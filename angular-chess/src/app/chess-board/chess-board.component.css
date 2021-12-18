@@ -1,0 +1,14 @@
+div.board{
+    background-image: url("../../../images/Board.png");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    border-radius: 3px;
+    height: 100%;
+    max-width: 800px;
+    max-height: 800px;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    overflow: initial;
+    position: relative;
+}
