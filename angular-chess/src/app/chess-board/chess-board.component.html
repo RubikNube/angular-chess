@@ -1,5 +1,7 @@
 
 <div class="board">
-  <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}">
+  <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
+  [style.top.%]="(8-piece.position.row)*12.5"
+  [style.left.%]="(piece.position.column-1)*12.5">
   </div>
 </div>

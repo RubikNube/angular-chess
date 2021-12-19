@@ -18,6 +18,7 @@ div.piece{
     width: 12.5%;
     background-repeat: no-repeat;
     background-size: 100%;
+    position: absolute;
 }
 
 /* White pieces*/

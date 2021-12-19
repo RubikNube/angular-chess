@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PieceColor, PieceType } from './pieces.t';
+import { PieceColor, PieceType, Position } from './pieces.t';
 
 @Component({
   selector: 'app-chess-board',
