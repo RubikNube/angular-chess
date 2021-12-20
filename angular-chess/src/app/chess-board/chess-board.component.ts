@@ -75,4 +75,8 @@ export class ChessBoardComponent implements OnInit {
       return (8 - piece.position.column) * 12.5;
     }
   }
+
+  importFen(fen:string):void{
+    
+  }
 }
