@@ -71,9 +71,13 @@ div.BLACK_PAWN{
     background-image: url("../../../images/pieces/Chess_pdt60.png");
 }
 
-button.switch{
+button{
     background-color: #238522;
     margin-left: 1em;
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+div.board-btn-group{
+    margin-top: 1em;
 }

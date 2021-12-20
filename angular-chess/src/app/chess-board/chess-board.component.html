@@ -5,4 +5,9 @@
   </div>
 </div>
 
-<button pButton class="switch" type="button" label="Switch Board" (click)="switchBoard()"></button>
+<div class="p-inputgroup board-btn-group">
+  <button pButton type="button" label="Switch Board" (click)="switchBoard()"></button>
+  <button type="button" pButton pRipple label="Import FEN" (click)="importFen(fen)"></button>
+  <input type="text" pInputText placeholder="FEN"
+  [(ngModel)]="fen">         
+</div>
