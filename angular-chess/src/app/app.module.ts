@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { ChessBoardComponent } from './chess-board/chess-board.component';
+import {ButtonModule} from 'primeng/button';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { ChessBoardComponent } from './chess-board/chess-board.component';
     ChessBoardComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    ButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

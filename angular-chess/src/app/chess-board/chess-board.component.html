@@ -1,7 +1,9 @@
 
 <div class="board">
   <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
-  [style.top.%]="(8-piece.position.row)*12.5"
-  [style.left.%]="(piece.position.column-1)*12.5">
+  [style.top.%]="getTopPosition(piece)"
+  [style.left.%]="getLeftPosition(piece)">
   </div>
 </div>
+
+<button pButton class="switch" type="button" label="Switch Board" (click)="switchBoard()"></button>

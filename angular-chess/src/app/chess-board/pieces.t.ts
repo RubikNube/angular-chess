@@ -1,6 +1,6 @@
 export type Piece = {
     type: PieceType;
-    color: PieceColor;
+    color: Color;
     position: Position;
 }
 
@@ -18,7 +18,7 @@ export enum PieceType {
     ROOK = "ROOK"
 }
 
-export enum PieceColor {
+export enum Color {
     WHITE="WHITE",
     BLACK="BLACK"
 }
