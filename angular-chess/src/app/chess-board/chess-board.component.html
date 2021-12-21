@@ -1,11 +1,18 @@
 <div class="board">
   <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
-  [style.top.%]="getTopPosition(piece)"
-  [style.left.%]="getLeftPosition(piece)"
+  [style.top.%]="getTopPosition(piece.position)"
+  [style.left.%]="getLeftPosition(piece.position)"
+  [style.cursor]="getCursor(piece)"
   pDraggable="piece"
+  pDroppable="fields"
   (onDragStart)="dragStart($event,piece)" 
   (onDragEnd)="dragEnd($event)">
   </div>
+
+  <div *ngFor="let field of fields" 
+  class="field field-{{field.position.row}}{{field.position.column}} color-{{field.highlight}}"
+  [style.top.%]="getTopPosition(field.position)"
+  [style.left.%]="getLeftPosition(field.position)"></div>
 </div>
 
 <div class="p-inputgroup board-btn-group">

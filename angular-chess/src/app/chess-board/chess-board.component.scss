@@ -20,8 +20,42 @@ div.piece{
     width: 12.5%;
     background-repeat: no-repeat;
     background-size: 100%;
+    z-index: 20;
     position: absolute;
 }
+
+div.field{
+    height: 12.5%;
+    width: 12.5%;
+    z-index: 10;
+    position: absolute;
+    opacity: 50%;
+}
+
+div.color-RED{
+    background: red;
+}
+
+div.color-GREEN{
+    background: green;
+}
+
+div.color-YELLOW{
+    background: yellow;
+}
+
+.cdk-drag {
+    &.cdk-drag-preview > *{
+      cursor: move;
+      cursor: grabbing;
+      cursor: -moz-grabbing;
+      cursor: -webkit-grabbing;
+    }
+  
+    &.cdk-drag-placeholder > *{
+      opacity: 0;
+    }
+  }
 
 /* White pieces*/
 div.WHITE_ROOK{

@@ -1,14 +1,9 @@
-import { Color } from "./board.t"
+import { Color, Position } from "./board.t"
 
 export type Piece = {
     type: PieceType;
     color: Color;
     position: Position;
-}
-
-export type Position = {
-    row: number;
-    column: number
 }
 
 export enum PieceType {
