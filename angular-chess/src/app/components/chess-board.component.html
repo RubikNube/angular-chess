@@ -1,5 +1,5 @@
 <div class="board">
-  <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
+  <div *ngFor="let piece of this.boardService.getPieces()" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
   [style.top.%]="getTopPosition(piece.position)"
   [style.left.%]="getLeftPosition(piece.position)"
   [style.cursor]="getCursor(piece)"
@@ -17,7 +17,7 @@
 
 <div class="p-inputgroup board-btn-group">
   <button pButton type="button" label="Switch Board" (click)="switchBoard()"></button>
-  <button type="button" pButton pRipple label="Import FEN" (click)="importFen(fen)"></button>
+  <button type="button" pButton pRipple label="Import FEN" (click)="this.boardService.importFen(fen)"></button>
   <input type="text" pInputText placeholder="FEN"
   [(ngModel)]="fen">         
 </div>

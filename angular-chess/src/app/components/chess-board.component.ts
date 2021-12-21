@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Color, Field, HighlightColor, Position } from './../types/board.t';
+import { ChessBoardService } from '../services/chess-board.service';
+import { Color, Field, HighlightColor, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 
 @Component({
@@ -9,14 +10,13 @@ import { Piece, PieceType } from '../types/pieces.t';
 })
 export class ChessBoardComponent implements OnInit {
   perspective = Color.WHITE;
-  pieces: Piece[] = [];
-  fen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
   fields: Field[] = [];
+  fen: string = "";
 
-  constructor() {
-    this.importFen(this.fen)
+  constructor(public boardService:ChessBoardService) {
+    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
   }
 
   ngOnInit(): void {
@@ -46,65 +46,9 @@ export class ChessBoardComponent implements OnInit {
     }
   }
 
-  public importFen(newFen: string): void {
-    console.log("importFen: " + newFen)
-    this.fen = newFen;
-
-    this.pieces = [];
-
-    let fenRows: string[] = newFen.split("/");
-    for (let j = 0; j < fenRows.length; j++) {
-      let fenRow: string = fenRows[j];
-      let currentPos: number = 0;
-      for (let i = 0; i < fenRow.length; i++) {
-        const currentChar = fenRow[i];
-        console.log("currentChar " + currentChar);
-
-        if (currentChar.match("\\d")) {
-          let columnsToAdd = parseInt(currentChar);
-          console.log("columnsToAdd " + columnsToAdd);
-          currentPos += columnsToAdd;
-        }
-        else if (currentChar.toUpperCase().match("[R|B|Q|K|N|P]")) {
-          let newPiece: Piece = {
-            color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
-            type: this.getPiece(currentChar),
-            position: { row: 8 - j, column: currentPos + 1 }
-          };
-
-          console.log("add piece " + JSON.stringify(newPiece))
-
-          this.pieces.push(newPiece);
-          currentPos++;
-        } else {
-          console.error("Not a number or a piece char: " + currentChar);
-        }
-      }
-    };
-  }
-
-  getPiece(pieceChar: string): PieceType {
-    switch (pieceChar.toUpperCase()) {
-      case 'K':
-        return PieceType.KING;
-      case 'Q':
-        return PieceType.QUEEN;
-      case 'R':
-        return PieceType.ROOK;
-      case 'B':
-        return PieceType.BISHOP;
-      case 'N':
-        return PieceType.KNIGHT;
-      case 'P':
-        return PieceType.PAWN;
-      default:
-        throw Error("Unknown piece: " + pieceChar);
-    }
-  }
-
   dragStart(e: MouseEvent, c: any) {
     this.dragPos = this.getPosition(e);
-    this.grabbedPiece = this.getPieceOnPos(this.dragPos);
+    this.grabbedPiece = this.boardService.getPieceOnPos(this.dragPos);
     if (this.grabbedPiece !== undefined) {
       let validMoves = this.getValidMoves(this.grabbedPiece);
 
@@ -148,33 +92,19 @@ export class ChessBoardComponent implements OnInit {
     document.body.classList.remove('inheritCursors');
     document.body.style.cursor = 'unset';
 
-    let draggedPiece = this.getPieceOnPos(this.dragPos);
+    let draggedPiece = this.boardService.getPieceOnPos(this.dragPos);
 
     if (draggedPiece !== undefined) {
-      this.removePiece(draggedPiece);
+      this.boardService.removePiece(draggedPiece);
 
       let dropPos: Position = this.getPosition(e);
-      let pieceOnDropPos = this.getPieceOnPos(dropPos);
+      let pieceOnDropPos = this.boardService.getPieceOnPos(dropPos);
       if (pieceOnDropPos !== undefined) {
-        this.removePiece(pieceOnDropPos);
+        this.boardService.removePiece(pieceOnDropPos);
       }
 
       draggedPiece.position = dropPos;
-      this.pieces.push(draggedPiece);
-    }
-  }
-
-  private getPieceOnPos(pos: Position): Piece | undefined {
-    return this.pieces.find(p => {
-      return p.position.row === pos.row
-        && p.position.column === pos.column;
-    });
-  }
-
-  private removePiece(draggedPiece: Piece) {
-    let index = this.pieces.indexOf(draggedPiece, 0);
-    if (index > -1) {
-      this.pieces.splice(index, 1);
+      this.boardService.addPiece(draggedPiece);
     }
   }
 
@@ -229,7 +159,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   isFree(position: Position): boolean {
-    let result=this.getPieceOnPos(position)===undefined;
+    let result=this.boardService.getPieceOnPos(position)===undefined;
     console.log("isFree position:"+JSON.stringify(position)+", result: "+result);
     return result;
   }
