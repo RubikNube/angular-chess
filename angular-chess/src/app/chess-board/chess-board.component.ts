@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Color, Piece, PieceType } from './pieces.t';
+import { Color } from './board.t';
+import { Piece, PieceType, Position } from './pieces.t';
 
 @Component({
   selector: 'app-chess-board',
@@ -9,7 +10,8 @@ import { Color, Piece, PieceType } from './pieces.t';
 export class ChessBoardComponent implements OnInit {
   perspective = Color.WHITE;
   pieces: Piece[] = [];
-  fen:string="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+  fen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+  dragPos: Position = { row: 0, column: 0 };
 
   constructor() {
     this.importFen(this.fen)
@@ -43,8 +45,8 @@ export class ChessBoardComponent implements OnInit {
   }
 
   public importFen(newFen: string): void {
-    console.log("importFen: "+newFen)
-    this.fen=newFen;
+    console.log("importFen: " + newFen)
+    this.fen = newFen;
 
     this.pieces = [];
 
@@ -95,6 +97,66 @@ export class ChessBoardComponent implements OnInit {
         return PieceType.PAWN;
       default:
         throw Error("Unknown piece: " + pieceChar);
+    }
+  }
+
+  dragStart(e: MouseEvent, c: any) {
+    this.dragPos = this.getPosition(e);
+  }
+
+  getPosition(e: MouseEvent): Position {
+    let boardElem = document.querySelector('div.board');
+    let rect = boardElem?.getBoundingClientRect();
+
+    let d_x = e.clientX - (rect?.x === undefined ? 0 : rect.x);
+    let d_y = e.clientY - (rect?.y === undefined ? 0 : rect.y);
+
+    // get corresponding square
+    let ev_height = boardElem?.scrollHeight === undefined ? 1 : boardElem?.scrollHeight;
+    let squareLength = ev_height / 8;
+
+    // get row
+    let row = Math.ceil(d_y / squareLength);
+
+    // get column
+    let column = 9 - Math.ceil(d_x / squareLength);
+
+    if (this.perspective === Color.BLACK) {
+      return { row: row, column: column };
+    }
+    else {
+      return { row: 9 - row, column: 9 - column };
+    }
+  }
+
+  dragEnd(e: MouseEvent) {
+    let draggedPiece = this.getPieceOnPos(this.dragPos);
+    
+    if (draggedPiece !== undefined) {
+      this.removePiece(draggedPiece);
+      
+      let dropPos: Position = this.getPosition(e);
+      let pieceOnDropPos=this.getPieceOnPos(dropPos);
+      if(pieceOnDropPos!==undefined){
+        this.removePiece(pieceOnDropPos);
+      }
+
+      draggedPiece.position = dropPos;
+      this.pieces.push(draggedPiece);
+    }
+  }
+
+  private getPieceOnPos(pos:Position):Piece|undefined {
+    return this.pieces.find(p => {
+      return p.position.row === pos.row
+        && p.position.column === pos.column;
+    });
+  }
+
+  private removePiece(draggedPiece: Piece) {
+    let index = this.pieces.indexOf(draggedPiece, 0);
+    if (index > -1) {
+      this.pieces.splice(index, 1);
     }
   }
 }

@@ -3,14 +3,16 @@ div.board{
     background-repeat: no-repeat;
     background-size: 100%;
     border-radius: 3px;
-    height: 100%;
-    max-width: 800px;
-    max-height: 800px;
-    width: 100%;
+    /* height: 100%; */
+    max-width: 99vh;
+    max-height: 99vh;
+    /* width: 100%; */
     box-sizing: border-box;
     display: block;
     overflow: initial;
     position: relative;
+    margin:2.5vw 0;
+    width:75vh; height:75vh;
 }
 
 div.piece{

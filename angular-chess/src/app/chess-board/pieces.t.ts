@@ -1,3 +1,5 @@
+import { Color } from "./board.t"
+
 export type Piece = {
     type: PieceType;
     color: Color;
@@ -16,9 +18,4 @@ export enum PieceType {
     KNIGHT = "KNIGHT",
     PAWN = "PAWN",
     ROOK = "ROOK"
-}
-
-export enum Color {
-    WHITE="WHITE",
-    BLACK="BLACK"
 }

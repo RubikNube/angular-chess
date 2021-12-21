@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { ChessBoardComponent } from './chess-board/chess-board.component';
 import {ButtonModule} from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import {DragDropModule} from 'primeng/dragdrop';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     ButtonModule,
-    FormsModule
+    FormsModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

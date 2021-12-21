@@ -1,7 +1,10 @@
 <div class="board">
   <div *ngFor="let piece of pieces" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
   [style.top.%]="getTopPosition(piece)"
-  [style.left.%]="getLeftPosition(piece)">
+  [style.left.%]="getLeftPosition(piece)"
+  pDraggable="piece"
+  (onDragStart)="dragStart($event,piece)" 
+  (onDragEnd)="dragEnd($event)">
   </div>
 </div>
 
