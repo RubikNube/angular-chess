@@ -46,16 +46,39 @@ export class MoveGenerationService {
     return fieldsToMove;
   }
 
-  // getValidCaptures(piece: Piece): Position[] {
-  //   console.log("getValidCaptures: " + JSON.stringify(piece));
-  //   let fieldsToMove: Position[] = [];
+  getValidCaptures(piece: Piece): Position[] {
+    console.log("getValidCaptures: " + JSON.stringify(piece));
+    let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
+    let fieldsToMove: Position[] = [];
 
-  //   if (piece.type === PieceType.PAWN) {
-  //     return this.getValidPawnCaptures(piece);
-  //   }
+    if (piece.type === PieceType.PAWN) {
+      fieldsToMove = this.getValidPawnCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+    }
 
-  //   return fieldsToMove;
-  // }
+    return fieldsToMove
+      .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+  }
+
+  private getValidPawnCaptures(piece: Piece): Position[] {
+    console.log("getValidPawnMoves: " + JSON.stringify(piece));
+    let fieldsToMove: Position[] = [];
+
+    // left upper field
+    let leftUpperField: Position = {
+      row: piece.position.row + 1,
+      column: piece.position.column - 1
+    };
+
+    // right upper field
+    let rightUpperField: Position = {
+      row: piece.position.row + 1,
+      column: piece.position.column + 1
+    };
+
+    fieldsToMove.push(leftUpperField, rightUpperField);
+
+    return fieldsToMove;
+  }
 
   private addIfFree(fieldsToMove: Position[], fieldToMove: Position, color: Color) {
     if (this.isFree(fieldToMove, color)) {

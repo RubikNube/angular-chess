@@ -42,16 +42,21 @@ export class ChessBoardComponent implements OnInit {
     this.dragPos = this.positioningService.getMousePosition(e);
     this.grabbedPiece = this.boardService.getPieceOnPos(this.dragPos);
     if (this.grabbedPiece !== undefined) {
-      let validMoves = this.moveGenerationService.getValidMoves(this.grabbedPiece);
-
-      let validSquares: Square[] = validMoves.map(m => {
+      let validSquares = this.moveGenerationService.getValidMoves(this.grabbedPiece).map(m => {
         return {
           position: m,
           highlight: HighlightColor.GREEN
         }
       });
 
-      this.highlightingService.addSquares(...validSquares);
+      let getValidCaptures=this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m => {
+        return {
+          position: m,
+          highlight: HighlightColor.RED
+        }
+      });
+
+      this.highlightingService.addSquares(...validSquares,...getValidCaptures);
     }
   }
 
