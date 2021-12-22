@@ -9,13 +9,13 @@
   </div>
 
   <div *ngFor="let square of this.highlightingService.getSquares()|async" 
-  class="field field-{{square.position.row}}{{square.position.column}} color-{{square.highlight}}"
+  class="field color-{{square.highlight}}"
   [style.top.%]="getTopPosition(square.position)"
   [style.left.%]="getLeftPosition(square.position)"></div>
 </div>
 
 <div class="p-inputgroup board-btn-group">
-  <button pButton type="button" label="Switch Board" (click)="switchBoard()"></button>
+  <button pButton type="button" label="Switch Board" (click)="this.positioningService.switchPerspective()"></button>
   <input id="fen" #fen name="fen" type="text" pInputText placeholder="FEN">         
   <button type="button" pButton pRipple label="Import FEN" (click)="this.boardService.importFen(fen.value)"></button>
 </div>

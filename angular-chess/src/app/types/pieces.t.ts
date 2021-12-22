@@ -14,3 +14,9 @@ export enum PieceType {
     PAWN = "PAWN",
     ROOK = "ROOK"
 }
+
+export type Move = {
+    piece: PieceType;
+    from: Position;
+    to: Position;
+}
