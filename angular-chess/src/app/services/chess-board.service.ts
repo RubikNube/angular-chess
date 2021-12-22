@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 
@@ -7,17 +8,23 @@ import { Piece, PieceType } from '../types/pieces.t';
 })
 export class ChessBoardService {
   pieces: Piece[] = [];
-  fen: string = "";
+
+  private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
+  fen$ = this.fenSource.asObservable();
 
   constructor() { }
 
-  public getPieces():Piece[]{
+  public setFen(fen: string) {
+    this.fenSource.next(fen);
+  }
+
+  public getPieces(): Piece[] {
     return this.pieces;
   }
 
   public importFen(newFen: string): void {
     console.log("importFen: " + newFen)
-    this.fen = newFen;
+    this.fenSource.next(newFen);
 
     this.pieces = [];
 
@@ -71,7 +78,7 @@ export class ChessBoardService {
     }
   }
 
-  
+
   getPieceOnPos(pos: Position): Piece | undefined {
     return this.pieces.find(p => {
       return p.position.row === pos.row
@@ -79,7 +86,7 @@ export class ChessBoardService {
     });
   }
 
-  addPiece(piece:Piece){
+  addPiece(piece: Piece) {
     this.pieces.push(piece);
   }
 

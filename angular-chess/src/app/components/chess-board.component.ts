@@ -11,14 +11,13 @@ import { Piece, PieceType } from '../types/pieces.t';
 })
 export class ChessBoardComponent implements OnInit {
   perspective = Color.WHITE;
-  fen: string = "";
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
   fields: Field[] = [];
 
   constructor(public boardService:ChessBoardService,
     public moveGenerationService:MoveGenerationService) {
-    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   }
 
   ngOnInit(): void {
