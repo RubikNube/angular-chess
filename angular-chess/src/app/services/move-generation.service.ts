@@ -13,48 +13,60 @@ export class MoveGenerationService {
 
   getValidMoves(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
+    // normalize position white <-> black
+    let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
     let fieldsToMove: Position[] = [];
 
     if (piece.type === PieceType.PAWN) {
-      return this.getValidPawnMoves(piece);
+      fieldsToMove = this.getValidPawnMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
-    return fieldsToMove;
+    return fieldsToMove
+      .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
   }
 
   private getValidPawnMoves(piece: Piece): Position[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
     let fieldsToMove: Position[] = [];
 
-    // normalize position white <-> black
-    let normalizedPosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
+    // move front
+    this.addIfFree(fieldsToMove,
+      {
+        column: piece.position.column,
+        row: piece.position.row + 1
+      }, piece.color);
 
-    console.log("getValidPawnMoves: normalizedPosition: " + JSON.stringify(normalizedPosition));
-
-
-    this.addIfFree(fieldsToMove, this.positioningService.getAbsolutePosition({
-      column: normalizedPosition.column,
-      row: normalizedPosition.row + 1
-    }, piece.color));
-
-    if (normalizedPosition.row === 2) {
-      this.addIfFree(fieldsToMove, this.positioningService.getAbsolutePosition({
-        column: normalizedPosition.column,
-        row: normalizedPosition.row + 2
-      }, piece.color));
+    if (piece.position.row === 2) {
+      this.addIfFree(fieldsToMove,
+        {
+          column: piece.position.column,
+          row: piece.position.row + 2
+        }, piece.color);
     }
     return fieldsToMove;
   }
 
-  private addIfFree(fieldsToMove: Position[], fieldToMove: Position) {
-    if (this.isFree(fieldToMove)) {
+  // getValidCaptures(piece: Piece): Position[] {
+  //   console.log("getValidCaptures: " + JSON.stringify(piece));
+  //   let fieldsToMove: Position[] = [];
+
+  //   if (piece.type === PieceType.PAWN) {
+  //     return this.getValidPawnCaptures(piece);
+  //   }
+
+  //   return fieldsToMove;
+  // }
+
+  private addIfFree(fieldsToMove: Position[], fieldToMove: Position, color: Color) {
+    if (this.isFree(fieldToMove, color)) {
       fieldsToMove.push(fieldToMove);
     }
   }
 
-  private isFree(position: Position): boolean {
-    let result = this.boardService.getPieceOnPos(position) === undefined;
-    console.log("isFree position:" + JSON.stringify(position) + ", result: " + result);
+  private isFree(position: Position, color: Color): boolean {
+    let absPos = this.positioningService.getAbsolutePosition(position, color);
+    let result = this.boardService.getPieceOnPos(absPos) === undefined;
+    console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
     return result;
   }
 }
