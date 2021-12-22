@@ -4,15 +4,14 @@
   [style.left.%]="getLeftPosition(piece.position)"
   [style.cursor]="getCursor(piece)"
   pDraggable="piece"
-  pDroppable="fields"
   (onDragStart)="dragStart($event,piece)" 
   (onDragEnd)="dragEnd($event)">
   </div>
 
-  <div *ngFor="let field of fields" 
-  class="field field-{{field.position.row}}{{field.position.column}} color-{{field.highlight}}"
-  [style.top.%]="getTopPosition(field.position)"
-  [style.left.%]="getLeftPosition(field.position)"></div>
+  <div *ngFor="let square of this.highlightingService.getSquares()|async" 
+  class="field field-{{square.position.row}}{{square.position.column}} color-{{square.highlight}}"
+  [style.top.%]="getTopPosition(square.position)"
+  [style.left.%]="getLeftPosition(square.position)"></div>
 </div>
 
 <div class="p-inputgroup board-btn-group">

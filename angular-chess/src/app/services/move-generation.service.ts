@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';

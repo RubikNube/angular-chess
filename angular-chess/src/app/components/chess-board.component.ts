@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ChessBoardService } from '../services/chess-board.service';
+import { HighlightingService } from '../services/highlighting.service';
 import { MoveGenerationService } from '../services/move-generation.service';
-import { Color, Field, HighlightColor, Position } from '../types/board.t';
-import { Piece, PieceType } from '../types/pieces.t';
+import { Color, Square, HighlightColor, Position } from '../types/board.t';
+import { Piece } from '../types/pieces.t';
 
 @Component({
   selector: 'app-chess-board',
@@ -13,10 +14,10 @@ export class ChessBoardComponent implements OnInit {
   perspective = Color.WHITE;
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
-  fields: Field[] = [];
 
   constructor(public boardService:ChessBoardService,
-    public moveGenerationService:MoveGenerationService) {
+    public moveGenerationService:MoveGenerationService,
+    public highlightingService:HighlightingService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   }
 
@@ -53,14 +54,14 @@ export class ChessBoardComponent implements OnInit {
     if (this.grabbedPiece !== undefined) {
       let validMoves = this.moveGenerationService.getValidMoves(this.grabbedPiece);
 
-      let validFields: Field[] = validMoves.map(m => {
+      let validFields: Square[] = validMoves.map(m => {
         return {
           position: m,
           highlight: HighlightColor.GREEN
         }
       });
 
-      this.fields = validFields;
+      this.highlightingService.addSquares(...validFields);
     }
   }
 
@@ -90,8 +91,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   dragEnd(e: MouseEvent) {
-    document.body.classList.remove('inheritCursors');
-    document.body.style.cursor = 'unset';
+    this.highlightingService.clearSquares();
 
     let draggedPiece = this.boardService.getPieceOnPos(this.dragPos);
 

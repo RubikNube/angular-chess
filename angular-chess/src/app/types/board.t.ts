@@ -8,7 +8,7 @@ export type Position = {
     column: number
 }
 
-export type Field={
+export type Square={
     highlight:HighlightColor;
     position:Position
 }
