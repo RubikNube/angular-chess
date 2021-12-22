@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ChessBoardService } from '../services/chess-board.service';
+import { MoveGenerationService } from '../services/move-generation.service';
 import { Color, Field, HighlightColor, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 
@@ -10,12 +11,13 @@ import { Piece, PieceType } from '../types/pieces.t';
 })
 export class ChessBoardComponent implements OnInit {
   perspective = Color.WHITE;
+  fen: string = "";
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
   fields: Field[] = [];
-  fen: string = "";
 
-  constructor(public boardService:ChessBoardService) {
+  constructor(public boardService:ChessBoardService,
+    public moveGenerationService:MoveGenerationService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
   }
 
@@ -50,7 +52,7 @@ export class ChessBoardComponent implements OnInit {
     this.dragPos = this.getPosition(e);
     this.grabbedPiece = this.boardService.getPieceOnPos(this.dragPos);
     if (this.grabbedPiece !== undefined) {
-      let validMoves = this.getValidMoves(this.grabbedPiece);
+      let validMoves = this.moveGenerationService.getValidMoves(this.grabbedPiece);
 
       let validFields: Field[] = validMoves.map(m => {
         return {
@@ -109,83 +111,6 @@ export class ChessBoardComponent implements OnInit {
   }
 
   getCursor(piece: Piece) {
-    // console.log("getCursor " + JSON.stringify({ piece: piece, grabbedPiece: this.grabbedPiece }))
-    // if(this.grabbedPiece!==undefined&&this.grabbedPiece===piece){
-    //   return "grabbing";
-    // }
-    // else{
-    //   return "grab";
-    // }
     return "grab";
   }
-
-
-  getValidMoves(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-
-    if (piece.type === PieceType.PAWN) {
-      return this.getValidPawnMoves(piece);
-    }
-
-    return fieldsToMove;
-  }
-
-  getValidPawnMoves(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-
-    // normalize position white <-> black
-    let normalizedPosition: Position = this.normalizePosition(piece.color, piece.position);
-
-    this.addIfFree(fieldsToMove,{
-      column: piece.position.column,
-      row: normalizedPosition.row + 1
-    });
-
-    if (normalizedPosition.row === 2) {
-      this.addIfFree(fieldsToMove,{
-        column: piece.position.column,
-        row: normalizedPosition.row + 2
-      });
-    }
-    return fieldsToMove.map(p => {
-      return this.denormalizePosition(piece.color, p);
-    });
-  }
-
-  private addIfFree(fieldsToMove: Position[],fieldToMove: Position) {
-    if (this.isFree(fieldToMove)) {
-      fieldsToMove.push(fieldToMove);
-    }
-  }
-
-  isFree(position: Position): boolean {
-    let result=this.boardService.getPieceOnPos(position)===undefined;
-    console.log("isFree position:"+JSON.stringify(position)+", result: "+result);
-    return result;
-  }
-
-  normalizePosition(color: Color, position: Position): Position {
-    if (color === Color.WHITE) {
-      return position;
-    }
-    else {
-      return {
-        row: 9 - position.row,
-        column: position.column
-      };
-    }
-  }
-
-  denormalizePosition(color: Color, position: Position): Position {
-    if (color === Color.WHITE) {
-      return position;
-    }
-    else {
-      return {
-        row: 9 - position.row,
-        column: position.column
-      };
-    }
-  }
-
 }
