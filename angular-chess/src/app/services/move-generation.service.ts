@@ -63,7 +63,20 @@ export class MoveGenerationService {
     }
 
     return fieldsToMove
+      .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+  }
+
+  private isOppositeColoredPieceOnPos(position: Position, color: Color): boolean {
+    let absPos = this.positioningService.getAbsolutePosition(position, color);
+    let pieceOnPos = this.boardService.getPieceOnPos(absPos);
+
+    if (pieceOnPos !== undefined) {
+      return pieceOnPos.color !== color;
+    }
+    else {
+      return false;
+    }
   }
 
   private getValidPawnCaptures(piece: Piece): Position[] {
