@@ -21,11 +21,53 @@ export class MoveGenerationService {
       fieldsToMove = this.getValidPawnMoves({ type: piece.type, color: piece.color, position: relativePosition });
     } else if (piece.type === PieceType.ROOK) {
       fieldsToMove = this.getValidRookMoves({ type: piece.type, color: piece.color, position: relativePosition });
+    } else if (piece.type == PieceType.KNIGHT) {
+      fieldsToMove = this.getValidKnightMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
     return fieldsToMove
       .filter(p => this.isFree(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+  }
+
+  getValidKnightMoves(piece: Piece): Position[] {
+    let fieldsToMove: Position[] = [];
+
+    fieldsToMove.push(
+      {
+        row: piece.position.row + 1,
+        column: piece.position.column - 2
+      },
+      {
+        row: piece.position.row + 2,
+        column: piece.position.column - 1
+      },
+      {
+        row: piece.position.row + 1,
+        column: piece.position.column + 2
+      },
+      {
+        row: piece.position.row + 2,
+        column: piece.position.column + 1
+      },
+      {
+        row: piece.position.row - 1,
+        column: piece.position.column - 2
+      },
+      {
+        row: piece.position.row - 2,
+        column: piece.position.column - 1
+      },
+      {
+        row: piece.position.row - 1,
+        column: piece.position.column + 2
+      },
+      {
+        row: piece.position.row - 2,
+        column: piece.position.column + 1
+      })
+
+    return fieldsToMove;
   }
 
   getValidRookMoves(piece: Piece): Position[] {
@@ -147,6 +189,9 @@ export class MoveGenerationService {
     }
     else if (piece.type === PieceType.ROOK) {
       fieldsToMove = this.getValidRookCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+    }
+    else if (piece.type === PieceType.KNIGHT) {
+      fieldsToMove = this.getValidKnightMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
     return fieldsToMove

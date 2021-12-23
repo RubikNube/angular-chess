@@ -15,25 +15,25 @@ export class ChessBoardComponent implements OnInit {
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
 
-  constructor(public boardService:ChessBoardService,
-    public moveGenerationService:MoveGenerationService,
-    public highlightingService:HighlightingService,
-    public positioningService:PositioningService) {
+  constructor(public boardService: ChessBoardService,
+    public moveGenerationService: MoveGenerationService,
+    public highlightingService: HighlightingService,
+    public positioningService: PositioningService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   }
 
   ngOnInit(): void {
   }
 
-  
+
   getTopPosition(position: Position): number {
-    let uiRow=this.positioningService.getUiPosition(position).row;
+    let uiRow = this.positioningService.getUiPosition(position).row;
 
     return (8 - uiRow) * 12.5;
   }
 
   getLeftPosition(position: Position): number {
-    let uiCol=this.positioningService.getUiPosition(position).column;
+    let uiCol = this.positioningService.getUiPosition(position).column;
 
     return (uiCol - 1) * 12.5
   }
@@ -49,14 +49,14 @@ export class ChessBoardComponent implements OnInit {
         }
       });
 
-      let getValidCaptures=this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m => {
+      let getValidCaptures = this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m => {
         return {
           position: m,
           highlight: HighlightColor.RED
         }
       });
 
-      this.highlightingService.addSquares(...validSquares,...getValidCaptures);
+      this.highlightingService.addSquares(...validSquares, ...getValidCaptures);
     }
   }
 
