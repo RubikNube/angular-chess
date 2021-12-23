@@ -145,10 +145,98 @@ export class MoveGenerationService {
     if (piece.type === PieceType.PAWN) {
       fieldsToMove = this.getValidPawnCaptures({ type: piece.type, color: piece.color, position: relativePosition });
     }
+    else if (piece.type === PieceType.ROOK) {
+      fieldsToMove = this.getValidRookCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+    }
 
     return fieldsToMove
       .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+  }
+
+  getValidRookCaptures(piece: Piece): Position[] {
+    let fieldsToMove: Position[] = [];
+    let frontSquares: Position[] = this.getOccupiedFrontSquare(piece, 8 - piece.position.row);
+    let backSquares: Position[] = this.getOccupiedBackSquare(piece, piece.position.row - 1);
+    let leftSquares: Position[] = this.getOccupiedLeftSquare(piece, piece.position.column - 1);
+    let rightSquares: Position[] = this.getOccupiedRightSquare(piece, 8 - piece.position.column);
+
+    fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
+
+    return fieldsToMove;
+  }
+
+  getOccupiedBackSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column,
+        row: piece.position.row - index
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedFrontSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column,
+        row: piece.position.row + index
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+
+  getOccupiedLeftSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedRightSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
   }
 
   private isOppositeColoredPieceOnPos(position: Position, color: Color): boolean {
