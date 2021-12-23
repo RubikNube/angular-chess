@@ -19,11 +19,25 @@ export class MoveGenerationService {
 
     if (piece.type === PieceType.PAWN) {
       fieldsToMove = this.getValidPawnMoves({ type: piece.type, color: piece.color, position: relativePosition });
+    } else if (piece.type === PieceType.ROOK) {
+      fieldsToMove = this.getValidRookMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
     return fieldsToMove
       .filter(p => this.isFree(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+  }
+
+  getValidRookMoves(piece: Piece): Position[] {
+    let fieldsToMove: Position[] = [];
+    let frontSquares: Position[] = this.getFreeFrontSquares(piece, 8 - piece.position.row);
+    let backSquares: Position[] = this.getFreeBackSquares(piece, piece.position.row - 1);
+    let leftSquares: Position[] = this.getFreeLeftSquares(piece, piece.position.column - 1);
+    let rightSquares: Position[] = this.getFreeRightSquares(piece, 8 - piece.position.column);
+
+    fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
+
+    return fieldsToMove;
   }
 
   private getValidPawnMoves(piece: Piece): Position[] {
@@ -43,6 +57,66 @@ export class MoveGenerationService {
       let squareToAdd = {
         column: piece.position.column,
         row: piece.position.row + index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  private getFreeBackSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column,
+        row: piece.position.row - index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  private getFreeLeftSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  private getFreeRightSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row
       };
 
       if (this.isFree(squareToAdd, piece.color)) {
