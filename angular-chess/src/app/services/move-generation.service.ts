@@ -4,6 +4,7 @@ import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
 import { MoveGenerationHandler } from './move-generation.handler';
+import { MoveGenerationKingHandler } from './move-generation.king.handler';
 import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
 import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
 import { MoveGenerationQueenHandler } from './move-generation.queen.handler';
@@ -23,7 +24,8 @@ export class MoveGenerationService {
       new MoveGenerationKnightHandler(this),
       new MoveGenerationPawnHandler(this),
       new MoveGenerationBishopHandler(this),
-      new MoveGenerationQueenHandler(this)
+      new MoveGenerationQueenHandler(this),
+      new MoveGenerationKingHandler(this)
     ]
 
   }
