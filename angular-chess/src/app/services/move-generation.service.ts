@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
+import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
 import { MoveGenerationHandler } from './move-generation.handler';
 import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
 import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
@@ -19,7 +20,8 @@ export class MoveGenerationService {
     this.generationHandlers = [
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
-      new MoveGenerationPawnHandler(this)
+      new MoveGenerationPawnHandler(this),
+      new MoveGenerationBishopHandler(this)
     ]
 
   }
@@ -126,6 +128,86 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
+  getFreeFrontLeftSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row + index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getFreeFrontRightSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row + index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getFreeBackRightSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row - index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getFreeBackLeftSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row - index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
   private isFree(position: Position, color: Color): boolean {
     let absPos = this.positioningService.getAbsolutePosition(position, color);
     let result = this.boardService.getPieceOnPos(absPos) === undefined;
@@ -215,6 +297,78 @@ export class MoveGenerationService {
       let squareToAdd = {
         column: piece.position.column + index,
         row: piece.position.row
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedFrontLeftSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row + index
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedFrontRightSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row + index
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedBackRightSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column + index,
+        row: piece.position.row - index
+      };
+
+      if (!this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+        break;
+      }
+    }
+
+    return quaresToMove;
+  }
+
+  getOccupiedBackLeftSquare(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column - index,
+        row: piece.position.row - index
       };
 
       if (!this.isFree(squareToAdd, piece.color)) {
