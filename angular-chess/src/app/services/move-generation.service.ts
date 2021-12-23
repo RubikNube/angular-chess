@@ -28,22 +28,32 @@ export class MoveGenerationService {
 
   private getValidPawnMoves(piece: Piece): Position[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
-    let fieldsToMove: Position[] = [];
-
-    fieldsToMove.push(
-      {
-        column: piece.position.column,
-        row: piece.position.row + 1
-      });
-
     if (piece.position.row === 2) {
-      fieldsToMove.push(
-        {
-          column: piece.position.column,
-          row: piece.position.row + 2
-        });
+      return this.getFreeFrontSquares(piece, 2);
     }
-    return fieldsToMove;
+    else {
+      return this.getFreeFrontSquares(piece, 1);
+    }
+  }
+
+  private getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
+    let quaresToMove: Position[] = [];
+
+    for (let index = 1; index <= maxSquares; index++) {
+      let squareToAdd = {
+        column: piece.position.column,
+        row: piece.position.row + index
+      };
+
+      if (this.isFree(squareToAdd, piece.color)) {
+        quaresToMove.push(squareToAdd);
+      }
+      else {
+        break;
+      }
+    }
+
+    return quaresToMove;
   }
 
   private isFree(position: Position, color: Color): boolean {
