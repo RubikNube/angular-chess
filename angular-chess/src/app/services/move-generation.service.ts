@@ -26,6 +26,7 @@ export class MoveGenerationService {
     }
 
     return fieldsToMove
+      .filter(p => this.positioningService.isOnBoard(p))
       .filter(p => this.isFree(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
   }

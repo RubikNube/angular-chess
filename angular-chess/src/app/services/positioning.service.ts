@@ -17,7 +17,7 @@ export class PositioningService {
   }
 
   public getUiPosition(position: Position): Position {
-    return this.getRelativePosition(position,this.perspectiveSource.getValue());
+    return this.getRelativePosition(position, this.perspectiveSource.getValue());
   }
 
   getMousePosition(e: MouseEvent): Position {
@@ -37,16 +37,16 @@ export class PositioningService {
     // get column
     let column = Math.ceil(d_x / squareLength);
 
-    let position:Position;
+    let position: Position;
 
     if (this.getPerspective() === Color.WHITE) {
-      position={ row: 9-row, column: column };
+      position = { row: 9 - row, column: column };
     }
     else {
-      position= { row: row, column:9- column };
+      position = { row: row, column: 9 - column };
     }
 
-    console.log("getMousePosition: "+JSON.stringify(position)+", this.getPerspective(): "+this.getPerspective());
+    console.log("getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
 
     return position;
   }
@@ -77,5 +77,9 @@ export class PositioningService {
         column: 9 - position.column
       }
     }
+  }
+
+  public isOnBoard(position: Position): boolean {
+    return position.row >= 1 && position.row <= 8 && position.column >= 1 && position.column <= 8;
   }
 }
