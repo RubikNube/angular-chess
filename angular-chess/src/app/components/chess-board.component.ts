@@ -3,7 +3,7 @@ import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Square, HighlightColor, Position } from '../types/board.t';
+import { HighlightColor, Position } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
 
 @Component({

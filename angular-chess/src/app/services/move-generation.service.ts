@@ -22,6 +22,7 @@ export class MoveGenerationService {
     }
 
     return fieldsToMove
+      .filter(p => this.isFree(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
   }
 
@@ -29,21 +30,27 @@ export class MoveGenerationService {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
     let fieldsToMove: Position[] = [];
 
-    // move front
-    this.addIfFree(fieldsToMove,
+    fieldsToMove.push(
       {
         column: piece.position.column,
         row: piece.position.row + 1
-      }, piece.color);
+      });
 
     if (piece.position.row === 2) {
-      this.addIfFree(fieldsToMove,
+      fieldsToMove.push(
         {
           column: piece.position.column,
           row: piece.position.row + 2
-        }, piece.color);
+        });
     }
     return fieldsToMove;
+  }
+
+  private isFree(position: Position, color: Color): boolean {
+    let absPos = this.positioningService.getAbsolutePosition(position, color);
+    let result = this.boardService.getPieceOnPos(absPos) === undefined;
+    console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
+    return result;
   }
 
   getValidCaptures(piece: Piece): Position[] {
@@ -78,18 +85,5 @@ export class MoveGenerationService {
     fieldsToMove.push(leftUpperField, rightUpperField);
 
     return fieldsToMove;
-  }
-
-  private addIfFree(fieldsToMove: Position[], fieldToMove: Position, color: Color) {
-    if (this.isFree(fieldToMove, color)) {
-      fieldsToMove.push(fieldToMove);
-    }
-  }
-
-  private isFree(position: Position, color: Color): boolean {
-    let absPos = this.positioningService.getAbsolutePosition(position, color);
-    let result = this.boardService.getPieceOnPos(absPos) === undefined;
-    console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
-    return result;
   }
 }
