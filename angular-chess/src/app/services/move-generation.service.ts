@@ -2,14 +2,27 @@ import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
+import { MoveGenerationHandler } from './move-generation.handler';
+import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
+import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
+import { MoveGenerationRookHandler } from './move-generation.rook.handler';
 import { PositioningService } from './positioning.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoveGenerationService {
+  generationHandlers: MoveGenerationHandler[];
+
   constructor(private boardService: ChessBoardService,
-    private positioningService: PositioningService) { }
+    private positioningService: PositioningService) {
+    this.generationHandlers = [
+      new MoveGenerationRookHandler(this),
+      new MoveGenerationKnightHandler(this),
+      new MoveGenerationPawnHandler(this)
+    ]
+
+  }
 
   getValidMoves(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
@@ -17,12 +30,14 @@ export class MoveGenerationService {
     let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
     let fieldsToMove: Position[] = [];
 
-    if (piece.type === PieceType.PAWN) {
-      fieldsToMove = this.getValidPawnMoves({ type: piece.type, color: piece.color, position: relativePosition });
-    } else if (piece.type === PieceType.ROOK) {
-      fieldsToMove = this.getValidRookMoves({ type: piece.type, color: piece.color, position: relativePosition });
-    } else if (piece.type == PieceType.KNIGHT) {
-      fieldsToMove = this.getValidKnightMoves({ type: piece.type, color: piece.color, position: relativePosition });
+    let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
+
+    if (matchingHandler !== undefined) {
+      console.log("getValidMoves: matchingHandler: " + matchingHandler)
+      fieldsToMove = matchingHandler.getMoveSquares({ type: piece.type, color: piece.color, position: relativePosition });
+    }
+    else {
+      console.log("getValidMoves: found no matching handler")
     }
 
     return fieldsToMove
@@ -31,69 +46,7 @@ export class MoveGenerationService {
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
   }
 
-  getValidKnightMoves(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-
-    fieldsToMove.push(
-      {
-        row: piece.position.row + 1,
-        column: piece.position.column - 2
-      },
-      {
-        row: piece.position.row + 2,
-        column: piece.position.column - 1
-      },
-      {
-        row: piece.position.row + 1,
-        column: piece.position.column + 2
-      },
-      {
-        row: piece.position.row + 2,
-        column: piece.position.column + 1
-      },
-      {
-        row: piece.position.row - 1,
-        column: piece.position.column - 2
-      },
-      {
-        row: piece.position.row - 2,
-        column: piece.position.column - 1
-      },
-      {
-        row: piece.position.row - 1,
-        column: piece.position.column + 2
-      },
-      {
-        row: piece.position.row - 2,
-        column: piece.position.column + 1
-      })
-
-    return fieldsToMove;
-  }
-
-  getValidRookMoves(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-    let frontSquares: Position[] = this.getFreeFrontSquares(piece, 8 - piece.position.row);
-    let backSquares: Position[] = this.getFreeBackSquares(piece, piece.position.row - 1);
-    let leftSquares: Position[] = this.getFreeLeftSquares(piece, piece.position.column - 1);
-    let rightSquares: Position[] = this.getFreeRightSquares(piece, 8 - piece.position.column);
-
-    fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
-
-    return fieldsToMove;
-  }
-
-  private getValidPawnMoves(piece: Piece): Position[] {
-    console.log("getValidPawnMoves: " + JSON.stringify(piece));
-    if (piece.position.row === 2) {
-      return this.getFreeFrontSquares(piece, 2);
-    }
-    else {
-      return this.getFreeFrontSquares(piece, 1);
-    }
-  }
-
-  private getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
+  getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
 
     for (let index = 1; index <= maxSquares; index++) {
@@ -113,7 +66,7 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  private getFreeBackSquares(piece: Piece, maxSquares: number): Position[] {
+  getFreeBackSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
 
     for (let index = 1; index <= maxSquares; index++) {
@@ -133,7 +86,7 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  private getFreeLeftSquares(piece: Piece, maxSquares: number): Position[] {
+  getFreeLeftSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
 
     for (let index = 1; index <= maxSquares; index++) {
@@ -153,7 +106,7 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  private getFreeRightSquares(piece: Piece, maxSquares: number): Position[] {
+  getFreeRightSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
 
     for (let index = 1; index <= maxSquares; index++) {
@@ -185,31 +138,19 @@ export class MoveGenerationService {
     let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
     let fieldsToMove: Position[] = [];
 
-    if (piece.type === PieceType.PAWN) {
-      fieldsToMove = this.getValidPawnCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+    let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
+
+    if (matchingHandler !== undefined) {
+      console.log("getValidMoves: matchingHandler: " + matchingHandler)
+      fieldsToMove = matchingHandler.getCaptureSquares({ type: piece.type, color: piece.color, position: relativePosition });
     }
-    else if (piece.type === PieceType.ROOK) {
-      fieldsToMove = this.getValidRookCaptures({ type: piece.type, color: piece.color, position: relativePosition });
-    }
-    else if (piece.type === PieceType.KNIGHT) {
-      fieldsToMove = this.getValidKnightMoves({ type: piece.type, color: piece.color, position: relativePosition });
+    else {
+      console.log("getValidMoves: found no matching handler")
     }
 
     return fieldsToMove
       .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color))
       .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
-  }
-
-  getValidRookCaptures(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-    let frontSquares: Position[] = this.getOccupiedFrontSquare(piece, 8 - piece.position.row);
-    let backSquares: Position[] = this.getOccupiedBackSquare(piece, piece.position.row - 1);
-    let leftSquares: Position[] = this.getOccupiedLeftSquare(piece, piece.position.column - 1);
-    let rightSquares: Position[] = this.getOccupiedRightSquare(piece, 8 - piece.position.column);
-
-    fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
-
-    return fieldsToMove;
   }
 
   getOccupiedBackSquare(piece: Piece, maxSquares: number): Position[] {
@@ -295,26 +236,5 @@ export class MoveGenerationService {
     else {
       return false;
     }
-  }
-
-  private getValidPawnCaptures(piece: Piece): Position[] {
-    console.log("getValidPawnMoves: " + JSON.stringify(piece));
-    let fieldsToMove: Position[] = [];
-
-    // left upper field
-    let leftUpperField: Position = {
-      row: piece.position.row + 1,
-      column: piece.position.column - 1
-    };
-
-    // right upper field
-    let rightUpperField: Position = {
-      row: piece.position.row + 1,
-      column: piece.position.column + 1
-    };
-
-    fieldsToMove.push(leftUpperField, rightUpperField);
-
-    return fieldsToMove;
   }
 }
