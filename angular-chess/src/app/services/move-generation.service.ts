@@ -6,6 +6,7 @@ import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
 import { MoveGenerationHandler } from './move-generation.handler';
 import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
 import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
+import { MoveGenerationQueenHandler } from './move-generation.queen.handler';
 import { MoveGenerationRookHandler } from './move-generation.rook.handler';
 import { PositioningService } from './positioning.service';
 
@@ -21,7 +22,8 @@ export class MoveGenerationService {
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
       new MoveGenerationPawnHandler(this),
-      new MoveGenerationBishopHandler(this)
+      new MoveGenerationBishopHandler(this),
+      new MoveGenerationQueenHandler(this)
     ]
 
   }
@@ -35,11 +37,7 @@ export class MoveGenerationService {
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
-      console.log("getValidMoves: matchingHandler: " + matchingHandler)
       fieldsToMove = matchingHandler.getMoveSquares({ type: piece.type, color: piece.color, position: relativePosition });
-    }
-    else {
-      console.log("getValidMoves: found no matching handler")
     }
 
     return fieldsToMove
