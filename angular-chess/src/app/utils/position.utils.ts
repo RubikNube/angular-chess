@@ -32,5 +32,9 @@ export default class PositionUtils {
 
     public static isOnBoard(position: Position): boolean {
         return position.row >= 1 && position.row <= 8 && position.column >= 1 && position.column <= 8;
-      }
+    }
+
+    public static includes(positions: Position[], position: Position) {
+        return positions.some(pos=>PositionUtils.positionEquals(pos,position));
+    }
 }
