@@ -1,7 +1,36 @@
-import { Position } from "../types/board.t";
+import { Color, Position } from "../types/board.t";
 
 export default class PositionUtils {
+
     public static positionEquals(a: Position, b: Position) {
         return a.row === b.row && a.column === b.column;
     }
+
+    public static getRelativePosition(position: Position, perspective: Color): Position {
+        if (perspective === Color.WHITE) {
+            return position;
+        }
+        else {
+            return {
+                row: 9 - position.row,
+                column: 9 - position.column
+            }
+        }
+    }
+
+    public static getAbsolutePosition(position: Position, perspective: Color): Position {
+        if (perspective === Color.WHITE) {
+            return position;
+        }
+        else {
+            return {
+                row: 9 - position.row,
+                column: 9 - position.column
+            }
+        }
+    }
+
+    public static isOnBoard(position: Position): boolean {
+        return position.row >= 1 && position.row <= 8 && position.column >= 1 && position.column <= 8;
+      }
 }

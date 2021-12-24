@@ -1,11 +1,14 @@
-import { Position } from "../types/board.t";
+import { Color, Position } from "../types/board.t";
 import { Piece, PieceType } from "../types/pieces.t";
+import PositionUtils from "../utils/position.utils";
+import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
 export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
-    constructor(public generationService: MoveGenerationService) {
+    constructor(public generationService: MoveGenerationService,
+        public boardService: ChessBoardService) {
 
     }
 
@@ -14,51 +17,61 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getMoveSquares(piece: Piece): Position[] {
-        let fieldsToMove: Position[] = [];
+        return this.filterOutAttackedSquares(piece,this.getSurroundingSquares(piece));
+    }
 
-        let frontSquares: Position[] = this.generationService.getFreeFrontSquares(piece, 1);
-        let backSquares: Position[] = this.generationService.getFreeBackSquares(piece, 1);
-        let leftSquares: Position[] = this.generationService.getFreeLeftSquares(piece, 1);
-        let rightSquares: Position[] = this.generationService.getFreeRightSquares(piece, 1);
-        let frontLeftSquares: Position[] = this.generationService.getFreeFrontLeftSquares(piece, 1);
-        let frontRightSquares: Position[] = this.generationService.getFreeFrontRightSquares(piece, 1);
-        let backLeftSquares: Position[] = this.generationService.getFreeBackLeftSquares(piece, 1);
-        let backRightSquares: Position[] = this.generationService.getFreeBackRightSquares(piece, 1);
+    private filterOutAttackedSquares(piece: Piece, fieldsToMove: Position[]) {
+        let attackedSquares: Position[];
+        if (piece.color === Color.WHITE) {
+            attackedSquares = this.boardService.getAttackedSquaresFromBlack();
+        }
+        else {
+            attackedSquares = this.boardService.getAttackedSquaresFromWhite();
+        }
 
-        fieldsToMove.push(
-            ...frontSquares,
-            ...backSquares,
-            ...leftSquares,
-            ...rightSquares,
-            ...frontLeftSquares,
-            ...frontRightSquares,
-            ...backLeftSquares,
-            ...backRightSquares);
+        let filteredSquares: Position[] = fieldsToMove.filter(squareToMove => attackedSquares
+            .find(a => {
+                let compareResult = PositionUtils.positionEquals(squareToMove, a);
+                return !PositionUtils.positionEquals(squareToMove, a);
+            })
+        )
 
-        return fieldsToMove;
+        console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: fieldsToMove, filteredSquares: filteredSquares, squaresThatOpponentAttacks: attackedSquares }));
+
+        return filteredSquares;
+    }
+
+    swapColor(color: Color): Color {
+        return color === Color.WHITE ? Color.BLACK : Color.WHITE
     }
 
     getCaptureSquares(piece: Piece): Position[] {
+        return this.getSurroundingSquares(piece);
+    }
+
+    getSurroundingSquares(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
 
-        let frontSquares: Position[] = this.generationService.getOccupiedFrontSquare(piece, 1);
-        let backSquares: Position[] = this.generationService.getOccupiedBackSquare(piece, 1);
-        let leftSquares: Position[] = this.generationService.getOccupiedLeftSquare(piece, 1);
-        let rightSquares: Position[] = this.generationService.getOccupiedRightSquare(piece, 1);
-        let frontLeftSquare: Position[] = this.generationService.getOccupiedFrontLeftSquare(piece, 1);
-        let frontRightSquare: Position[] = this.generationService.getOccupiedFrontRightSquare(piece, 1);
-        let backLeftSquare: Position[] = this.generationService.getOccupiedBackLeftSquare(piece, 1);
-        let backRightSquare: Position[] = this.generationService.getOccupiedBackRightSquare(piece, 1);
+        for (let r: number = -1; r <= 1; r++) {
+            for (let c: number = -1; c <= 1; c++) {
+                console.log(JSON.stringify({ r: r, c: c }))
 
-        fieldsToMove.push(
-            ...frontSquares,
-            ...backSquares,
-            ...leftSquares,
-            ...rightSquares,
-            ...frontLeftSquare,
-            ...frontRightSquare,
-            ...backLeftSquare,
-            ...backRightSquare);
+                if (!(r == 0 && c == 0)) {
+                    console.log("r&&c!=0: " + JSON.stringify({ r: r, c: c }))
+                    let field: Position = {
+                        row: piece.position.row + r,
+                        column: piece.position.column + c
+                    }
+
+                    fieldsToMove.push(field);
+                }
+                else {
+                    console.log("r&&c==0: " + JSON.stringify({ r: r, c: c }))
+                }
+            }
+        }
+
+        console.log("getSurroundingSquares: " + JSON.stringify({ fieldsToMove: fieldsToMove, piece: piece }));
 
         return fieldsToMove;
     }

@@ -16,7 +16,8 @@ export enum PieceType {
 }
 
 export type Move = {
-    piece: PieceType;
+    piece: Piece;
     from: Position;
     to: Position;
+    capturedPiece?: Piece
 }

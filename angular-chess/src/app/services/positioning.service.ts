@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
+import PositionUtils from '../utils/position.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class PositioningService {
   }
 
   public getUiPosition(position: Position): Position {
-    return this.getRelativePosition(position, this.perspectiveSource.getValue());
+    return PositionUtils.getRelativePosition(position, this.perspectiveSource.getValue());
   }
 
   getMousePosition(e: MouseEvent): Position {
@@ -53,33 +54,5 @@ export class PositioningService {
 
   private getPerspective(): Color {
     return this.perspectiveSource.getValue();
-  }
-
-  public getRelativePosition(position: Position, perspective: Color): Position {
-    if (perspective === Color.WHITE) {
-      return position;
-    }
-    else {
-      return {
-        row: 9 - position.row,
-        column: 9 - position.column
-      }
-    }
-  }
-
-  public getAbsolutePosition(position: Position, perspective: Color): Position {
-    if (perspective === Color.WHITE) {
-      return position;
-    }
-    else {
-      return {
-        row: 9 - position.row,
-        column: 9 - position.column
-      }
-    }
-  }
-
-  public isOnBoard(position: Position): boolean {
-    return position.row >= 1 && position.row <= 8 && position.column >= 1 && position.column <= 8;
   }
 }

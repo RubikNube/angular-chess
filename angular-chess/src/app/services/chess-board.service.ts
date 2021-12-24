@@ -1,18 +1,49 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import { HighlightingService } from './highlighting.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChessBoardService {
   pieces: Piece[] = [];
+  attackedSquaresFromBlackSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
+  attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlackSource.asObservable();
+  attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
+  attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
 
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
 
-  constructor() { }
+
+  constructor(public highlightingService: HighlightingService) {
+  }
+
+  public setAttackedSquaresFromBlack(squares: Position[]) {
+    this.attackedSquaresFromBlackSource.next(squares);
+  }
+
+  public getAttackedSquaresFromBlack$():Observable<Position[]>{
+    return this.attackedSquaresFromBlack$;
+  }
+
+  public getAttackedSquaresFromBlack():Position[]{
+    return this.attackedSquaresFromBlackSource.getValue();
+  }
+
+  public setAttackedSquaresFromWhite(squares: Position[]) {
+    this.attackedSquaresFromWhiteSource.next(squares);
+  }
+
+  public getAttackedSquaresFromWhite$():Observable<Position[]>{
+    return this.attackedSquaresFromWhite$;
+  }
+
+  public getAttackedSquaresFromWhite():Position[]{
+    return this.attackedSquaresFromWhiteSource.getValue();
+  }
 
   public setFen(fen: string) {
     this.fenSource.next(fen);
@@ -24,7 +55,6 @@ export class ChessBoardService {
 
   public importFen(newFen: string): void {
     console.log("importFen: " + newFen)
-    this.fenSource.next(newFen);
 
     this.pieces = [];
 
@@ -57,6 +87,8 @@ export class ChessBoardService {
         }
       }
     };
+
+    this.fenSource.next(newFen);
   }
 
   getPiece(pieceChar: string): PieceType {

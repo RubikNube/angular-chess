@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
+import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
 import { HighlightColor, Position } from '../types/board.t';
-import { Piece } from '../types/pieces.t';
+import { Move, Piece } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -19,7 +20,8 @@ export class ChessBoardComponent implements OnInit {
   constructor(public boardService: ChessBoardService,
     public moveGenerationService: MoveGenerationService,
     public highlightingService: HighlightingService,
-    public positioningService: PositioningService) {
+    public positioningService: PositioningService,
+    public moveExecutionService: MoveExecutionService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   }
 
@@ -67,29 +69,15 @@ export class ChessBoardComponent implements OnInit {
     let draggedPiece = this.boardService.getPieceOnPos(this.dragPos);
 
     if (draggedPiece !== undefined) {
-      let validSquares: Position[] = this.moveGenerationService.getValidMoves(draggedPiece);
-      let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptures(draggedPiece);
-
       let dropPos: Position = this.positioningService.getMousePosition(e);
 
-      if (validSquares.find(p => PositionUtils.positionEquals(p, dropPos))) {
-        this.boardService.removePiece(draggedPiece);
-        draggedPiece.position = dropPos;
-        this.boardService.addPiece(draggedPiece);
-      }
-      else if (getValidCaptures.find(p => PositionUtils.positionEquals(p, dropPos))) {
-        this.boardService.removePiece(draggedPiece);
-        let pieceOnDropPos = this.boardService.getPieceOnPos(dropPos);
-        if (pieceOnDropPos !== undefined) {
-          this.boardService.removePiece(pieceOnDropPos);
-        }
-        draggedPiece.position = dropPos;
-        this.boardService.addPiece(draggedPiece);
-      }
-      else {
-        console.warn("No capture or move possible! dropPos: " + JSON.stringify(dropPos) + ", validSquares: " + JSON.stringify(validSquares))
+      let move: Move = {
+        from: this.dragPos,
+        to: dropPos,
+        piece: draggedPiece
       }
 
+      this.moveExecutionService.executeMove(move);
     }
   }
 

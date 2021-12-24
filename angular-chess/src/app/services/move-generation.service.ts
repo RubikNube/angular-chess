@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
+import { MoveExecutionService } from './move-execution.service';
 import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
 import { MoveGenerationHandler } from './move-generation.handler';
 import { MoveGenerationKingHandler } from './move-generation.king.handler';
@@ -9,7 +11,6 @@ import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
 import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
 import { MoveGenerationQueenHandler } from './move-generation.queen.handler';
 import { MoveGenerationRookHandler } from './move-generation.rook.handler';
-import { PositioningService } from './positioning.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,23 +18,21 @@ import { PositioningService } from './positioning.service';
 export class MoveGenerationService {
   generationHandlers: MoveGenerationHandler[];
 
-  constructor(private boardService: ChessBoardService,
-    private positioningService: PositioningService) {
+  constructor(private boardService: ChessBoardService) {
     this.generationHandlers = [
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
       new MoveGenerationPawnHandler(this),
       new MoveGenerationBishopHandler(this),
       new MoveGenerationQueenHandler(this),
-      new MoveGenerationKingHandler(this)
+      new MoveGenerationKingHandler(this, boardService)
     ]
-
   }
 
   getValidMoves(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black
-    let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
+    let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
     let fieldsToMove: Position[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
@@ -43,9 +42,9 @@ export class MoveGenerationService {
     }
 
     return fieldsToMove
-      .filter(p => this.positioningService.isOnBoard(p))
+      .filter(p => PositionUtils.isOnBoard(p))
       .filter(p => this.isFree(p, piece.color))
-      .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+      .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
   }
 
   getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
@@ -209,7 +208,7 @@ export class MoveGenerationService {
   }
 
   private isFree(position: Position, color: Color): boolean {
-    let absPos = this.positioningService.getAbsolutePosition(position, color);
+    let absPos = PositionUtils.getAbsolutePosition(position, color);
     let result = this.boardService.getPieceOnPos(absPos) === undefined;
     console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
     return result;
@@ -217,7 +216,7 @@ export class MoveGenerationService {
 
   getValidCaptures(piece: Piece): Position[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
-    let relativePosition: Position = this.positioningService.getRelativePosition(piece.position, piece.color);
+    let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
     let fieldsToMove: Position[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
@@ -232,7 +231,7 @@ export class MoveGenerationService {
 
     return fieldsToMove
       .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color))
-      .map(p => this.positioningService.getAbsolutePosition(p, piece.color));
+      .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
   }
 
   getOccupiedBackSquare(piece: Piece, maxSquares: number): Position[] {
@@ -381,7 +380,7 @@ export class MoveGenerationService {
   }
 
   private isOppositeColoredPieceOnPos(position: Position, color: Color): boolean {
-    let absPos = this.positioningService.getAbsolutePosition(position, color);
+    let absPos = PositionUtils.getAbsolutePosition(position, color);
     let pieceOnPos = this.boardService.getPieceOnPos(absPos);
 
     if (pieceOnPos !== undefined) {
