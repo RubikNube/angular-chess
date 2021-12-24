@@ -17,7 +17,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getMoveSquares(piece: Piece): Position[] {
-        return this.filterOutAttackedSquares(piece,this.getSurroundingSquares(piece));
+        return this.filterOutAttackedSquares(piece, this.getSurroundingSquares(piece));
     }
 
     private filterOutAttackedSquares(piece: Piece, fieldsToMove: Position[]) {
@@ -29,12 +29,9 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             attackedSquares = this.boardService.getAttackedSquaresFromWhite();
         }
 
-        let filteredSquares: Position[] = fieldsToMove.filter(squareToMove => attackedSquares
-            .find(a => {
-                let compareResult = PositionUtils.positionEquals(squareToMove, a);
-                return !PositionUtils.positionEquals(squareToMove, a);
-            })
-        )
+        let filteredSquares: Position[] = fieldsToMove.filter(squareToMove => {
+            return !PositionUtils.includes(attackedSquares, squareToMove);
+        });
 
         console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: fieldsToMove, filteredSquares: filteredSquares, squaresThatOpponentAttacks: attackedSquares }));
 

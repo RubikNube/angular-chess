@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { Color, HighlightColor, Position, Square } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { HighlightingService } from './highlighting.service';
 
@@ -25,11 +25,11 @@ export class ChessBoardService {
     this.attackedSquaresFromBlackSource.next(squares);
   }
 
-  public getAttackedSquaresFromBlack$():Observable<Position[]>{
+  public getAttackedSquaresFromBlack$(): Observable<Position[]> {
     return this.attackedSquaresFromBlack$;
   }
 
-  public getAttackedSquaresFromBlack():Position[]{
+  public getAttackedSquaresFromBlack(): Position[] {
     return this.attackedSquaresFromBlackSource.getValue();
   }
 
@@ -37,11 +37,11 @@ export class ChessBoardService {
     this.attackedSquaresFromWhiteSource.next(squares);
   }
 
-  public getAttackedSquaresFromWhite$():Observable<Position[]>{
+  public getAttackedSquaresFromWhite$(): Observable<Position[]> {
     return this.attackedSquaresFromWhite$;
   }
 
-  public getAttackedSquaresFromWhite():Position[]{
+  public getAttackedSquaresFromWhite(): Position[] {
     return this.attackedSquaresFromWhiteSource.getValue();
   }
 
