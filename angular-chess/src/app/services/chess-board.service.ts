@@ -19,6 +19,31 @@ export class ChessBoardService {
 
 
   constructor(public highlightingService: HighlightingService) {
+    this.attackedSquaresFromBlack$.subscribe(attackedSquaresFromBlack => {
+      let squares: Square[] = attackedSquaresFromBlack.map(p => {
+        return {
+          highlight: HighlightColor.YELLOW,
+          position: p
+        }
+      })
+
+      this.highlightingService.addSquares(
+        ...squares
+      );
+    });
+
+    this.attackedSquaresFromWhite$.subscribe(attackedSquaresFromWhite => {
+      let squares: Square[] = attackedSquaresFromWhite.map(p => {
+        return {
+          highlight: HighlightColor.RED,
+          position: p
+        }
+      })
+
+      this.highlightingService.addSquares(
+        ...squares
+      );
+    });
   }
 
   public setAttackedSquaresFromBlack(squares: Position[]) {

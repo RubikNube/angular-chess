@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Color, Position } from '../types/board.t';
-import { Move } from '../types/pieces.t';
+import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
@@ -36,13 +36,24 @@ export class MoveExecutionService {
     this.boardService.getPieces()
       .filter(p => p.color === colorOfPieces)
       .forEach(p => {
-        this.moveGenerationService.getValidMoves(p).forEach(m => {
-          attackedSquares.add(m);
-        });
+        if (p.type === PieceType.KING) {
+          this.moveGenerationService.getSurroundingSquares(p)
+            .filter(p => PositionUtils.isOnBoard(p))
+            .forEach(m => {
+              attackedSquares.add(m);
+            })
+        }
+        else {
+          if (p.type !== PieceType.PAWN) {
+            this.moveGenerationService.getValidMoves(p).forEach(m => {
+              attackedSquares.add(m);
+            });
+          }
 
-        this.moveGenerationService.getValidCaptures(p).forEach(m => {
-          attackedSquares.add(m);
-        });
+          this.moveGenerationService.getValidCaptures(p).forEach(m => {
+            attackedSquares.add(m);
+          });
+        }
       });
 
     let result = Array.from(attackedSquares.values());

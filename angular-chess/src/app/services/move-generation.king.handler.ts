@@ -17,7 +17,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getMoveSquares(piece: Piece): Position[] {
-        return this.filterOutAttackedSquares(piece, this.getSurroundingSquares(piece));
+        return this.filterOutAttackedSquares(piece, this.generationService.getSurroundingSquares(piece));
     }
 
     private filterOutAttackedSquares(piece: Piece, fieldsToMove: Position[]) {
@@ -30,7 +30,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         }
 
         let filteredSquares: Position[] = fieldsToMove.filter(squareToMove => {
-            return !PositionUtils.includes(attackedSquares, squareToMove);
+            return !PositionUtils.includes(attackedSquares, PositionUtils.getAbsolutePosition(squareToMove, piece.color));
         });
 
         console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: fieldsToMove, filteredSquares: filteredSquares, squaresThatOpponentAttacks: attackedSquares }));
@@ -43,33 +43,6 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getCaptureSquares(piece: Piece): Position[] {
-        return this.getSurroundingSquares(piece);
-    }
-
-    getSurroundingSquares(piece: Piece): Position[] {
-        let fieldsToMove: Position[] = [];
-
-        for (let r: number = -1; r <= 1; r++) {
-            for (let c: number = -1; c <= 1; c++) {
-                console.log(JSON.stringify({ r: r, c: c }))
-
-                if (!(r == 0 && c == 0)) {
-                    console.log("r&&c!=0: " + JSON.stringify({ r: r, c: c }))
-                    let field: Position = {
-                        row: piece.position.row + r,
-                        column: piece.position.column + c
-                    }
-
-                    fieldsToMove.push(field);
-                }
-                else {
-                    console.log("r&&c==0: " + JSON.stringify({ r: r, c: c }))
-                }
-            }
-        }
-
-        console.log("getSurroundingSquares: " + JSON.stringify({ fieldsToMove: fieldsToMove, piece: piece }));
-
-        return fieldsToMove;
+        return this.generationService.getSurroundingSquares(piece);
     }
 }

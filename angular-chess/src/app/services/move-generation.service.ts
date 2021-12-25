@@ -47,6 +47,25 @@ export class MoveGenerationService {
       .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
   }
 
+  getSurroundingSquares(piece: Piece): Position[] {
+    let fieldsToMove: Position[] = [];
+
+    for (let r: number = -1; r <= 1; r++) {
+        for (let c: number = -1; c <= 1; c++) {
+            if (!(r == 0 && c == 0)) {
+                let field: Position = {
+                    row: piece.position.row + r,
+                    column: piece.position.column + c
+                }
+
+                fieldsToMove.push(field);
+            }
+        }
+    }
+
+    return fieldsToMove;
+}
+
   getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
 
