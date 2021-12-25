@@ -117,3 +117,15 @@ button{
 div.board-btn-group{
     margin-top: 1em;
 }
+
+div.WHITE-playerToMove{
+    width: 3em;
+    height: 3em;
+    background-color:white;
+}
+
+div.BLACK-playerToMove{
+    width: 3em;
+    height: 3em;
+    background-color:black;
+}

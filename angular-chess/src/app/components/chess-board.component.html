@@ -15,6 +15,7 @@
 </div>
 
 <div class="p-inputgroup board-btn-group">
+  <div class="{{this.boardService.getPlayerToMove$()|async}}-playerToMove"></div>
   <button pButton type="button" label="Switch Board" (click)="this.positioningService.switchPerspective()"></button>
   <input id="fen" #fen name="fen" type="text" pInputText placeholder="FEN">         
   <button type="button" pButton pRipple label="Import FEN" (click)="this.boardService.importFen(fen.value)"></button>
