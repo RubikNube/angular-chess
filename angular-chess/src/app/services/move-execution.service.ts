@@ -66,6 +66,11 @@ export class MoveExecutionService {
   public executeMove(move: Move) {
     let moveHistory = this.moveHistorySource.getValue();
 
+    if (move.piece.color !== this.boardService.getPlayerToMove()) {
+      console.warn("Not the right player to move. Ignore move.")
+      return;
+    }
+
     let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece);
     let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptures(move.piece);
 
@@ -90,6 +95,7 @@ export class MoveExecutionService {
 
     moveHistory.push(move);
 
+    this.boardService.togglePlayerToMove();
     this.moveHistorySource.next(moveHistory);
   }
 

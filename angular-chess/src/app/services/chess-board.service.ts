@@ -48,6 +48,10 @@ export class ChessBoardService {
     }
   }
 
+  public togglePlayerToMove(): void {
+    this.playerToMoveSource.next(this.playerToMoveSource.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE);
+  }
+
   public getPlayerToMove$() {
     return this.playerToMove$;
   }
