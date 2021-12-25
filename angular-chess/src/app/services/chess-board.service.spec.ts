@@ -72,6 +72,18 @@ describe('importFen', () => {
     ]
       .sort(comparePositions()));
   });
+
+  it('should set white player to move if "w" after position', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
+
+    expect(service.getPlayerToMove()).toEqual(Color.WHITE);
+  });
+
+  it('should set black player to move if "b" after position', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b");
+
+    expect(service.getPlayerToMove()).toEqual(Color.BLACK);
+  });
 });
 
 function comparePositions(): ((a: { color: Color; type: PieceType; position: { row: number; column: number; }; }, b: { color: Color; type: PieceType; position: { row: number; column: number; }; }) => number) | undefined {

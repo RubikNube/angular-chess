@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color, HighlightColor, Position, Square } from '../types/board.t';
+import { CastleData, Color, HighlightColor, Position, Square } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { HighlightingService } from './highlighting.service';
 
@@ -14,36 +14,28 @@ export class ChessBoardService {
   attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
 
+  playerToMoveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
+  playerToMove$: Observable<Color> = this.playerToMoveSource.asObservable();
+
+  whiteCastleDataSource: BehaviorSubject<CastleData> = new BehaviorSubject<CastleData>({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+  whiteCastleData$: Observable<CastleData> = this.whiteCastleDataSource.asObservable();
+
+  blackCastleDataSource: BehaviorSubject<CastleData> = new BehaviorSubject<CastleData>({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
+  blackCastleData$: Observable<CastleData> = this.blackCastleDataSource.asObservable();
+
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
 
 
   constructor(public highlightingService: HighlightingService) {
-    this.attackedSquaresFromBlack$.subscribe(attackedSquaresFromBlack => {
-      let squares: Square[] = attackedSquaresFromBlack.map(p => {
-        return {
-          highlight: HighlightColor.YELLOW,
-          position: p
-        }
-      })
+  }
 
-      this.highlightingService.addSquares(
-        ...squares
-      );
-    });
+  public getPlayerToMove$() {
+    return this.playerToMove$;
+  }
 
-    this.attackedSquaresFromWhite$.subscribe(attackedSquaresFromWhite => {
-      let squares: Square[] = attackedSquaresFromWhite.map(p => {
-        return {
-          highlight: HighlightColor.RED,
-          position: p
-        }
-      })
-
-      this.highlightingService.addSquares(
-        ...squares
-      );
-    });
+  public getPlayerToMove() {
+    return this.playerToMoveSource.getValue();
   }
 
   public setAttackedSquaresFromBlack(squares: Position[]) {
@@ -83,7 +75,9 @@ export class ChessBoardService {
 
     this.pieces = [];
 
-    let fenRows: string[] = newFen.split("/");
+    let fenSections = newFen.split(' ');
+
+    let fenRows: string[] = fenSections[0].split("/");
     for (let j = 0; j < fenRows.length; j++) {
       let fenRow: string = fenRows[j];
       let currentPos: number = 0;
@@ -112,6 +106,17 @@ export class ChessBoardService {
         }
       }
     };
+
+    if (fenSections.length > 1) {
+      let playerChar = fenSections[1];
+
+      if (playerChar === 'w') {
+        this.playerToMoveSource.next(Color.WHITE);
+      }
+      else {
+        this.playerToMoveSource.next(Color.BLACK);
+      }
+    }
 
     this.fenSource.next(newFen);
   }

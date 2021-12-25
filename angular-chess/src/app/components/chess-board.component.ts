@@ -22,7 +22,7 @@ export class ChessBoardComponent implements OnInit {
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
     public moveExecutionService: MoveExecutionService) {
-    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
   }
 
   ngOnInit(): void {

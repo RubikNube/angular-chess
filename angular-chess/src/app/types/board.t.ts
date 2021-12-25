@@ -1,6 +1,6 @@
 export enum Color {
-    WHITE="WHITE",
-    BLACK="BLACK"
+    WHITE = "WHITE",
+    BLACK = "BLACK"
 }
 
 export type Position = {
@@ -8,14 +8,20 @@ export type Position = {
     column: number
 }
 
-export type Square={
-    highlight:HighlightColor;
-    position:Position
+export type Square = {
+    highlight: HighlightColor;
+    position: Position
 }
 
 export enum HighlightColor {
-    NONE="NONE",
-    YELLOW="YELLOW",
-    GREEN="GREEN",
-    RED="RED"
+    NONE = "NONE",
+    YELLOW = "YELLOW",
+    GREEN = "GREEN",
+    RED = "RED"
+}
+
+export type CastleData = {
+    player: Color,
+    canShortCastle: boolean,
+    canLongCastle: boolean
 }
