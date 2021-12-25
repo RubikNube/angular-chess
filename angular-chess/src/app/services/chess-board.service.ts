@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CastleData, Color, HighlightColor, Position, Square } from '../types/board.t';
+import { CastleRights, Color, HighlightColor, Position, Square } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { HighlightingService } from './highlighting.service';
 
@@ -17,17 +17,35 @@ export class ChessBoardService {
   playerToMoveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
   playerToMove$: Observable<Color> = this.playerToMoveSource.asObservable();
 
-  whiteCastleDataSource: BehaviorSubject<CastleData> = new BehaviorSubject<CastleData>({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-  whiteCastleData$: Observable<CastleData> = this.whiteCastleDataSource.asObservable();
+  whiteCastleRightsSource: BehaviorSubject<CastleRights> = new BehaviorSubject<CastleRights>({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+  whiteCastleRights$: Observable<CastleRights> = this.whiteCastleRightsSource.asObservable();
 
-  blackCastleDataSource: BehaviorSubject<CastleData> = new BehaviorSubject<CastleData>({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
-  blackCastleData$: Observable<CastleData> = this.blackCastleDataSource.asObservable();
+  blackCastleRightsSource: BehaviorSubject<CastleRights> = new BehaviorSubject<CastleRights>({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
+  blackCastleRights$: Observable<CastleRights> = this.blackCastleRightsSource.asObservable();
 
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
 
 
   constructor(public highlightingService: HighlightingService) {
+  }
+
+  public getCastleRights(player: Color) {
+    if (player === Color.WHITE) {
+      return this.whiteCastleRightsSource.getValue();
+    }
+    else {
+      return this.blackCastleRightsSource.getValue();
+    }
+  }
+
+  public getCastleRights$(player: Color) {
+    if (player === Color.WHITE) {
+      return this.whiteCastleRights$;
+    }
+    else {
+      return this.blackCastleRights$;
+    }
   }
 
   public getPlayerToMove$() {
@@ -116,6 +134,46 @@ export class ChessBoardService {
       else {
         this.playerToMoveSource.next(Color.BLACK);
       }
+    }
+
+    if (fenSections.length > 2) {
+      let castleFen = fenSections[2];
+
+      let whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+      let blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+
+      for (let index = 0; index < castleFen.length; index++) {
+        const castleChar = castleFen[index];
+
+
+        switch (castleChar) {
+          case 'K':
+            whiteCastleRights.canShortCastle = true;
+            break;
+          case 'Q':
+            whiteCastleRights.canLongCastle = true;
+            break;
+          case 'k':
+            blackCastleRights.canShortCastle = true;
+            break;
+          case 'q':
+            blackCastleRights.canLongCastle = true;
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      this.whiteCastleRightsSource.next(whiteCastleRights);
+      this.blackCastleRightsSource.next(blackCastleRights);
+    }
+    else {
+
+      let whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+      let blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+      this.whiteCastleRightsSource.next(whiteCastleRights);
+      this.blackCastleRightsSource.next(blackCastleRights);
     }
 
     this.fenSource.next(newFen);

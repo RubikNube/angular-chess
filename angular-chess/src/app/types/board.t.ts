@@ -20,7 +20,7 @@ export enum HighlightColor {
     RED = "RED"
 }
 
-export type CastleData = {
+export type CastleRights = {
     player: Color,
     canShortCastle: boolean,
     canLongCastle: boolean

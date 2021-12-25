@@ -84,6 +84,34 @@ describe('importFen', () => {
 
     expect(service.getPlayerToMove()).toEqual(Color.BLACK);
   });
+
+  it('should set castle rights for "KQkq"', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+
+    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
+  });
+
+  it('should set castle rights for "KQ"', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ");
+
+    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+  });
+
+  it('should set castle rights for "Kk"', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk");
+
+    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: true });
+    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: true });
+  });
+
+  it('should set castle rights for empty castle fen', () => {
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
+
+    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: false });
+    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+  });
 });
 
 function comparePositions(): ((a: { color: Color; type: PieceType; position: { row: number; column: number; }; }, b: { color: Color; type: PieceType; position: { row: number; column: number; }; }) => number) | undefined {
