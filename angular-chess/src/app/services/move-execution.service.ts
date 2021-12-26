@@ -129,6 +129,7 @@ export class MoveExecutionService {
     }
     else {
       console.warn("No capture or move possible! dropPos: " + JSON.stringify(move.to) + ", validSquares: " + JSON.stringify(validSquares))
+      return;
     }
 
     moveHistory.push(move);

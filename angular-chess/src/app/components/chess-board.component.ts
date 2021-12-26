@@ -65,20 +65,24 @@ export class ChessBoardComponent implements OnInit {
 
   dragEnd(e: MouseEvent) {
     this.highlightingService.clearSquares();
+    if (this.grabbedPiece === undefined) {
+      return;
+    }
 
-    let draggedPiece = this.boardService.getPieceOnPos(this.dragPos);
+    let validSquares = this.moveGenerationService.getValidMoves(this.grabbedPiece);
 
-    if (draggedPiece !== undefined) {
-      let dropPos: Position = this.positioningService.getMousePosition(e);
+    let dropPos: Position = this.positioningService.getMousePosition(e);
 
+    if(PositionUtils.includes(validSquares,dropPos)){
       let move: Move = {
         from: this.dragPos,
         to: dropPos,
-        piece: draggedPiece
+        piece: this.grabbedPiece 
       }
-
+      
       this.moveExecutionService.executeMove(move);
     }
+
   }
 
   getCursor(piece: Piece) {
