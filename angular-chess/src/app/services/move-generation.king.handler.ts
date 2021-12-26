@@ -17,7 +17,49 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getMoveSquares(piece: Piece): Position[] {
-        return this.filterOutAttackedSquares(piece, this.generationService.getSurroundingSquares(piece));
+        let squares: Position[] = [];
+
+        // surrounding squares:
+        squares = this.generationService.getSurroundingSquares(piece);
+
+        // castle
+        let castleRights = this.boardService.getCastleRights(piece.color);
+
+        // kingside castle
+        if (castleRights.canShortCastle) {
+            let squareBeforeCastle = {
+                row: piece.position.row,
+                column: piece.position.column + 1
+            }
+
+            let castleSquare = {
+                row: piece.position.row,
+                column: piece.position.column + 2
+            }
+
+            if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
+                squares.push(castleSquare);
+            }
+        }
+
+        // queenside castle
+        if (castleRights.canLongCastle) {
+            let squareBeforeCastle = {
+                row: piece.position.row,
+                column: piece.position.column - 1
+            }
+
+            let castleSquare = {
+                row: piece.position.row,
+                column: piece.position.column - 2
+            }
+
+            if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
+                squares.push(castleSquare);
+            }
+        }
+
+        return this.filterOutAttackedSquares(piece, squares);
     }
 
     private filterOutAttackedSquares(piece: Piece, fieldsToMove: Position[]) {

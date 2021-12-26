@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CastleRights, Color, HighlightColor, Position, Square } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import PositionUtils from '../utils/position.utils';
 import { HighlightingService } from './highlighting.service';
 
 @Injectable({
@@ -28,6 +29,15 @@ export class ChessBoardService {
 
 
   constructor(public highlightingService: HighlightingService) {
+  }
+
+  public setCastleRights(castleRights: CastleRights) {
+    if (castleRights.player === Color.WHITE) {
+      return this.whiteCastleRightsSource.next(castleRights);
+    }
+    else {
+      return this.blackCastleRightsSource.next(castleRights);
+    }
   }
 
   public getCastleRights(player: Color) {
@@ -219,6 +229,13 @@ export class ChessBoardService {
     if (index > -1) {
       this.pieces.splice(index, 1);
     }
+  }
+
+  public isFree(position: Position, color: Color): boolean {
+    let absPos = PositionUtils.getAbsolutePosition(position, color);
+    let result = this.getPieceOnPos(absPos) === undefined;
+    console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
+    return result;
   }
 
 }

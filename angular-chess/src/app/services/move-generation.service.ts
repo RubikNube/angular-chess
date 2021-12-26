@@ -43,7 +43,7 @@ export class MoveGenerationService {
 
     return fieldsToMove
       .filter(p => PositionUtils.isOnBoard(p))
-      .filter(p => this.isFree(p, piece.color))
+      .filter(p => this.boardService.isFree(p, piece.color))
       .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
   }
 
@@ -75,7 +75,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -95,7 +95,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -115,7 +115,7 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -135,7 +135,7 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -155,7 +155,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -175,7 +175,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -195,7 +195,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -215,7 +215,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.isFree(squareToAdd, piece.color)) {
+      if (this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -224,13 +224,6 @@ export class MoveGenerationService {
     }
 
     return quaresToMove;
-  }
-
-  private isFree(position: Position, color: Color): boolean {
-    let absPos = PositionUtils.getAbsolutePosition(position, color);
-    let result = this.boardService.getPieceOnPos(absPos) === undefined;
-    console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
-    return result;
   }
 
   getValidCaptures(piece: Piece): Position[] {
@@ -262,7 +255,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -280,7 +273,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -299,7 +292,7 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -317,7 +310,7 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -335,7 +328,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -353,7 +346,7 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -371,7 +364,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -389,7 +382,7 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.isFree(squareToAdd, piece.color)) {
+      if (!this.boardService.isFree(squareToAdd, piece.color)) {
         quaresToMove.push(squareToAdd);
         break;
       }

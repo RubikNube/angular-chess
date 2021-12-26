@@ -74,6 +74,44 @@ export class MoveExecutionService {
     let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece);
     let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptures(move.piece);
 
+    if (move.piece.type === PieceType.KING) {
+      this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
+    }
+
+    // kingside castle
+    if (move.piece.type === PieceType.KING && move.to.column === 7) {
+      let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
+
+      if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
+        this.boardService.removePiece(pieceOnSide);
+        this.boardService.removePiece(move.piece);
+
+        move.piece.position = move.to;
+        this.boardService.addPiece(move.piece);
+
+        pieceOnSide.position.column = 6;
+        this.boardService.addPiece(pieceOnSide);
+        return;
+      }
+    }
+
+    // queenside castle
+    if (move.piece.type === PieceType.KING && move.to.column === 3) {
+      let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
+
+      if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
+        this.boardService.removePiece(pieceOnSide);
+        this.boardService.removePiece(move.piece);
+
+        move.piece.position = move.to;
+        this.boardService.addPiece(move.piece);
+
+        pieceOnSide.position.column = 4;
+        this.boardService.addPiece(pieceOnSide);
+        return;
+      }
+    }
+
     if (validSquares.find(p => PositionUtils.positionEquals(p, move.to))) {
       this.boardService.removePiece(move.piece);
       move.piece.position = move.to;
