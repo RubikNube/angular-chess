@@ -91,6 +91,7 @@ export class MoveExecutionService {
 
         pieceOnSide.position.column = 6;
         this.boardService.addPiece(pieceOnSide);
+        this.boardService.togglePlayerToMove();
         return;
       }
     }
@@ -108,6 +109,7 @@ export class MoveExecutionService {
 
         pieceOnSide.position.column = 4;
         this.boardService.addPiece(pieceOnSide);
+        this.boardService.togglePlayerToMove();
         return;
       }
     }
