@@ -19,5 +19,8 @@ export type Move = {
     piece: Piece;
     from: Position;
     to: Position;
-    capturedPiece?: Piece
+    capturedPiece?: Piece;
+    isEnPassant?: boolean;
+    isShortCastle?:boolean;
+    isLongCastle?:boolean;
 }

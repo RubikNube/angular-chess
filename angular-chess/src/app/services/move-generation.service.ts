@@ -22,7 +22,7 @@ export class MoveGenerationService {
     this.generationHandlers = [
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
-      new MoveGenerationPawnHandler(this),
+      new MoveGenerationPawnHandler(this, boardService),
       new MoveGenerationBishopHandler(this),
       new MoveGenerationQueenHandler(this),
       new MoveGenerationKingHandler(this, boardService)
@@ -51,20 +51,20 @@ export class MoveGenerationService {
     let fieldsToMove: Position[] = [];
 
     for (let r: number = -1; r <= 1; r++) {
-        for (let c: number = -1; c <= 1; c++) {
-            if (!(r == 0 && c == 0)) {
-                let field: Position = {
-                    row: piece.position.row + r,
-                    column: piece.position.column + c
-                }
+      for (let c: number = -1; c <= 1; c++) {
+        if (!(r == 0 && c == 0)) {
+          let field: Position = {
+            row: piece.position.row + r,
+            column: piece.position.column + c
+          }
 
-                fieldsToMove.push(field);
-            }
+          fieldsToMove.push(field);
         }
+      }
     }
 
     return fieldsToMove;
-}
+  }
 
   getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
     let quaresToMove: Position[] = [];
@@ -242,8 +242,19 @@ export class MoveGenerationService {
     }
 
     return fieldsToMove
-      .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color))
+      .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color) || this.isEnPassantSquare(piece, p))
       .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
+  }
+
+  isEnPassantSquare(piece: Piece, pos: Position): boolean {
+    if (piece.type === PieceType.PAWN) {
+      let enPassantSquares = this.boardService.getEnPassantSquares()
+        .filter(p => PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column - 1 }) || PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column + 1 }))
+      return PositionUtils.includes(enPassantSquares, PositionUtils.getRelativePosition(pos,piece.color));
+    }
+    else {
+      return false;
+    }
   }
 
   getOccupiedBackSquare(piece: Piece, maxSquares: number): Position[] {

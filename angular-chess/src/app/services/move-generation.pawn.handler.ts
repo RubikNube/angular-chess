@@ -1,11 +1,15 @@
 import { Position } from "../types/board.t";
 import { Piece, PieceType } from "../types/pieces.t";
+import PositionUtils from "../utils/position.utils";
+import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
+import { PositioningService } from "./positioning.service";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
-  constructor(public generationService: MoveGenerationService) {
+  constructor(public generationService: MoveGenerationService,
+    private boardService: ChessBoardService) {
 
   }
 
@@ -25,7 +29,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
   getCaptureSquares(piece: Piece): Position[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
-    let fieldsToMove: Position[] = [];
+    let fieldsToCapture: Position[] = [];
 
     // left upper field
     let leftUpperField: Position = {
@@ -39,9 +43,9 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
       column: piece.position.column + 1
     };
 
-    fieldsToMove.push(leftUpperField, rightUpperField);
+    fieldsToCapture.push(leftUpperField, rightUpperField);
 
-    return fieldsToMove;
+    return fieldsToCapture;
   }
 
 

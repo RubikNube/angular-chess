@@ -24,11 +24,30 @@ export class ChessBoardService {
   blackCastleRightsSource: BehaviorSubject<CastleRights> = new BehaviorSubject<CastleRights>({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
   blackCastleRights$: Observable<CastleRights> = this.blackCastleRightsSource.asObservable();
 
+  enPassantSquaresSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
+  enPassantSquares$: Observable<Position[]> = this.enPassantSquaresSource.asObservable();
+
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
 
 
   constructor(public highlightingService: HighlightingService) {
+  }
+
+  public clearEnPassantSquares(): void {
+    this.enPassantSquaresSource.next([]);
+  }
+
+  public setEnPassantSquares(...enPassantSquares: Position[]) {
+    this.enPassantSquaresSource.next(enPassantSquares);
+  }
+
+  public getEnPassantSquares(): Position[] {
+    return this.enPassantSquaresSource.getValue();
+  }
+
+  public getEnPassantSquares$(): Observable<Position[]> {
+    return this.enPassantSquares$;
   }
 
   public setCastleRights(castleRights: CastleRights) {
@@ -235,6 +254,12 @@ export class ChessBoardService {
     let absPos = PositionUtils.getAbsolutePosition(position, color);
     let result = this.getPieceOnPos(absPos) === undefined;
     console.log("isFree position:" + JSON.stringify(absPos) + ", result: " + result);
+    return result;
+  }
+
+  public isAbsFree(position: Position): boolean {
+    let result = this.getPieceOnPos(position) === undefined;
+    console.log("isFree position:" + JSON.stringify(position) + ", result: " + result);
     return result;
   }
 

@@ -99,19 +99,58 @@ export class MoveExecutionService {
     }
 
     if (validSquares.find(p => PositionUtils.positionEquals(p, move.to))) {
+      if (move.piece.type === PieceType.PAWN) {
+        if (move.piece.color === Color.WHITE && move.to.row === 4) {
+          this.boardService.setEnPassantSquares({ row: 3, column: move.from.column });
+
+          this.movePiece(move);
+          this.boardService.togglePlayerToMove();
+          moveHistory.push(move);
+          this.moveHistorySource.next(moveHistory);
+          return;
+        }
+        else if (move.piece.color === Color.BLACK && move.to.row === 5) {
+          this.boardService.setEnPassantSquares({ row: 6, column: move.from.column });
+
+          this.movePiece(move);
+          this.boardService.togglePlayerToMove();
+          moveHistory.push(move);
+          this.moveHistorySource.next(moveHistory);
+          return;
+        }
+      }
+
       this.movePiece(move);
     }
     else if (getValidCaptures.find(p => PositionUtils.positionEquals(p, move.to))) {
-      this.capturePiece(move);
+      if (move.isEnPassant) {
+        this.boardService.removePiece(move.piece);
+        move.piece.position = move.to;
+        this.boardService.addPiece(move.piece);
+
+        let capturedPiecePos: Position = {
+          row: move.piece.color === Color.WHITE ? move.to.row - 1 : move.to.row + 1,
+          column: move.to.column
+        }
+
+        let pieceOnDropPos = this.boardService.getPieceOnPos(capturedPiecePos);
+        if (pieceOnDropPos !== undefined) {
+          move.capturedPiece = pieceOnDropPos;
+          this.boardService.removePiece(pieceOnDropPos);
+        }
+      }
+      else {
+        this.capturePiece(move);
+      }
     }
     else {
       console.warn("No capture or move possible! dropPos: " + JSON.stringify(move.to) + ", validSquares: " + JSON.stringify(validSquares))
       return;
     }
 
-    moveHistory.push(move);
-
+    this.boardService.clearEnPassantSquares();
     this.boardService.togglePlayerToMove();
+    moveHistory.push(move);
     this.moveHistorySource.next(moveHistory);
   }
 
@@ -142,7 +181,7 @@ export class MoveExecutionService {
   private executeShortCastle(pieceOnSide: Piece, move: Move) {
     this.movePiece(move);
     this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } })
-    
+
     this.boardService.togglePlayerToMove();
   }
 

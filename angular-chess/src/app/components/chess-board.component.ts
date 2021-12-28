@@ -70,16 +70,21 @@ export class ChessBoardComponent implements OnInit {
     }
 
     let validSquares = this.moveGenerationService.getValidMoves(this.grabbedPiece);
+    let validCaptures = this.moveGenerationService.getValidCaptures(this.grabbedPiece);
 
     let dropPos: Position = this.positioningService.getMousePosition(e);
 
-    if(PositionUtils.includes(validSquares,dropPos)){
+    if (PositionUtils.includes(validSquares, dropPos) || PositionUtils.includes(validCaptures, dropPos)) {
       let move: Move = {
         from: this.dragPos,
         to: dropPos,
-        piece: this.grabbedPiece 
+        piece: this.grabbedPiece
       }
-      
+
+      if (PositionUtils.includes(validCaptures, dropPos) && this.boardService.isAbsFree(dropPos)) {
+        move.isEnPassant = true;
+      }
+
       this.moveExecutionService.executeMove(move);
     }
 
