@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Color, Position } from '../types/board.t';
-import { Move, PieceType } from '../types/pieces.t';
+import { Move, Piece, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
@@ -76,58 +76,33 @@ export class MoveExecutionService {
 
     if (move.piece.type === PieceType.KING) {
       this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
-    }
 
-    // kingside castle
-    if (move.piece.type === PieceType.KING && move.to.column === 7) {
-      let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
+      // kingside castle
+      if (move.to.column === 7) {
+        let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
 
-      if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
-        this.boardService.removePiece(pieceOnSide);
-        this.boardService.removePiece(move.piece);
-
-        move.piece.position = move.to;
-        this.boardService.addPiece(move.piece);
-
-        pieceOnSide.position.column = 6;
-        this.boardService.addPiece(pieceOnSide);
-        this.boardService.togglePlayerToMove();
-        return;
+        if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
+          this.executeShortCastle(pieceOnSide, move);
+          return;
+        }
       }
-    }
 
-    // queenside castle
-    if (move.piece.type === PieceType.KING && move.to.column === 3) {
-      let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
+      // queenside castle
+      if (move.to.column === 3) {
+        let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
 
-      if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
-        this.boardService.removePiece(pieceOnSide);
-        this.boardService.removePiece(move.piece);
-
-        move.piece.position = move.to;
-        this.boardService.addPiece(move.piece);
-
-        pieceOnSide.position.column = 4;
-        this.boardService.addPiece(pieceOnSide);
-        this.boardService.togglePlayerToMove();
-        return;
+        if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
+          this.executeLongCastle(pieceOnSide, move);
+          return;
+        }
       }
     }
 
     if (validSquares.find(p => PositionUtils.positionEquals(p, move.to))) {
-      this.boardService.removePiece(move.piece);
-      move.piece.position = move.to;
-      this.boardService.addPiece(move.piece);
+      this.movePiece(move);
     }
     else if (getValidCaptures.find(p => PositionUtils.positionEquals(p, move.to))) {
-      this.boardService.removePiece(move.piece);
-      let pieceOnDropPos = this.boardService.getPieceOnPos(move.to);
-      if (pieceOnDropPos !== undefined) {
-        move.capturedPiece = pieceOnDropPos;
-        this.boardService.removePiece(pieceOnDropPos);
-      }
-      move.piece.position = move.to;
-      this.boardService.addPiece(move.piece);
+      this.capturePiece(move);
     }
     else {
       console.warn("No capture or move possible! dropPos: " + JSON.stringify(move.to) + ", validSquares: " + JSON.stringify(validSquares))
@@ -138,6 +113,37 @@ export class MoveExecutionService {
 
     this.boardService.togglePlayerToMove();
     this.moveHistorySource.next(moveHistory);
+  }
+
+  private capturePiece(move: Move) {
+    this.boardService.removePiece(move.piece);
+    let pieceOnDropPos = this.boardService.getPieceOnPos(move.to);
+    if (pieceOnDropPos !== undefined) {
+      move.capturedPiece = pieceOnDropPos;
+      this.boardService.removePiece(pieceOnDropPos);
+    }
+    move.piece.position = move.to;
+    this.boardService.addPiece(move.piece);
+  }
+
+  private movePiece(move: Move) {
+    this.boardService.removePiece(move.piece);
+    move.piece.position = move.to;
+    this.boardService.addPiece(move.piece);
+  }
+
+  private executeLongCastle(pieceOnSide: Piece, move: Move) {
+    this.movePiece(move);
+    this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } })
+
+    this.boardService.togglePlayerToMove();
+  }
+
+  private executeShortCastle(pieceOnSide: Piece, move: Move) {
+    this.movePiece(move);
+    this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } })
+    
+    this.boardService.togglePlayerToMove();
   }
 
   public getMoveHistory$(): Observable<Move[]> {
