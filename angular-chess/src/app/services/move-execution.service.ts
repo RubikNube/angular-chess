@@ -67,7 +67,6 @@ export class MoveExecutionService {
 
   public executeMove(move: Move) {
     console.log("executeMove: " + JSON.stringify(move));
-    let moveHistory = this.moveHistorySource.getValue();
 
     if (move.piece.color !== this.boardService.getPlayerToMove()) {
       console.warn("Not the right player to move. Ignore move.")
@@ -80,12 +79,14 @@ export class MoveExecutionService {
       // kingside castle
       if (move.isShortCastle) {
         this.executeShortCastle(move);
+        this.finishMove(move);
         return;
       }
 
       // queenside castle
       if (move.isLongCastle) {
         this.executeLongCastle(move);
+        this.finishMove(move);
         return;
       }
     }
@@ -95,19 +96,13 @@ export class MoveExecutionService {
         if (move.piece.color === Color.WHITE && move.to.row === 4) {
           this.boardService.setEnPassantSquares({ row: 3, column: move.from.column });
 
-          this.movePiece(move);
-          this.boardService.togglePlayerToMove();
-          moveHistory.push(move);
-          this.moveHistorySource.next(moveHistory);
+          this.finishMove(move);
           return;
         }
         else if (move.piece.color === Color.BLACK && move.to.row === 5) {
           this.boardService.setEnPassantSquares({ row: 6, column: move.from.column });
 
-          this.movePiece(move);
-          this.boardService.togglePlayerToMove();
-          moveHistory.push(move);
-          this.moveHistorySource.next(moveHistory);
+          this.finishMove(move);
           return;
         }
       }
@@ -136,7 +131,16 @@ export class MoveExecutionService {
       }
     }
 
-    this.boardService.clearEnPassantSquares();
+    this.finishMove(move);
+  }
+
+  private finishMove(move: Move) {
+    let moveHistory = this.moveHistorySource.getValue();
+
+    if (!(move.isShortCastle || move.isLongCastle)) {
+      this.movePiece(move);
+    }
+
     this.boardService.togglePlayerToMove();
     moveHistory.push(move);
     this.moveHistorySource.next(moveHistory);
@@ -167,8 +171,6 @@ export class MoveExecutionService {
     if (pieceOnSide !== undefined) {
       this.movePiece(move);
       this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });
-
-      this.boardService.togglePlayerToMove();
     }
   }
 
@@ -179,8 +181,6 @@ export class MoveExecutionService {
     if (pieceOnSide !== undefined) {
       this.movePiece(move);
       this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
-
-      this.boardService.togglePlayerToMove();
     }
   }
 

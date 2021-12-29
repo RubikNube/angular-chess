@@ -18,7 +18,14 @@ export class MoveHistoryComponent implements OnInit {
   }
 
   getMoveRepresentation(move: Move): string {
-    return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to);
+    if (move.isShortCastle) {
+      return "O-O";
+    } else if (move.isLongCastle) {
+      return "O-O-O";
+    } else {
+      return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to);
+    }
+
   }
 
   getMoveDelimiter(move: Move): string {
