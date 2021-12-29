@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CastleRights, Color, HighlightColor, Position, Square } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 import { HighlightingService } from './highlighting.service';
 
@@ -248,7 +249,18 @@ export class ChessBoardService {
   }
 
   removePiece(draggedPiece: Piece) {
-    let index = this.pieces.indexOf(draggedPiece, 0);
+    let index = -1;
+    
+    for (let i = 0; i < this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      
+      if (PieceUtils.pieceEquals(piece, draggedPiece)) {
+        index = i;
+      }
+    }
+    
+    console.log("removePiece " + JSON.stringify({ pieces: this.pieces, piece: draggedPiece, index: index }));
+
     if (index > -1) {
       this.pieces.splice(index, 1);
     }

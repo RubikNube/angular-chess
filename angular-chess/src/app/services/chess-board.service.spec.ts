@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Color } from '../types/board.t';
-import { PieceType } from '../types/pieces.t';
+import { Piece, PieceType } from '../types/pieces.t';
 
 import { ChessBoardService } from './chess-board.service';
 
@@ -14,6 +14,31 @@ describe('ChessBoardService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+});
+
+describe('removePiece', () => {
+  let service: ChessBoardService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ChessBoardService);
+    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+  });
+
+  it('should remove a piece with the given type and position', () => {
+    let pieceToRemove: Piece = {
+      type: PieceType.ROOK,
+      position: {
+        row: 1,
+        column: 1
+      },
+      color: Color.WHITE
+    }
+
+    service.removePiece(pieceToRemove);
+
+    expect(service.pieces.length).toEqual(31);
   });
 });
 

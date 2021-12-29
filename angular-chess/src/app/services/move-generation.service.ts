@@ -29,6 +29,16 @@ export class MoveGenerationService {
     ]
   }
 
+  getExecutableMove(piece: Piece, dropPos: Position): Move | undefined {
+    let move = this.getValidMoves(piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+    if (move !== undefined) {
+      return move;
+    }
+    else{
+      return this.getValidCaptures(piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+    }
+  }
+
   getValidMoves(piece: Piece): Move[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black

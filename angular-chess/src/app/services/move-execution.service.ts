@@ -73,11 +73,6 @@ export class MoveExecutionService {
       return;
     }
 
-    let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece)
-      .map(m => m.to);
-    let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptures(move.piece)
-      .map(m => m.to);
-
     if (move.piece.type === PieceType.KING) {
       this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
@@ -94,7 +89,7 @@ export class MoveExecutionService {
       }
     }
 
-    if (validSquares.find(p => PositionUtils.positionEquals(p, move.to))) {
+    if (move.capturedPiece === undefined) { // move
       if (move.piece.type === PieceType.PAWN) {
         if (move.piece.color === Color.WHITE && move.to.row === 4) {
           this.boardService.setEnPassantSquares({ row: 3, column: move.from.column });
@@ -118,7 +113,7 @@ export class MoveExecutionService {
 
       this.movePiece(move);
     }
-    else if (getValidCaptures.find(p => PositionUtils.positionEquals(p, move.to))) {
+    else { // capture
       if (move.isEnPassant) {
         this.boardService.removePiece(move.piece);
         move.piece.position = move.to;
@@ -138,10 +133,6 @@ export class MoveExecutionService {
       else {
         this.capturePiece(move);
       }
-    }
-    else {
-      console.warn("No capture or move possible! dropPos: " + JSON.stringify(move.to) + ", validSquares: " + JSON.stringify(validSquares))
-      return;
     }
 
     this.boardService.clearEnPassantSquares();
