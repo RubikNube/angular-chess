@@ -23,13 +23,17 @@ export class MoveHistoryComponent implements OnInit {
     } else if (move.isLongCastle) {
       return "O-O-O";
     } else {
-      return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to);
+      return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to) + this.getEnPassantRepresentation(move);
     }
 
   }
 
   getMoveDelimiter(move: Move): string {
     return move.capturedPiece === undefined ? "-" : "x";
+  }
+
+  getEnPassantRepresentation(move: Move): string {
+    return move.isEnPassant ? " e.p" : "";
   }
 
 }

@@ -60,11 +60,14 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
     return fieldsToCapture
       .map(p => {
+        let isEnPassant = this.boardService.isEnPassantSquare(PositionUtils.getAbsolutePosition(p, piece.color));
+
         return {
           piece: piece,
           from: piece.position,
           to: p,
-          isEnPassant: this.boardService.isEnPassantSquare(PositionUtils.getAbsolutePosition(p, piece.color))
+          isEnPassant: isEnPassant,
+          capturedPiece: isEnPassant ? this.boardService.getPieceOnPos(PositionUtils.getAbsolutePosition({ row: p.row - 1, column: p.column }, piece.color)) : this.boardService.getPieceOnPos(p)
         }
       });
   }

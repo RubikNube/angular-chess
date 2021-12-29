@@ -147,6 +147,7 @@ export class MoveExecutionService {
   }
 
   private capturePiece(move: Move) {
+    console.log("capturePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
     let pieceOnDropPos = this.boardService.getPieceOnPos(move.to);
     if (pieceOnDropPos !== undefined) {

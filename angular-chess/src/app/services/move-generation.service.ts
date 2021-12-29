@@ -33,7 +33,7 @@ export class MoveGenerationService {
     if (move !== undefined) {
       return move;
     }
-    else{
+    else {
       return this.getValidCaptures(piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
     }
   }
@@ -260,7 +260,11 @@ export class MoveGenerationService {
       .map(m => {
         m.piece.position = piece.position;
         m.from = piece.position;
+        let positionToMove = PositionUtils.getAbsolutePosition(m.to, piece.color);
         m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
+        if (!m.isEnPassant) {
+          m.capturedPiece = this.boardService.getPieceOnPos(positionToMove);
+        }
         return m;
       });
   }
