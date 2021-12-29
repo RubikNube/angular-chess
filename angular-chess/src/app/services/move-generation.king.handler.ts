@@ -36,12 +36,12 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         if (castleRights.canShortCastle) {
             let squareBeforeCastle = {
                 row: piece.position.row,
-                column: piece.position.column + 1
+                column: piece.color === Color.WHITE ? piece.position.column + 1 : piece.position.column - 1
             }
 
             let castleSquare = {
                 row: piece.position.row,
-                column: piece.position.column + 2
+                column: piece.color === Color.WHITE ? piece.position.column + 2 : piece.position.column - 2
             }
 
             if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
@@ -58,12 +58,12 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         if (castleRights.canLongCastle) {
             let squareBeforeCastle = {
                 row: piece.position.row,
-                column: piece.position.column - 1
+                column: piece.color === Color.WHITE ? piece.position.column - 1 : piece.position.column + 1
             }
 
             let castleSquare = {
                 row: piece.position.row,
-                column: piece.position.column - 2
+                column: piece.color === Color.WHITE ? piece.position.column - 2 : piece.position.column + 2
             }
 
             if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {

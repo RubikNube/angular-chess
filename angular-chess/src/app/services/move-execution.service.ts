@@ -66,6 +66,7 @@ export class MoveExecutionService {
   }
 
   public executeMove(move: Move) {
+    console.log("executeMove: " + JSON.stringify(move));
     let moveHistory = this.moveHistorySource.getValue();
 
     if (move.piece.color !== this.boardService.getPlayerToMove()) {
@@ -153,12 +154,14 @@ export class MoveExecutionService {
   }
 
   private movePiece(move: Move) {
+    console.log("movePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
     move.piece.position = move.to;
     this.boardService.addPiece(move.piece);
   }
 
   private executeLongCastle(move: Move) {
+    console.log("executeLongCastle: " + JSON.stringify(move));
     let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
@@ -170,6 +173,7 @@ export class MoveExecutionService {
   }
 
   private executeShortCastle(move: Move) {
+    console.log("executeShortCastle: " + JSON.stringify(move));
     let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
