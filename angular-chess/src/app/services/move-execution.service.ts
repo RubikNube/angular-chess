@@ -45,14 +45,16 @@ export class MoveExecutionService {
         }
         else {
           if (p.type !== PieceType.PAWN) {
-            this.moveGenerationService.getValidMoves(p).map(m=>m.to).forEach(m => {
-              attackedSquares.add(m);
-            });
+            this.moveGenerationService.getValidMoves(p)
+              .map(m => m.to).forEach(m => {
+                attackedSquares.add(m);
+              });
           }
 
-          this.moveGenerationService.getValidCaptureSquares(p).forEach(m => {
-            attackedSquares.add(m);
-          });
+          this.moveGenerationService.getValidCaptures(p)
+            .map(m => m.to).forEach(m => {
+              attackedSquares.add(m);
+            });
         }
       });
 
@@ -71,8 +73,10 @@ export class MoveExecutionService {
       return;
     }
 
-    let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece).map(m=>m.to);
-    let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptureSquares(move.piece);
+    let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece)
+      .map(m => m.to);
+    let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptures(move.piece)
+      .map(m => m.to);
 
     if (move.piece.type === PieceType.KING) {
       this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
@@ -168,7 +172,7 @@ export class MoveExecutionService {
 
     if (pieceOnSide !== undefined) {
       this.movePiece(move);
-      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });      
+      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });
 
       this.boardService.togglePlayerToMove();
     }

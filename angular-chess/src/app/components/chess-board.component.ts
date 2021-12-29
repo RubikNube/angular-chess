@@ -52,9 +52,9 @@ export class ChessBoardComponent implements OnInit {
         }
       });
 
-      let getValidCaptures = this.moveGenerationService.getValidCaptureSquares(this.grabbedPiece).map(m => {
+      let getValidCaptures = this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m => {
         return {
-          position: m,
+          position: m.to,
           highlight: HighlightColor.RED
         }
       });
@@ -70,7 +70,7 @@ export class ChessBoardComponent implements OnInit {
     }
 
     let validSquares = this.moveGenerationService.getValidMoves(this.grabbedPiece).map(m=>m.to);
-    let validCaptures = this.moveGenerationService.getValidCaptureSquares(this.grabbedPiece);
+    let validCaptures = this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m=>m.to);
 
     let dropPos: Position = this.positioningService.getMousePosition(e);
 

@@ -237,7 +237,19 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  getValidCaptureSquares(piece: Piece): Position[] {
+  getValidCaptures(piece: Piece): Move[] {
+    return this.getValidCaptureSquares(piece)
+      .map(p => {
+        return {
+          piece: piece,
+          from: piece.position,
+          to: p,
+          capturedPiece: this.boardService.getPieceOnPos(p)
+        }
+      })
+  }
+
+  private getValidCaptureSquares(piece: Piece): Position[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
     let squaresToCapture: Position[] = [];
