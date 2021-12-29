@@ -78,23 +78,15 @@ export class MoveExecutionService {
       this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
       // kingside castle
-      if (move.to.column === 7) {
-        let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
-
-        if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
-          this.executeShortCastle(pieceOnSide, move);
-          return;
-        }
+      if (move.isShortCastle) {
+        this.executeShortCastle(move);
+        return;
       }
 
       // queenside castle
-      if (move.to.column === 3) {
-        let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
-
-        if (pieceOnSide !== undefined && pieceOnSide.type === PieceType.ROOK) {
-          this.executeLongCastle(pieceOnSide, move);
-          return;
-        }
+      if (move.isLongCastle) {
+        this.executeLongCastle(move);
+        return;
       }
     }
 
@@ -171,18 +163,26 @@ export class MoveExecutionService {
     this.boardService.addPiece(move.piece);
   }
 
-  private executeLongCastle(pieceOnSide: Piece, move: Move) {
-    this.movePiece(move);
-    this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } })
+  private executeLongCastle(move: Move) {
+    let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
 
-    this.boardService.togglePlayerToMove();
+    if (pieceOnSide !== undefined) {
+      this.movePiece(move);
+      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });      
+
+      this.boardService.togglePlayerToMove();
+    }
   }
 
-  private executeShortCastle(pieceOnSide: Piece, move: Move) {
-    this.movePiece(move);
-    this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } })
+  private executeShortCastle(move: Move) {
+    let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
 
-    this.boardService.togglePlayerToMove();
+    if (pieceOnSide !== undefined) {
+      this.movePiece(move);
+      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
+
+      this.boardService.togglePlayerToMove();
+    }
   }
 
   public getMoveHistory$(): Observable<Move[]> {

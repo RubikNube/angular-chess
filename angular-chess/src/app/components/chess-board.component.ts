@@ -4,8 +4,8 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { HighlightColor, Position } from '../types/board.t';
-import { Move, Piece } from '../types/pieces.t';
+import { Color, HighlightColor, Position } from '../types/board.t';
+import { Move, Piece, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -83,6 +83,14 @@ export class ChessBoardComponent implements OnInit {
 
       if (PositionUtils.includes(validCaptures, dropPos) && this.boardService.isAbsFree(dropPos)) {
         move.isEnPassant = true;
+      }
+
+      if (this.grabbedPiece.type === PieceType.KING && Math.abs(this.grabbedPiece.position.column - dropPos.column)) {
+        if (dropPos.column === 7) {
+          move.isShortCastle = true;
+        } else if (dropPos.column === 3) {
+          move.isLongCastle = true;
+        }
       }
 
       this.moveExecutionService.executeMove(move);
