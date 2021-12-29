@@ -44,7 +44,7 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
         });
     }
 
-    getCaptures(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Move[] {
         let fieldsToMove: Position[] = [];
 
         let frontSquares: Position[] = this.generationService.getOccupiedFrontSquare(piece, 8 - piece.position.row);
@@ -66,7 +66,13 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
             ...backLeftSquare,
             ...backRightSquare);
 
-        return fieldsToMove;
+        return fieldsToMove.map(p => {
+            return {
+                piece: piece,
+                from: piece.position,
+                to: p
+            }
+        });
     }
 
 }

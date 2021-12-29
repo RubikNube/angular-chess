@@ -252,7 +252,7 @@ export class MoveGenerationService {
 
     if (matchingHandler !== undefined) {
       console.log("getValidMoves: matchingHandler: " + matchingHandler)
-      squaresToCapture = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+      squaresToCapture = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition }).map(m => m.to);
     }
     else {
       console.log("getValidMoves: found no matching handler")

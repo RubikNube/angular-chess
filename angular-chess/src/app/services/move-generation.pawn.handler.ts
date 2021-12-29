@@ -41,7 +41,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     }
   }
 
-  getCaptures(piece: Piece): Position[] {
+  getCaptures(piece: Piece): Move[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
     let fieldsToCapture: Position[] = [];
 
@@ -59,7 +59,14 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
     fieldsToCapture.push(leftUpperField, rightUpperField);
 
-    return fieldsToCapture;
+    return fieldsToCapture
+      .map(p => {
+        return {
+          piece: piece,
+          from: piece.position,
+          to: p
+        }
+      });
   }
 
 

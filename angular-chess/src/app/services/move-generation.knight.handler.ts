@@ -24,8 +24,15 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
             });
     }
 
-    getCaptures(piece: Piece): Position[] {
-        return this.getValidKnightMoves(piece);
+    getCaptures(piece: Piece): Move[] {
+        return this.getValidKnightMoves(piece)
+            .map(p => {
+                return {
+                    piece: piece,
+                    from: piece.position,
+                    to: p
+                };
+            });
     }
 
     getValidKnightMoves(piece: Piece): Position[] {

@@ -31,7 +31,7 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
         });;
     }
 
-    getCaptures(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Move[] {
         let fieldsToMove: Position[] = [];
         let frontSquares: Position[] = this.generationService.getOccupiedFrontSquare(piece, 8 - piece.position.row);
         let backSquares: Position[] = this.generationService.getOccupiedBackSquare(piece, piece.position.row - 1);
@@ -40,7 +40,13 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
 
         fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
 
-        return fieldsToMove;
+        return fieldsToMove.map(p => {
+            return {
+                piece: piece,
+                from: piece.position,
+                to: p
+            }
+        });
     }
 
 }

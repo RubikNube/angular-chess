@@ -1,5 +1,7 @@
 import { Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
+import PositionUtils from "../utils/position.utils";
+import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
@@ -28,10 +30,10 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
                 from: piece.position,
                 to: p
             }
-        });;
+        });
     }
 
-    getCaptures(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Move[] {
         let fieldsToMove: Position[] = [];
         let frontLeftSquare: Position[] = this.generationService.getOccupiedFrontLeftSquare(piece, Math.min(8 - piece.position.row, piece.position.column - 1));
         let frontRightSquare: Position[] = this.generationService.getOccupiedFrontRightSquare(piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
@@ -40,6 +42,12 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
 
         fieldsToMove.push(...frontLeftSquare, ...frontRightSquare, ...backLeftSquare, ...backRightSquare);
 
-        return fieldsToMove;
+        return fieldsToMove.map(p => {
+            return {
+                piece: piece,
+                from: piece.position,
+                to: p
+            }
+        });
     }
 }
