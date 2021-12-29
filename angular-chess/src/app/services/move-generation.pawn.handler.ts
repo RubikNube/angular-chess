@@ -1,5 +1,5 @@
 import { Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
 import PositionUtils from "../utils/position.utils";
 import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -17,13 +17,27 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     return piece.type === PieceType.PAWN;;
   }
 
-  getMoves(piece: Piece): Position[] {
+  getMoves(piece: Piece): Move[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
     if (piece.position.row === 2) {
-      return this.generationService.getFreeFrontSquares(piece, 2);
+      return this.generationService.getFreeFrontSquares(piece, 2)
+        .map(p => {
+          return {
+            piece: piece,
+            from: piece.position,
+            to: p
+          }
+        });
     }
     else {
-      return this.generationService.getFreeFrontSquares(piece, 1);
+      return this.generationService.getFreeFrontSquares(piece, 1)
+        .map(p => {
+          return {
+            piece: piece,
+            from: piece.position,
+            to: p
+          }
+        });
     }
   }
 

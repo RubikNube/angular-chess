@@ -30,32 +30,27 @@ export class MoveGenerationService {
   }
 
   getValidMoves(piece: Piece): Move[] {
-    return this.getValidMoveSquares(piece)
-      .map(p => {
-        return {
-          piece: piece,
-          from: piece.position,
-          to: p
-        }
-      });
-  }
-
-  private getValidMoveSquares(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
-    let fieldsToMove: Position[] = [];
+    let moves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
-      fieldsToMove = matchingHandler.getMoves({ type: piece.type, color: piece.color, position: relativePosition });
+      moves = matchingHandler.getMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
-    return fieldsToMove
-      .filter(p => PositionUtils.isOnBoard(p))
-      .filter(p => this.boardService.isFree(p, piece.color))
-      .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
+    return moves
+      .filter(m => PositionUtils.isOnBoard(m.to))
+      .filter(m => this.boardService.isFree(m.to, piece.color))
+      .map(m => {
+        let from = PositionUtils.getAbsolutePosition(m.to, piece.color);
+        m.piece.position = from;
+        m.from = from;
+        m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
+        return m;
+      });
   }
 
   getSurroundingSquares(piece: Piece): Position[] {

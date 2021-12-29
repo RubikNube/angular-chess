@@ -1,5 +1,5 @@
 import { Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
@@ -13,8 +13,15 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
         return piece.type === PieceType.KNIGHT;
     }
 
-    getMoves(piece: Piece): Position[] {
-        return this.getValidKnightMoves(piece);
+    getMoves(piece: Piece): Move[] {
+        return this.getValidKnightMoves(piece)
+            .map(p => {
+                return {
+                    piece: piece,
+                    from: piece.position,
+                    to: p
+                }
+            });
     }
 
     getCaptureSquares(piece: Piece): Position[] {

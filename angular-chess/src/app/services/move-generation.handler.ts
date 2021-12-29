@@ -1,8 +1,8 @@
 import { Position } from "../types/board.t";
-import { Piece } from "../types/pieces.t";
+import { Move, Piece } from "../types/pieces.t";
 
 export interface MoveGenerationHandler {
     canHandle(piece: Piece): boolean;
-    getMoves(piece:Piece):Position[];
-    getCaptureSquares(piece:Piece):Position[];
+    getMoves(piece: Piece): Move[];
+    getCaptureSquares(piece: Piece): Position[];
 }

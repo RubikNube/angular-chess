@@ -1,5 +1,6 @@
+import { from } from "rxjs";
 import { Color, Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
 import PositionUtils from "../utils/position.utils";
 import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -16,11 +17,18 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return piece.type === PieceType.KING;
     }
 
-    getMoves(piece: Piece): Position[] {
-        let squares: Position[] = [];
+    getMoves(piece: Piece): Move[] {
+        let squares: Move[] = [];
 
         // surrounding squares:
-        squares = this.generationService.getSurroundingSquares(piece);
+        squares = this.generationService.getSurroundingSquares(piece)
+            .map(p => {
+                return {
+                    piece: piece,
+                    from: piece.position,
+                    to: p
+                }
+            });
 
         // castle
         let castleRights = this.boardService.getCastleRights(piece.color);
@@ -38,7 +46,12 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             }
 
             if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
-                squares.push(castleSquare);
+                squares.push({
+                    piece: piece,
+                    from: piece.position,
+                    to: castleSquare,
+                    isShortCastle: true
+                });
             }
         }
 
@@ -55,14 +68,19 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             }
 
             if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
-                squares.push(castleSquare);
+                squares.push({
+                    piece: piece,
+                    from: piece.position,
+                    to: castleSquare,
+                    isLongCastle: true
+                });
             }
         }
 
         return this.filterOutAttackedSquares(piece, squares);
     }
 
-    private filterOutAttackedSquares(piece: Piece, fieldsToMove: Position[]) {
+    private filterOutAttackedSquares(piece: Piece, moves: Move[]): Move[] {
         let attackedSquares: Position[];
         if (piece.color === Color.WHITE) {
             attackedSquares = this.boardService.getAttackedSquaresFromBlack();
@@ -71,13 +89,13 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             attackedSquares = this.boardService.getAttackedSquaresFromWhite();
         }
 
-        let filteredSquares: Position[] = fieldsToMove.filter(squareToMove => {
-            return !PositionUtils.includes(attackedSquares, PositionUtils.getAbsolutePosition(squareToMove, piece.color));
+        let filteredMoves: Move[] = moves.filter(move => {
+            return !PositionUtils.includes(attackedSquares, PositionUtils.getAbsolutePosition(move.to, piece.color));
         });
 
-        console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: fieldsToMove, filteredSquares: filteredSquares, squaresThatOpponentAttacks: attackedSquares }));
+        console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: moves, filteredSquares: filteredMoves, squaresThatOpponentAttacks: attackedSquares }));
 
-        return filteredSquares;
+        return filteredMoves;
     }
 
     swapColor(color: Color): Color {

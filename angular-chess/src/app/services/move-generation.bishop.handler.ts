@@ -1,5 +1,5 @@
 import { Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
@@ -13,7 +13,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
         return piece.type === PieceType.BISHOP;
     }
 
-    getMoves(piece: Piece): Position[] {
+    getMoves(piece: Piece): Move[] {
         let fieldsToMove: Position[] = [];
         let frontLeftSquares: Position[] = this.generationService.getFreeFrontLeftSquares(piece, Math.min(8 - piece.position.row, piece.position.column - 1));
         let frontRightSquares: Position[] = this.generationService.getFreeFrontRightSquares(piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
@@ -22,7 +22,13 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
 
         fieldsToMove.push(...frontLeftSquares, ...frontRightSquares, ...backLeftSquares, ...backRightSquares);
 
-        return fieldsToMove;
+        return fieldsToMove.map(p => {
+            return {
+                piece: piece,
+                from: piece.position,
+                to: p
+            }
+        });;
     }
 
     getCaptureSquares(piece: Piece): Position[] {
