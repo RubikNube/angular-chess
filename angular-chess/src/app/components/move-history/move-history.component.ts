@@ -18,7 +18,11 @@ export class MoveHistoryComponent implements OnInit {
   }
 
   getMoveRepresentation(move: Move): string {
-    return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + "-" + PositionUtils.getCoordinate(move.to);
+    return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to);
+  }
+
+  getMoveDelimiter(move: Move): string {
+    return move.capturedPiece === undefined ? "-" : "x";
   }
 
 }
