@@ -29,7 +29,7 @@ export class MoveGenerationService {
     ]
   }
 
-  getValidMoves(piece: Piece): Position[] {
+  getValidMoveSquares(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
@@ -226,22 +226,22 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  getValidCaptures(piece: Piece): Position[] {
+  getValidCaptureSquares(piece: Piece): Position[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
-    let fieldsToMove: Position[] = [];
+    let squaresToCapture: Position[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
       console.log("getValidMoves: matchingHandler: " + matchingHandler)
-      fieldsToMove = matchingHandler.getCaptureSquares({ type: piece.type, color: piece.color, position: relativePosition });
+      squaresToCapture = matchingHandler.getCaptureSquares({ type: piece.type, color: piece.color, position: relativePosition });
     }
     else {
       console.log("getValidMoves: found no matching handler")
     }
 
-    return fieldsToMove
+    return squaresToCapture
       .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color) || this.isEnPassantSquare(piece, p))
       .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
   }
