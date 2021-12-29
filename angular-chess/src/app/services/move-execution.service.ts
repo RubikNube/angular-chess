@@ -45,7 +45,7 @@ export class MoveExecutionService {
         }
         else {
           if (p.type !== PieceType.PAWN) {
-            this.moveGenerationService.getValidMoveSquares(p).forEach(m => {
+            this.moveGenerationService.getValidMoves(p).map(m=>m.to).forEach(m => {
               attackedSquares.add(m);
             });
           }
@@ -71,7 +71,7 @@ export class MoveExecutionService {
       return;
     }
 
-    let validSquares: Position[] = this.moveGenerationService.getValidMoveSquares(move.piece);
+    let validSquares: Position[] = this.moveGenerationService.getValidMoves(move.piece).map(m=>m.to);
     let getValidCaptures: Position[] = this.moveGenerationService.getValidCaptureSquares(move.piece);
 
     if (move.piece.type === PieceType.KING) {

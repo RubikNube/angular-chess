@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
-import { Piece, PieceType } from '../types/pieces.t';
+import { Move, Piece, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveExecutionService } from './move-execution.service';
@@ -29,7 +29,18 @@ export class MoveGenerationService {
     ]
   }
 
-  getValidMoveSquares(piece: Piece): Position[] {
+  getValidMoves(piece: Piece): Move[] {
+    return this.getValidMoveSquares(piece)
+      .map(p => {
+        return {
+          piece: piece,
+          from: piece.position,
+          to: p
+        }
+      });
+  }
+
+  private getValidMoveSquares(piece: Piece): Position[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
@@ -250,7 +261,7 @@ export class MoveGenerationService {
     if (piece.type === PieceType.PAWN) {
       let enPassantSquares = this.boardService.getEnPassantSquares()
         .filter(p => PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column - 1 }) || PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column + 1 }))
-      return PositionUtils.includes(enPassantSquares, PositionUtils.getRelativePosition(pos,piece.color));
+      return PositionUtils.includes(enPassantSquares, PositionUtils.getRelativePosition(pos, piece.color));
     }
     else {
       return false;
