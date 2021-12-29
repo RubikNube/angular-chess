@@ -31,7 +31,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
         });;
     }
 
-    getCaptureSquares(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
         let frontLeftSquare: Position[] = this.generationService.getOccupiedFrontLeftSquare(piece, Math.min(8 - piece.position.row, piece.position.column - 1));
         let frontRightSquare: Position[] = this.generationService.getOccupiedFrontRightSquare(piece, Math.min(8 - piece.position.row, 8 - piece.position.column));

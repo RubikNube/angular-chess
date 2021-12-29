@@ -31,7 +31,7 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
         });;
     }
 
-    getCaptureSquares(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
         let frontSquares: Position[] = this.generationService.getOccupiedFrontSquare(piece, 8 - piece.position.row);
         let backSquares: Position[] = this.generationService.getOccupiedBackSquare(piece, piece.position.row - 1);

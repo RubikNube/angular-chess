@@ -102,7 +102,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return color === Color.WHITE ? Color.BLACK : Color.WHITE
     }
 
-    getCaptureSquares(piece: Piece): Position[] {
+    getCaptures(piece: Piece): Position[] {
         return this.generationService.getSurroundingSquares(piece);
     }
 }
