@@ -13,7 +13,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
         return piece.type === PieceType.BISHOP;
     }
 
-    getMoveSquares(piece: Piece): Position[] {
+    getMoves(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
         let frontLeftSquares: Position[] = this.generationService.getFreeFrontLeftSquares(piece, Math.min(8 - piece.position.row, piece.position.column - 1));
         let frontRightSquares: Position[] = this.generationService.getFreeFrontRightSquares(piece, Math.min(8 - piece.position.row, 8 - piece.position.column));

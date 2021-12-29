@@ -17,7 +17,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     return piece.type === PieceType.PAWN;;
   }
 
-  getMoveSquares(piece: Piece): Position[] {
+  getMoves(piece: Piece): Position[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
     if (piece.position.row === 2) {
       return this.generationService.getFreeFrontSquares(piece, 2);

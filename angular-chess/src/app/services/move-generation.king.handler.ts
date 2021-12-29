@@ -16,7 +16,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return piece.type === PieceType.KING;
     }
 
-    getMoveSquares(piece: Piece): Position[] {
+    getMoves(piece: Piece): Position[] {
         let squares: Position[] = [];
 
         // surrounding squares:

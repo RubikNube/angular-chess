@@ -49,7 +49,7 @@ export class MoveGenerationService {
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
-      fieldsToMove = matchingHandler.getMoveSquares({ type: piece.type, color: piece.color, position: relativePosition });
+      fieldsToMove = matchingHandler.getMoves({ type: piece.type, color: piece.color, position: relativePosition });
     }
 
     return fieldsToMove

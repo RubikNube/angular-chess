@@ -13,7 +13,7 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
         return piece.type === PieceType.QUEEN;
     }
 
-    getMoveSquares(piece: Piece): Position[] {
+    getMoves(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
 
         let frontSquares: Position[] = this.generationService.getFreeFrontSquares(piece, 8 - piece.position.row);

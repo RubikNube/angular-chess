@@ -13,7 +13,7 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
         return piece.type === PieceType.KNIGHT;
     }
 
-    getMoveSquares(piece: Piece): Position[] {
+    getMoves(piece: Piece): Position[] {
         return this.getValidKnightMoves(piece);
     }
 

@@ -13,7 +13,7 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
         return piece.type === PieceType.ROOK;
     }
 
-    getMoveSquares(piece: Piece): Position[] {
+    getMoves(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
         let frontSquares: Position[] = this.generationService.getFreeFrontSquares(piece, 8 - piece.position.row);
         let backSquares: Position[] = this.generationService.getFreeBackSquares(piece, piece.position.row - 1);
