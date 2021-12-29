@@ -4,9 +4,8 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Color, HighlightColor, Position } from '../types/board.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
-import PositionUtils from '../utils/position.utils';
+import { HighlightColor, Position } from '../types/board.t';
+import { Piece } from '../types/pieces.t';
 
 @Component({
   selector: 'app-chess-board',

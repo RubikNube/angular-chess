@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
+import { Move, Piece } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
-import { MoveExecutionService } from './move-execution.service';
 import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
 import { MoveGenerationHandler } from './move-generation.handler';
 import { MoveGenerationKingHandler } from './move-generation.king.handler';

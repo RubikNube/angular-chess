@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
+import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';

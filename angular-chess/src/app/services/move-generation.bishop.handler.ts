@@ -1,7 +1,5 @@
 import { Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
-import PositionUtils from "../utils/position.utils";
-import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 

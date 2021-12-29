@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CastleRights, Color, HighlightColor, Position, Square } from '../types/board.t';
+import { CastleRights, Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';

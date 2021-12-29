@@ -4,7 +4,6 @@ import PositionUtils from "../utils/position.utils";
 import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
-import { PositioningService } from "./positioning.service";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
