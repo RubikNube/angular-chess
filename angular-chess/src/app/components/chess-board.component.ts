@@ -81,18 +81,6 @@ export class ChessBoardComponent implements OnInit {
         piece: this.grabbedPiece
       }
 
-      if (PositionUtils.includes(validCaptures, dropPos) && this.boardService.isAbsFree(dropPos)) {
-        move.isEnPassant = true;
-      }
-
-      if (this.grabbedPiece.type === PieceType.KING && Math.abs(this.grabbedPiece.position.column - dropPos.column)) {
-        if (dropPos.column === 7) {
-          move.isShortCastle = true;
-        } else if (dropPos.column === 3) {
-          move.isLongCastle = true;
-        }
-      }
-
       this.moveExecutionService.executeMove(move);
     }
 

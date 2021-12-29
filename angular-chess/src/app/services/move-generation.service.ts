@@ -232,46 +232,28 @@ export class MoveGenerationService {
   }
 
   getValidCaptures(piece: Piece): Move[] {
-    return this.getValidCaptureSquares(piece)
-      .map(p => {
-        return {
-          piece: piece,
-          from: piece.position,
-          to: p,
-          capturedPiece: this.boardService.getPieceOnPos(p)
-        }
-      })
-  }
-
-  private getValidCaptureSquares(piece: Piece): Position[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
-    let squaresToCapture: Position[] = [];
+    let squaresToCapture: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
       console.log("getValidMoves: matchingHandler: " + matchingHandler)
-      squaresToCapture = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition }).map(m => m.to);
+      squaresToCapture = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition });
     }
     else {
       console.log("getValidMoves: found no matching handler")
     }
 
     return squaresToCapture
-      .filter(p => this.isOppositeColoredPieceOnPos(p, piece.color) || this.isEnPassantSquare(piece, p))
-      .map(p => PositionUtils.getAbsolutePosition(p, piece.color));
-  }
-
-  isEnPassantSquare(piece: Piece, pos: Position): boolean {
-    if (piece.type === PieceType.PAWN) {
-      let enPassantSquares = this.boardService.getEnPassantSquares()
-        .filter(p => PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column - 1 }) || PositionUtils.positionEquals(p, { row: piece.color === Color.WHITE ? 6 : 3, column: piece.position.column + 1 }))
-      return PositionUtils.includes(enPassantSquares, PositionUtils.getRelativePosition(pos, piece.color));
-    }
-    else {
-      return false;
-    }
+      .filter(m => this.isOppositeColoredPieceOnPos(m.to, piece.color) || m.isEnPassant)
+      .map(m => {
+        m.piece.position = piece.position;
+        m.from = piece.position;
+        m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
+        return m;
+      });
   }
 
   getOccupiedBackSquare(piece: Piece, maxSquares: number): Position[] {

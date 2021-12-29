@@ -64,7 +64,8 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
         return {
           piece: piece,
           from: piece.position,
-          to: p
+          to: p,
+          isEnPassant: this.boardService.isEnPassantSquare(PositionUtils.getAbsolutePosition(p, piece.color))
         }
       });
   }

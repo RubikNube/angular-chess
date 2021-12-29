@@ -42,6 +42,10 @@ export class ChessBoardService {
     this.enPassantSquaresSource.next(enPassantSquares);
   }
 
+  public isEnPassantSquare(position: Position): boolean {
+    return PositionUtils.includes(this.enPassantSquaresSource.getValue(), position);
+  }
+
   public getEnPassantSquares(): Position[] {
     return this.enPassantSquaresSource.getValue();
   }
