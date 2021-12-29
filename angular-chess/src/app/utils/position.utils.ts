@@ -35,6 +35,10 @@ export default class PositionUtils {
     }
 
     public static includes(positions: Position[], position: Position) {
-        return positions.some(pos=>PositionUtils.positionEquals(pos,position));
+        return positions.some(pos => PositionUtils.positionEquals(pos, position));
+    }
+
+    public static getCoordinate(position: Position): string {
+        return String.fromCharCode(96 + position.column) + position.row;
     }
 }

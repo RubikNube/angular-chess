@@ -1,0 +1,3 @@
+<ul>
+    <li *ngFor="let move of this.moveExecutionService.getMoveHistory$()|async">{{getMoveRepresentation(move)}}</li>
+</ul>

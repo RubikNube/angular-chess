@@ -1,3 +1,8 @@
-<h1>{{title}}</h1>
-
-<app-chess-board></app-chess-board>
+<p-splitter class="background">
+    <ng-template pTemplate>
+        <app-chess-board></app-chess-board>
+    </ng-template>
+    <ng-template pTemplate>
+        <app-move-history></app-move-history>
+    </ng-template>
+</p-splitter>

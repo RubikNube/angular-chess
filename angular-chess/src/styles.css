@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-body, html {
+body, html, p-splitter.p-element.background,div.p-splitter.p-component.p-splitter-horizontal {
   height: 100%;
   width: 100%;
   background-color: #123619;
