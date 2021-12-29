@@ -45,9 +45,8 @@ export class MoveGenerationService {
       .filter(m => PositionUtils.isOnBoard(m.to))
       .filter(m => this.boardService.isFree(m.to, piece.color))
       .map(m => {
-        let from = PositionUtils.getAbsolutePosition(m.to, piece.color);
-        m.piece.position = from;
-        m.from = from;
+        m.piece.position = piece.position;
+        m.from = piece.position;
         m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
         return m;
       });
