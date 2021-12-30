@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import {DragDropModule} from 'primeng/dragdrop';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
 import { SplitterModule } from "primeng/splitter";
+import {TableModule} from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SplitterModule } from "primeng/splitter";
     ButtonModule,
     FormsModule,
     DragDropModule,
-    SplitterModule
+    SplitterModule,
+    TableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

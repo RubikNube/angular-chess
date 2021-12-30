@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { async, asyncScheduler, Observable } from 'rxjs';
 import { MoveExecutionService } from 'src/app/services/move-execution.service';
 import { MoveGenerationService } from 'src/app/services/move-generation.service';
-import { Move } from 'src/app/types/pieces.t';
+import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
@@ -11,19 +12,29 @@ import PositionUtils from 'src/app/utils/position.utils';
   styleUrls: ['./move-history.component.scss']
 })
 export class MoveHistoryComponent implements OnInit {
+  fullMoveHistory: FullMove[] = [];
 
-  constructor(public moveExecutionService: MoveExecutionService) { }
+  constructor(public moveExecutionService: MoveExecutionService) {
+    this.moveExecutionService.getFullMoveHistory$().subscribe(
+      p => {
+        this.fullMoveHistory = p;
+      }
+    );
+  }
 
   ngOnInit(): void {
   }
 
   getMoveRepresentation(move: Move): string {
-    if (move.isShortCastle) {
+    if (move === undefined) {
+      return "";
+    }
+    else if (move?.isShortCastle) {
       return "O-O";
-    } else if (move.isLongCastle) {
+    } else if (move?.isLongCastle) {
       return "O-O-O";
     } else {
-      return PieceUtils.getSymbol(move.piece.type, move.piece.color) + PositionUtils.getCoordinate(move.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move.to) + this.getEnPassantRepresentation(move);
+      return PieceUtils.getSymbol(move?.piece.type, move?.piece.color) + PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move);
     }
 
   }

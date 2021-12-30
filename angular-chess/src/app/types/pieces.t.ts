@@ -21,6 +21,12 @@ export type Move = {
     to: Position;
     capturedPiece?: Piece;
     isEnPassant?: boolean;
-    isShortCastle?:boolean;
-    isLongCastle?:boolean;
+    isShortCastle?: boolean;
+    isLongCastle?: boolean;
+}
+
+export type FullMove = {
+    count: number,
+    whiteMove?: Move,
+    blackMove?: Move
 }
