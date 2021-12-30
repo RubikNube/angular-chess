@@ -5,6 +5,7 @@ import { Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 import { HighlightingService } from './highlighting.service';
+import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,8 @@ export class ChessBoardService {
   fen$ = this.fenSource.asObservable();
 
 
-  constructor(public highlightingService: HighlightingService) {
+  constructor(public highlightingService: HighlightingService,
+    public moveHistoryService:MoveHistoryService) {
   }
 
   public clearEnPassantSquares(): void {
@@ -120,6 +122,7 @@ export class ChessBoardService {
 
   public setFen(fen: string) {
     this.fenSource.next(fen);
+    this.moveHistoryService.resetMoveHistory();
   }
 
   public getPieces(): Piece[] {
@@ -127,8 +130,9 @@ export class ChessBoardService {
   }
 
   public importFen(newFen: string): void {
-    console.log("importFen: " + newFen)
+    console.log("importFen: " + newFen);
 
+    this.moveHistoryService.resetMoveHistory();
     this.pieces = [];
 
     let fenSections = newFen.split(' ');

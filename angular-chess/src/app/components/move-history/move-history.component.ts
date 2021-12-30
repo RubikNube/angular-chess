@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { async, asyncScheduler, Observable } from 'rxjs';
-import { MoveExecutionService } from 'src/app/services/move-execution.service';
-import { MoveGenerationService } from 'src/app/services/move-generation.service';
+import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
@@ -14,8 +12,8 @@ import PositionUtils from 'src/app/utils/position.utils';
 export class MoveHistoryComponent implements OnInit {
   fullMoveHistory: FullMove[] = [];
 
-  constructor(public moveExecutionService: MoveExecutionService) {
-    this.moveExecutionService.getFullMoveHistory$().subscribe(
+  constructor(public moveHistoryService: MoveHistoryService) {
+    this.moveHistoryService.getFullMoveHistory$().subscribe(
       p => {
         this.fullMoveHistory = p;
       }

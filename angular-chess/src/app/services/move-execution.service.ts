@@ -6,87 +6,27 @@ import MoveHistoryUtils from '../utils/move.history.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
+import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoveExecutionService {
-  moveHistorySource: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
-  moveHistory$: Observable<Move[]> = this.moveHistorySource.asObservable();
-
-  whiteMoveHistory$: Observable<Move[]> = this.moveHistory$.pipe(map(m => m.filter(m => m.piece.color === Color.WHITE)));
-  blackMoveHistory$: Observable<Move[]> = this.moveHistory$.pipe(map(m => m.filter(m => m.piece.color === Color.BLACK)));
-
   attackedSquaresFromBlack: Position[] = [];
   attackedSquaresFromWhite: Position[] = [];
 
-  fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
-
   constructor(public boardService: ChessBoardService,
-    public moveGenerationService: MoveGenerationService) {
-    this.getMoveHistory$().subscribe(moveHistory => {
+    public moveGenerationService: MoveGenerationService,
+    public moveHistoryService:MoveHistoryService) {
+    this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
       boardService.setAttackedSquaresFromBlack(this.calculateAttackedSquares(Color.BLACK));
       boardService.setAttackedSquaresFromWhite(this.calculateAttackedSquares(Color.WHITE));
     })
   }
 
-  getFullMoveHistory$(): Observable<FullMove[]> {
-    return this.fullMoveHistory$;
-  }
-
-  createFullMoveHistory$(): Observable<FullMove[]> {
-    return this.moveHistory$.pipe(map(moveHistory => {
-      let fullMoveHistory: FullMove[] = [];
-      let moveMap: Map<number, FullMove> = new Map<number, FullMove>();
-
-      let firstMove = moveHistory[0];
-      let startingColor: Color = firstMove?.piece.color;
-
-
-      for (let index = 0; index < moveHistory.length; index++) {
-        let move = moveHistory[index];
-
-        let moveCount = MoveHistoryUtils.getMoveCount(startingColor, move.piece.color, index);
-
-        let fullMove: FullMove | undefined = moveMap.get(moveCount);
-
-        if (fullMove === undefined) {
-          fullMove = {
-            count: moveCount
-          }
-        }
-
-        if (move.piece.color === Color.WHITE) {
-          fullMove.whiteMove = move;
-        }
-        else {
-          fullMove.blackMove = move;
-        }
-
-        moveMap.set(moveCount, fullMove);
-      }
-
-      moveMap.forEach(fm => {
-        fullMoveHistory.push(fm);
-      });
-
-      return fullMoveHistory.sort((a, b) => {
-        return a.count - b.count;
-      });
-    }));
-  }
-
   getMoveCount(startingColor: Color, index: number): number {
     return 1;
-  }
-
-  public getWhiteMoveHistory$(): Observable<Move[]> {
-    return this.whiteMoveHistory$;
-  }
-
-  public getBlackMoveHistory$(): Observable<Move[]> {
-    return this.blackMoveHistory$;
   }
 
   public getAttackedSquares(colorOfPieces: Color): Position[] {
@@ -198,15 +138,13 @@ export class MoveExecutionService {
   }
 
   private finishMove(move: Move) {
-    let moveHistory = this.moveHistorySource.getValue();
-
     if (!(move.isShortCastle || move.isLongCastle)) {
       this.movePiece(move);
     }
-
+    
     this.boardService.togglePlayerToMove();
-    moveHistory.push(move);
-    this.moveHistorySource.next(moveHistory);
+
+    this.moveHistoryService.addMoveToHistory(move);
   }
 
   private capturePiece(move: Move) {
@@ -246,9 +184,5 @@ export class MoveExecutionService {
       this.movePiece(move);
       this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
     }
-  }
-
-  public getMoveHistory$(): Observable<Move[]> {
-    return this.moveHistory$;
   }
 }
