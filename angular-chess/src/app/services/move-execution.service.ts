@@ -17,7 +17,7 @@ export class MoveExecutionService {
 
   constructor(public boardService: ChessBoardService,
     public moveGenerationService: MoveGenerationService,
-    public moveHistoryService:MoveHistoryService) {
+    public moveHistoryService: MoveHistoryService) {
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
       boardService.setAttackedSquaresFromBlack(this.calculateAttackedSquares(Color.BLACK));
@@ -109,7 +109,7 @@ export class MoveExecutionService {
       this.movePiece(move);
     }
     else { // capture
-        this.capturePiece(move);
+      this.capturePiece(move);
     }
 
     this.finishMove(move);
@@ -119,10 +119,13 @@ export class MoveExecutionService {
     if (!(move.isShortCastle || move.isLongCastle)) {
       this.movePiece(move);
     }
-    
+
     this.boardService.togglePlayerToMove();
 
     this.moveHistoryService.addMoveToHistory(move);
+    if (move.isEnPassant) {
+      this.boardService.clearEnPassantSquares();
+    }
   }
 
   private capturePiece(move: Move) {
