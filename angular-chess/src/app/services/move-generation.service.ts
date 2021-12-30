@@ -33,7 +33,7 @@ export class MoveGenerationService {
       type: move.piece.type,
       color: move.piece.color,
       position: move.to
-    });
+    }, true);
 
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
@@ -67,6 +67,7 @@ export class MoveGenerationService {
         m.piece.position = piece.position;
         m.from = piece.position;
         m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
+        m.isCheck = this.isCheck(m);
         return m;
       });
   }
@@ -250,7 +251,7 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  getValidCaptures(piece: Piece): Move[] {
+  getValidCaptures(piece: Piece, dontSearchForCheck?: boolean): Move[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
     let captureMoves: Move[] = [];
@@ -281,6 +282,11 @@ export class MoveGenerationService {
           }
 
           m.capturedPiece = this.boardService.getPieceOnPos(capturedPiecePos);
+
+        }
+
+        if (!dontSearchForCheck) {
+          m.isCheck = this.isCheck(m);
         }
         return m;
       });

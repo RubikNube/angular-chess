@@ -123,7 +123,7 @@ export class MoveExecutionService {
     this.boardService.togglePlayerToMove();
 
     this.moveHistoryService.addMoveToHistory(move);
-    if (move.isEnPassant) {
+    if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
       this.boardService.clearEnPassantSquares();
     }
   }
