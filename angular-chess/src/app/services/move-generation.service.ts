@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color, Position } from '../types/board.t';
-import { Move, Piece } from '../types/pieces.t';
+import { Move, Piece, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
@@ -26,6 +26,16 @@ export class MoveGenerationService {
       new MoveGenerationQueenHandler(this),
       new MoveGenerationKingHandler(this, boardService)
     ]
+  }
+
+  public isCheck(move: Move): boolean {
+    let validCaptures = this.getValidCaptures({
+      type: move.piece.type,
+      color: move.piece.color,
+      position: move.to
+    });
+
+    return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
 
   getExecutableMove(piece: Piece, dropPos: Position): Move | undefined {
@@ -243,19 +253,19 @@ export class MoveGenerationService {
   getValidCaptures(piece: Piece): Move[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
-    let squaresToCapture: Move[] = [];
+    let captureMoves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
       console.log("getValidMoves: matchingHandler: " + matchingHandler)
-      squaresToCapture = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+      captureMoves = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition });
     }
     else {
       console.log("getValidMoves: found no matching handler")
     }
 
-    return squaresToCapture
+    return captureMoves
       .filter(m => this.isOppositeColoredPieceOnPos(m.to, piece.color) || m.isEnPassant)
       .map(m => {
         m.piece.position = piece.position;
@@ -264,6 +274,13 @@ export class MoveGenerationService {
         m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
         if (!m.isEnPassant) {
           m.capturedPiece = this.boardService.getPieceOnPos(positionToMove);
+        } else {
+          let capturedPiecePos: Position = {
+            row: m.piece.color === Color.WHITE ? m.to.row - 1 : m.to.row + 1,
+            column: m.to.column
+          }
+
+          m.capturedPiece = this.boardService.getPieceOnPos(capturedPiecePos);
         }
         return m;
       });

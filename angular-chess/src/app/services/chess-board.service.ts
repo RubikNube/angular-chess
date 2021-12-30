@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CastleRights, Color, Position } from '../types/board.t';
-import { Piece, PieceType } from '../types/pieces.t';
+import { Move, Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 import { HighlightingService } from './highlighting.service';
@@ -34,7 +34,7 @@ export class ChessBoardService {
 
 
   constructor(public highlightingService: HighlightingService,
-    public moveHistoryService:MoveHistoryService) {
+    public moveHistoryService: MoveHistoryService) {
   }
 
   public clearEnPassantSquares(): void {
@@ -254,15 +254,15 @@ export class ChessBoardService {
 
   removePiece(draggedPiece: Piece) {
     let index = -1;
-    
+
     for (let i = 0; i < this.pieces.length; i++) {
       const piece = this.pieces[i];
-      
+
       if (PieceUtils.pieceEquals(piece, draggedPiece)) {
         index = i;
       }
     }
-    
+
     console.log("removePiece " + JSON.stringify({ pieces: this.pieces, piece: draggedPiece, index: index }));
 
     if (index > -1) {

@@ -118,15 +118,8 @@ export class MoveExecutionService {
         move.piece.position = move.to;
         this.boardService.addPiece(move.piece);
 
-        let capturedPiecePos: Position = {
-          row: move.piece.color === Color.WHITE ? move.to.row - 1 : move.to.row + 1,
-          column: move.to.column
-        }
-
-        let pieceOnDropPos = this.boardService.getPieceOnPos(capturedPiecePos);
-        if (pieceOnDropPos !== undefined) {
-          move.capturedPiece = pieceOnDropPos;
-          this.boardService.removePiece(pieceOnDropPos);
+        if (move.capturedPiece !== undefined) {
+          this.boardService.removePiece(move.capturedPiece);
         }
       }
       else {
@@ -150,10 +143,9 @@ export class MoveExecutionService {
   private capturePiece(move: Move) {
     console.log("capturePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
-    let pieceOnDropPos = this.boardService.getPieceOnPos(move.to);
-    if (pieceOnDropPos !== undefined) {
-      move.capturedPiece = pieceOnDropPos;
-      this.boardService.removePiece(pieceOnDropPos);
+
+    if (move.capturedPiece !== undefined) {
+      this.boardService.removePiece(move.capturedPiece);
     }
     move.piece.position = move.to;
     this.boardService.addPiece(move.piece);
