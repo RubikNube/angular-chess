@@ -25,10 +25,6 @@ export class MoveExecutionService {
     })
   }
 
-  getMoveCount(startingColor: Color, index: number): number {
-    return 1;
-  }
-
   public getAttackedSquares(colorOfPieces: Color): Position[] {
     return colorOfPieces === Color.WHITE ? this.attackedSquaresFromWhite : this.attackedSquaresFromBlack;
   }
@@ -113,18 +109,7 @@ export class MoveExecutionService {
       this.movePiece(move);
     }
     else { // capture
-      if (move.isEnPassant) {
-        this.boardService.removePiece(move.piece);
-        move.piece.position = move.to;
-        this.boardService.addPiece(move.piece);
-
-        if (move.capturedPiece !== undefined) {
-          this.boardService.removePiece(move.capturedPiece);
-        }
-      }
-      else {
         this.capturePiece(move);
-      }
     }
 
     this.finishMove(move);
