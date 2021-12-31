@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CastleRights, Color, Position } from '../types/board.t';
+import { CastleRights, Color, Position, Result } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -29,12 +29,25 @@ export class ChessBoardService {
   enPassantSquaresSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   enPassantSquares$: Observable<Position[]> = this.enPassantSquaresSource.asObservable();
 
+  result: Result = Result.UNKNOWN;
+
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
 
 
   constructor(public highlightingService: HighlightingService,
     public moveHistoryService: MoveHistoryService) {
+  }
+
+  public getKing(color: Color): Piece {
+    let king = this.pieces.find(p => p.color === color && p.type === PieceType.KING);
+
+    if (king !== undefined) {
+      return king;
+    }
+    else {
+      throw Error("No king existing with color " + color);
+    }
   }
 
   public clearEnPassantSquares(): void {

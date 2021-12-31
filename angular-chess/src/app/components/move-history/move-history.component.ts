@@ -32,12 +32,12 @@ export class MoveHistoryComponent implements OnInit {
     } else if (move?.isLongCastle) {
       return "O-O-O";
     } else {
-      return PieceUtils.getSymbol(move?.piece.type, move?.piece.color) + PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move) + this.getCheckRepresentation(move);
+      return PieceUtils.getSymbol(move?.piece.type, move?.piece.color) + PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move) + this.getCheckOrMateRepresentation(move);
     }
 
   }
-  getCheckRepresentation(move: Move): string {
-    return move.isCheck ? " +" : "";
+  getCheckOrMateRepresentation(move: Move): string {
+    return move.isCheck ? move.isMate ? "#" : " +" : "";
   }
 
   getMoveDelimiter(move: Move): string {

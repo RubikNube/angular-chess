@@ -8,6 +8,10 @@ export default class PieceUtils {
         return a.color === b.color && a.type === b.type && PositionUtils.positionEquals(a.position, b.position);
     }
 
+    public static getOpposedColor(color: Color) {
+        return color === Color.WHITE ? Color.BLACK : Color.WHITE;
+    }
+
     public static getSymbol(type: PieceType, color: Color): string {
         if (color === Color.WHITE) {
             switch (type) {

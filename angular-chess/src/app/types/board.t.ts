@@ -25,3 +25,10 @@ export type CastleRights = {
     canShortCastle: boolean,
     canLongCastle: boolean
 }
+
+export enum Result {
+    UNKNOWN = "UNKNOWN",
+    REMIS = "REMIS",
+    WHITE_WIN = "WHITE_WIN",
+    BLACK_WIN = "BLACK_WIN"
+}

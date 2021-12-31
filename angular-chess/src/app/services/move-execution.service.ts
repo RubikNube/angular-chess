@@ -3,6 +3,7 @@ import { BehaviorSubject, filter, map, Observable, throwIfEmpty } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import { FullMove, Move, PieceType } from '../types/pieces.t';
 import MoveHistoryUtils from '../utils/move.history.utils';
+import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
@@ -115,6 +116,17 @@ export class MoveExecutionService {
     this.finishMove(move);
   }
 
+  isMate(move: Move): boolean {
+    let opposedKing = this.boardService.getKing(PieceUtils.getOpposedColor(move.piece.color));
+
+    let validMoves = this.moveGenerationService.getValidMoves(opposedKing);
+    let result = this.moveGenerationService.getValidMoves(opposedKing).length === 0;
+
+    console.log("isMate: " + JSON.stringify(move) + ", result: " + result + ", validMoves: " + JSON.stringify(validMoves));
+
+    return result;
+  }
+
   private finishMove(move: Move) {
     if (!(move.isShortCastle || move.isLongCastle)) {
       this.movePiece(move);
@@ -123,6 +135,11 @@ export class MoveExecutionService {
     this.boardService.togglePlayerToMove();
 
     this.moveHistoryService.addMoveToHistory(move);
+
+    if (move.isCheck) {
+      move.isMate = this.isMate(move);
+    }
+    
     if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
       this.boardService.clearEnPassantSquares();
     }
@@ -143,6 +160,13 @@ export class MoveExecutionService {
     console.log("movePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
     move.piece.position = move.to;
+    this.boardService.addPiece(move.piece);
+  }
+
+  private unmovePiece(move: Move) {
+    console.log("movePiece: " + JSON.stringify(move));
+    this.boardService.removePiece(move.piece);
+    move.piece.position = move.from;
     this.boardService.addPiece(move.piece);
   }
 

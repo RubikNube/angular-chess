@@ -23,7 +23,8 @@ export type Move = {
     isEnPassant?: boolean;
     isShortCastle?: boolean;
     isLongCastle?: boolean;
-    isCheck?:boolean
+    isCheck?: boolean;
+    isMate?: boolean;
 }
 
 export type FullMove = {
