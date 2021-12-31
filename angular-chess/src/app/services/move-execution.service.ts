@@ -117,14 +117,28 @@ export class MoveExecutionService {
   }
 
   isMate(move: Move): boolean {
+    let opposedColor: Color = PieceUtils.getOpposedColor(move.piece.color);
     let opposedKing = this.boardService.getKing(PieceUtils.getOpposedColor(move.piece.color));
 
     let validMoves = this.moveGenerationService.getValidMoves(opposedKing);
-    let result = this.moveGenerationService.getValidMoves(opposedKing).length === 0;
+    let hasKingEscapeSquares = this.moveGenerationService.getValidMoves(opposedKing).length > 0;
 
-    console.log("isMate: " + JSON.stringify(move) + ", result: " + result + ", validMoves: " + JSON.stringify(validMoves));
+    console.log("isMate: " + JSON.stringify(move) + ", hasKingEscapeSquares: " + hasKingEscapeSquares + ", validMoves: " + JSON.stringify(validMoves));
 
-    return result;
+    if (hasKingEscapeSquares) {
+      return false;
+    }
+    else {
+      // check if piece can be captured
+      let attackedSquares = this.boardService.getAttackedSquares(opposedColor);
+
+      if (PositionUtils.includes(attackedSquares, move.piece.position)) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
   }
 
   private finishMove(move: Move) {
@@ -139,7 +153,7 @@ export class MoveExecutionService {
     if (move.isCheck) {
       move.isMate = this.isMate(move);
     }
-    
+
     if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
       this.boardService.clearEnPassantSquares();
     }

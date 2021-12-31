@@ -117,6 +117,15 @@ export class ChessBoardService {
     return this.attackedSquaresFromBlack$;
   }
 
+  public getAttackedSquares(color: Color): Position[] {
+    if (color === Color.WHITE) {
+      return this.attackedSquaresFromWhiteSource.getValue();
+    }
+    else {
+      return this.attackedSquaresFromBlackSource.getValue();
+    }
+  }
+
   public getAttackedSquaresFromBlack(): Position[] {
     return this.attackedSquaresFromBlackSource.getValue();
   }
