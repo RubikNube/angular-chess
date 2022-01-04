@@ -1,3 +1,13 @@
+import { Piece } from "./pieces.t"
+
+export type Board = {
+    pieces: Piece[];
+    whiteCastleRights: CastleRights;
+    blackCastleRights: CastleRights;
+    moveNumber?: number;
+    enPassantSquare?: Position;
+}
+
 export enum Color {
     WHITE = "WHITE",
     BLACK = "BLACK"

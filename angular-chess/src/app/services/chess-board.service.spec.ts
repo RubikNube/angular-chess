@@ -38,7 +38,7 @@ describe('removePiece', () => {
 
     service.removePiece(pieceToRemove);
 
-    expect(service.pieces.length).toEqual(31);
+    expect(service.getBoard().pieces.length).toEqual(31);
   });
 });
 
@@ -52,12 +52,12 @@ describe('importFen', () => {
 
   it('should empty the board for empty fen', () => {
     service.importFen("8/8/8//8/8/8/8/8");
-    expect(service.pieces).toEqual([]);
+    expect(service.getBoard().pieces).toEqual([]);
   });
 
   it('should load start FEN', () => {
     service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-    expect(service.pieces.sort(comparePositions())).toEqual([
+    expect(service.getBoard().pieces.sort(comparePositions())).toEqual([
       { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 1 } },
       { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 2 } },
       { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 3 } },

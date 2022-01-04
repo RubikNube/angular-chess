@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CastleRights, Color, Position, Result } from '../types/board.t';
+import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -11,7 +11,13 @@ import { MoveHistoryService } from './move-history.service';
   providedIn: 'root'
 })
 export class ChessBoardService {
-  pieces: Piece[] = [];
+  boardSource: BehaviorSubject<Board> = new BehaviorSubject<Board>({
+    pieces: [],
+    whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
+    blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true }
+  });
+  board$: Observable<Board> = this.boardSource.asObservable();
+
   attackedSquaresFromBlackSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlackSource.asObservable();
   attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
@@ -39,8 +45,16 @@ export class ChessBoardService {
     public moveHistoryService: MoveHistoryService) {
   }
 
+  public getBoard$(): Observable<Board> {
+    return this.board$;
+  }
+
+  public getBoard(): Board {
+    return this.boardSource.getValue();
+  }
+
   public getKing(color: Color): Piece {
-    let king = this.pieces.find(p => p.color === color && p.type === PieceType.KING);
+    let king = this.boardSource.getValue().pieces.find(p => p.color === color && p.type === PieceType.KING);
 
     if (king !== undefined) {
       return king;
@@ -148,14 +162,14 @@ export class ChessBoardService {
   }
 
   public getPieces(): Piece[] {
-    return this.pieces;
+    return this.boardSource.getValue().pieces;
   }
 
   public importFen(newFen: string): void {
     console.log("importFen: " + newFen);
 
     this.moveHistoryService.resetMoveHistory();
-    this.pieces = [];
+    let pieces: Piece[] = [];
 
     let fenSections = newFen.split(' ');
 
@@ -181,13 +195,17 @@ export class ChessBoardService {
 
           console.log("add piece " + JSON.stringify(newPiece))
 
-          this.pieces.push(newPiece);
+          pieces.push(newPiece);
           currentPos++;
         } else {
           console.error("Not a number or a piece char: " + currentChar);
         }
       }
     };
+
+    let currentBoard = this.boardSource.getValue();
+    currentBoard.pieces = pieces;
+    this.boardSource.next(currentBoard);
 
     if (fenSections.length > 1) {
       let playerChar = fenSections[1];
@@ -264,31 +282,37 @@ export class ChessBoardService {
 
 
   getPieceOnPos(pos: Position): Piece | undefined {
-    return this.pieces.find(p => {
+    return this.boardSource.getValue().pieces.find(p => {
       return p.position.row === pos.row
         && p.position.column === pos.column;
     });
   }
 
   addPiece(piece: Piece) {
-    this.pieces.push(piece);
+    let currentBoard = this.boardSource.getValue();
+    currentBoard.pieces.push(piece);
+    this.boardSource.next(currentBoard);
   }
 
   removePiece(draggedPiece: Piece) {
     let index = -1;
+    let currentPieces = this.boardSource.getValue().pieces;
 
-    for (let i = 0; i < this.pieces.length; i++) {
-      const piece = this.pieces[i];
+    for (let i = 0; i < currentPieces.length; i++) {
+      const piece = currentPieces[i];
 
       if (PieceUtils.pieceEquals(piece, draggedPiece)) {
         index = i;
       }
     }
 
-    console.log("removePiece " + JSON.stringify({ pieces: this.pieces, piece: draggedPiece, index: index }));
+    console.log("removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
 
     if (index > -1) {
-      this.pieces.splice(index, 1);
+      currentPieces.splice(index, 1);
+      let currentBoard = this.boardSource.getValue();
+      currentBoard.pieces = currentPieces;
+      this.boardSource.next(currentBoard);
     }
   }
 
