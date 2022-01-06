@@ -24,9 +24,6 @@ export class ChessBoardService {
   attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
 
-  enPassantSquaresSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
-  enPassantSquares$: Observable<Position[]> = this.enPassantSquaresSource.asObservable();
-
   result: Result = Result.UNKNOWN;
 
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
@@ -57,23 +54,31 @@ export class ChessBoardService {
   }
 
   public clearEnPassantSquares(): void {
-    this.enPassantSquaresSource.next([]);
+    let currentBoard: Board = this.boardSource.getValue();
+    currentBoard.enPassantSquare = undefined;
+    this.boardSource.next(currentBoard);
   }
 
-  public setEnPassantSquares(...enPassantSquares: Position[]) {
-    this.enPassantSquaresSource.next(enPassantSquares);
+  public setEnPassantSquares(enPassantSquare: Position) {
+    let currentBoard: Board = this.boardSource.getValue();
+    currentBoard.enPassantSquare = enPassantSquare;
+    this.boardSource.next(currentBoard);
   }
 
   public isEnPassantSquare(position: Position): boolean {
-    return PositionUtils.includes(this.enPassantSquaresSource.getValue(), position);
+    let enPassantSquare = this.boardSource.getValue().enPassantSquare;
+
+    return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
   }
 
-  public getEnPassantSquares(): Position[] {
-    return this.enPassantSquaresSource.getValue();
+  public getEnPassantSquare(): Position | undefined {
+    return this.boardSource.getValue().enPassantSquare;
   }
 
-  public getEnPassantSquares$(): Observable<Position[]> {
-    return this.enPassantSquares$;
+  public getEnPassantSquare$(): Observable<Position | undefined> {
+    return this.boardSource.pipe(map(b => {
+      return b.enPassantSquare;
+    }));
   }
 
   public setCastleRights(castleRights: CastleRights) {

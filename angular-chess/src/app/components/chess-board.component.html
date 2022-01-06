@@ -12,11 +12,6 @@
   class="field color-{{square.highlight}}"
   [style.top.%]="getTopPosition(square.position)"
   [style.left.%]="getLeftPosition(square.position)"></div>
-
-  <div *ngFor="let square of this.boardService.getEnPassantSquares$()|async" 
-  class="ep field color-RED}"
-  [style.top.%]="getTopPosition(square)"
-  [style.left.%]="getLeftPosition(square)"></div>
 </div>
 
 <div class="p-inputgroup board-btn-group">
