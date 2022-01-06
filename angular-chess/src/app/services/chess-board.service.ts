@@ -24,12 +24,6 @@ export class ChessBoardService {
   attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
 
-  whiteCastleRightsSource: BehaviorSubject<CastleRights> = new BehaviorSubject<CastleRights>({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-  whiteCastleRights$: Observable<CastleRights> = this.whiteCastleRightsSource.asObservable();
-
-  blackCastleRightsSource: BehaviorSubject<CastleRights> = new BehaviorSubject<CastleRights>({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
-  blackCastleRights$: Observable<CastleRights> = this.blackCastleRightsSource.asObservable();
-
   enPassantSquaresSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   enPassantSquares$: Observable<Position[]> = this.enPassantSquaresSource.asObservable();
 
@@ -83,29 +77,37 @@ export class ChessBoardService {
   }
 
   public setCastleRights(castleRights: CastleRights) {
+    let currentBoard: Board = this.boardSource.getValue();
+
     if (castleRights.player === Color.WHITE) {
-      return this.whiteCastleRightsSource.next(castleRights);
+      currentBoard.whiteCastleRights = castleRights;
     }
     else {
-      return this.blackCastleRightsSource.next(castleRights);
+      currentBoard.blackCastleRights = castleRights;
     }
+
+    this.boardSource.next(currentBoard);
   }
 
   public getCastleRights(player: Color) {
     if (player === Color.WHITE) {
-      return this.whiteCastleRightsSource.getValue();
+      return this.boardSource.getValue().whiteCastleRights;
     }
     else {
-      return this.blackCastleRightsSource.getValue();
+      return this.boardSource.getValue().blackCastleRights;
     }
   }
 
   public getCastleRights$(player: Color) {
     if (player === Color.WHITE) {
-      return this.whiteCastleRights$;
+      return this.board$.pipe(map(b => {
+        return b.whiteCastleRights;
+      }));
     }
     else {
-      return this.blackCastleRights$;
+      return this.board$.pipe(map(b => {
+        return b.blackCastleRights;
+      }));
     }
   }
 
@@ -217,7 +219,6 @@ export class ChessBoardService {
       currentBoard.playerToMove = playerChar === 'w' ? Color.WHITE : Color.BLACK;
     }
 
-    this.boardSource.next(currentBoard);
 
     if (fenSections.length > 2) {
       let castleFen = fenSections[2];
@@ -248,17 +249,18 @@ export class ChessBoardService {
         }
       }
 
-      this.whiteCastleRightsSource.next(whiteCastleRights);
-      this.blackCastleRightsSource.next(blackCastleRights);
+      currentBoard.whiteCastleRights = whiteCastleRights;
+      currentBoard.blackCastleRights = blackCastleRights;
     }
     else {
-
       let whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
       let blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
-      this.whiteCastleRightsSource.next(whiteCastleRights);
-      this.blackCastleRightsSource.next(blackCastleRights);
+
+      currentBoard.whiteCastleRights = whiteCastleRights;
+      currentBoard.blackCastleRights = blackCastleRights;
     }
 
+    this.boardSource.next(currentBoard);
     this.fenSource.next(newFen);
   }
 
