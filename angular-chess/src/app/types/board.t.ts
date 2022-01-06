@@ -6,7 +6,8 @@ export type Board = {
     blackCastleRights: CastleRights;
     moveNumber?: number;
     enPassantSquare?: Position;
-    playerToMove:Color
+    playerToMove: Color;
+    result: Result;
 }
 
 export enum Color {

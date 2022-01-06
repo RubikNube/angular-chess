@@ -11,12 +11,14 @@ import { MoveHistoryService } from './move-history.service';
   providedIn: 'root'
 })
 export class ChessBoardService {
-  boardSource: BehaviorSubject<Board> = new BehaviorSubject<Board>({
+  initialBoard: Board = {
     pieces: [],
     whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
     blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
-    playerToMove: Color.WHITE
-  });
+    playerToMove: Color.WHITE,
+    result: Result.UNKNOWN,
+  };
+  boardSource: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   board$: Observable<Board> = this.boardSource.asObservable();
 
   attackedSquaresFromBlackSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
@@ -24,11 +26,8 @@ export class ChessBoardService {
   attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
 
-  result: Result = Result.UNKNOWN;
-
   private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
   fen$ = this.fenSource.asObservable();
-
 
   constructor(public highlightingService: HighlightingService,
     public moveHistoryService: MoveHistoryService) {
@@ -215,7 +214,7 @@ export class ChessBoardService {
       }
     };
 
-    let currentBoard: Board = this.boardSource.getValue();
+    let currentBoard: Board = this.initialBoard;
     currentBoard.pieces = pieces;
 
     if (fenSections.length > 1) {
