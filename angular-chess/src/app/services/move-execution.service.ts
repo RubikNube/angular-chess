@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable, throwIfEmpty } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { Board, Color, Position } from '../types/board.t';
 import { FullMove, Move, PieceType } from '../types/pieces.t';
 import MoveHistoryUtils from '../utils/move.history.utils';
 import PieceUtils from '../utils/piece.utils';
@@ -45,7 +45,8 @@ export class MoveExecutionService {
         }
         else {
           if (p.type !== PieceType.PAWN) {
-            this.moveGenerationService.getValidMoves(p)
+            let currentBoard: Board = this.boardService.getBoard();
+            this.moveGenerationService.getValidMoves(currentBoard, p)
               .map(m => m.to).forEach(m => {
                 attackedSquares.add(m);
               });
@@ -119,9 +120,10 @@ export class MoveExecutionService {
   isMate(move: Move): boolean {
     let opposedColor: Color = PieceUtils.getOpposedColor(move.piece.color);
     let opposedKing = this.boardService.getKing(PieceUtils.getOpposedColor(move.piece.color));
+    let currentBoard: Board = this.boardService.getBoard();
 
-    let validMoves = this.moveGenerationService.getValidMoves(opposedKing);
-    let hasKingEscapeSquares = this.moveGenerationService.getValidMoves(opposedKing).length > 0;
+    let validMoves = this.moveGenerationService.getValidMoves(currentBoard, opposedKing);
+    let hasKingEscapeSquares = this.moveGenerationService.getValidMoves(currentBoard, opposedKing).length > 0;
 
     console.log("isMate: " + JSON.stringify(move) + ", hasKingEscapeSquares: " + hasKingEscapeSquares + ", validMoves: " + JSON.stringify(validMoves));
 

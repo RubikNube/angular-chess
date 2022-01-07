@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color, Position } from '../types/board.t';
+import { Board, Color, Position } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
@@ -39,7 +39,8 @@ export class MoveGenerationService {
   }
 
   getExecutableMove(piece: Piece, dropPos: Position): Move | undefined {
-    let move = this.getValidMoves(piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+    let currentBoard: Board = this.boardService.getBoard();
+    let move = this.getValidMoves(currentBoard, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
     if (move !== undefined) {
       return move;
     }
@@ -48,7 +49,7 @@ export class MoveGenerationService {
     }
   }
 
-  getValidMoves(piece: Piece): Move[] {
+  getValidMoves(board: Board, piece: Piece): Move[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
     // normalize position white <-> black
     let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);

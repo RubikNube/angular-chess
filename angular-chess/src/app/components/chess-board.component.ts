@@ -4,7 +4,7 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { HighlightColor, Position } from '../types/board.t';
+import { Board, HighlightColor, Position } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
 
 @Component({
@@ -43,8 +43,9 @@ export class ChessBoardComponent implements OnInit {
   dragStart(e: MouseEvent, c: any) {
     this.dragPos = this.positioningService.getMousePosition(e);
     this.grabbedPiece = this.boardService.getPieceOnPos(this.dragPos);
+    let currentBoard: Board = this.boardService.getBoard();
     if (this.grabbedPiece !== undefined) {
-      let validSquares = this.moveGenerationService.getValidMoves(this.grabbedPiece).map(m => {
+      let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.GREEN
