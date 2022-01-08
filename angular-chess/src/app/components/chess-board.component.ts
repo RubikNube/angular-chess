@@ -6,6 +6,7 @@ import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, HighlightColor, Position } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
+import PositionUtils from '../utils/position.utils';
 
 @Component({
   selector: 'app-chess-board',
@@ -42,8 +43,8 @@ export class ChessBoardComponent implements OnInit {
 
   dragStart(e: MouseEvent, c: any) {
     this.dragPos = this.positioningService.getMousePosition(e);
-    this.grabbedPiece = this.boardService.getPieceOnPos(this.dragPos);
     let currentBoard: Board = this.boardService.getBoard();
+    this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
     if (this.grabbedPiece !== undefined) {
       let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece).map(m => {
         return {
@@ -52,7 +53,7 @@ export class ChessBoardComponent implements OnInit {
         }
       });
 
-      let getValidCaptures = this.moveGenerationService.getValidCaptures(this.grabbedPiece).map(m => {
+      let getValidCaptures = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED

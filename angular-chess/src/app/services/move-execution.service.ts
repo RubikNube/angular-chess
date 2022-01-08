@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable, throwIfEmpty } from 'rxjs';
 import { Board, Color, Position } from '../types/board.t';
 import { FullMove, Move, PieceType } from '../types/pieces.t';
+import BoardUtils from '../utils/board.utils';
 import MoveHistoryUtils from '../utils/move.history.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -21,49 +22,14 @@ export class MoveExecutionService {
     public moveHistoryService: MoveHistoryService) {
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
-      boardService.setAttackedSquaresFromBlack(this.calculateAttackedSquares(Color.BLACK));
-      boardService.setAttackedSquaresFromWhite(this.calculateAttackedSquares(Color.WHITE));
+      let board = boardService.getBoard();
+      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK));
+      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE));
     })
   }
 
   public getAttackedSquares(colorOfPieces: Color): Position[] {
     return colorOfPieces === Color.WHITE ? this.attackedSquaresFromWhite : this.attackedSquaresFromBlack;
-  }
-
-  private calculateAttackedSquares(colorOfPieces: Color): Position[] {
-    let attackedSquares: Set<Position> = new Set<Position>();
-
-    this.boardService.getPieces()
-      .filter(p => p.color === colorOfPieces)
-      .forEach(p => {
-        if (p.type === PieceType.KING) {
-          this.moveGenerationService.getSurroundingSquares(p)
-            .filter(p => PositionUtils.isOnBoard(p))
-            .forEach(m => {
-              attackedSquares.add(m);
-            })
-        }
-        else {
-          if (p.type !== PieceType.PAWN) {
-            let currentBoard: Board = this.boardService.getBoard();
-            this.moveGenerationService.getValidMoves(currentBoard, p)
-              .map(m => m.to).forEach(m => {
-                attackedSquares.add(m);
-              });
-          }
-
-          this.moveGenerationService.getValidCaptures(p)
-            .map(m => m.to).forEach(m => {
-              attackedSquares.add(m);
-            });
-        }
-      });
-
-    let result = Array.from(attackedSquares.values());
-
-    console.log("calculateAttackedSquares color:" + colorOfPieces + ", result: " + JSON.stringify(result))
-
-    return result;
   }
 
   public executeMove(move: Move) {
@@ -188,7 +154,8 @@ export class MoveExecutionService {
 
   private executeLongCastle(move: Move) {
     console.log("executeLongCastle: " + JSON.stringify(move));
-    let pieceOnSide = this.boardService.getPieceOnPos({ column: 1, row: move.piece.position.row });
+    let currentBoard = this.boardService.getBoard();
+    let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 1, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
       this.movePiece(move);
@@ -198,7 +165,8 @@ export class MoveExecutionService {
 
   private executeShortCastle(move: Move) {
     console.log("executeShortCastle: " + JSON.stringify(move));
-    let pieceOnSide = this.boardService.getPieceOnPos({ column: 8, row: move.piece.position.row });
+    let currentBoard = this.boardService.getBoard();
+    let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
       this.movePiece(move);

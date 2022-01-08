@@ -137,6 +137,18 @@ describe('importFen', () => {
     expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: false });
     expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
   });
+
+  it('should set en passant square to e3', () => {
+    service.importFen("rnbqkbnr/ppppp1pp/8/8/4Pp2/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+
+    expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 3 });
+  });
+
+  it('should set en passant square to e6', () => {
+    service.importFen("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
+
+    expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 6 });
+  });
 });
 
 function comparePositions(): ((a: { color: Color; type: PieceType; position: { row: number; column: number; }; }, b: { color: Color; type: PieceType; position: { row: number; column: number; }; }) => number) | undefined {

@@ -21,15 +21,15 @@ export class MoveGenerationService {
     this.generationHandlers = [
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
-      new MoveGenerationPawnHandler(this, boardService),
+      new MoveGenerationPawnHandler(this),
       new MoveGenerationBishopHandler(this),
       new MoveGenerationQueenHandler(this),
       new MoveGenerationKingHandler(this, boardService)
     ]
   }
 
-  public isCheck(move: Move): boolean {
-    let validCaptures = this.getValidCaptures({
+  public isCheck(board: Board, move: Move): boolean {
+    let validCaptures = this.getValidCaptures(board, {
       type: move.piece.type,
       color: move.piece.color,
       position: move.to
@@ -45,51 +45,28 @@ export class MoveGenerationService {
       return move;
     }
     else {
-      return this.getValidCaptures(piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+      return this.getValidCaptures(currentBoard, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
     }
   }
 
   getValidMoves(board: Board, piece: Piece): Move[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
-    // normalize position white <-> black
-    let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
+
     let moves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
-      moves = matchingHandler.getMoves({ type: piece.type, color: piece.color, position: relativePosition });
+      moves = matchingHandler.getMoves(piece, board);
     }
 
     return moves
       .filter(m => PositionUtils.isOnBoard(m.to))
-      .filter(m => this.boardService.isFree(m.to, piece.color))
+      .filter(m => PositionUtils.isFree(board, m.to))
       .map(m => {
-        m.piece.position = piece.position;
-        m.from = piece.position;
-        m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
-        m.isCheck = this.isCheck(m);
+        m.isCheck = this.isCheck(board, m);
         return m;
       });
-  }
-
-  getSurroundingSquares(piece: Piece): Position[] {
-    let fieldsToMove: Position[] = [];
-
-    for (let r: number = -1; r <= 1; r++) {
-      for (let c: number = -1; c <= 1; c++) {
-        if (!(r == 0 && c == 0)) {
-          let field: Position = {
-            row: piece.position.row + r,
-            column: piece.position.column + c
-          }
-
-          fieldsToMove.push(field);
-        }
-      }
-    }
-
-    return fieldsToMove;
   }
 
   getFreeFrontSquares(piece: Piece, maxSquares: number): Position[] {
@@ -101,7 +78,9 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -121,7 +100,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -141,7 +121,8 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -161,7 +142,8 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -181,7 +163,8 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -201,7 +184,8 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -221,7 +205,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -241,7 +226,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
       }
       else {
@@ -252,42 +238,39 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  getValidCaptures(piece: Piece, dontSearchForCheck?: boolean): Move[] {
+  public getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
     console.log("getValidCaptures: " + JSON.stringify(piece));
-    let relativePosition: Position = PositionUtils.getRelativePosition(piece.position, piece.color);
     let captureMoves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
       console.log("getValidMoves: matchingHandler: " + matchingHandler)
-      captureMoves = matchingHandler.getCaptures({ type: piece.type, color: piece.color, position: relativePosition });
+      captureMoves = matchingHandler.getCaptures(piece, board);
     }
     else {
       console.log("getValidMoves: found no matching handler")
     }
 
     return captureMoves
-      .filter(m => this.isOppositeColoredPieceOnPos(m.to, piece.color) || m.isEnPassant)
+      .filter(m => this.isOppositeColoredPieceOnPos(board, m.to, piece.color) || m.isEnPassant)
       .map(m => {
         m.piece.position = piece.position;
-        m.from = piece.position;
-        let positionToMove = PositionUtils.getAbsolutePosition(m.to, piece.color);
-        m.to = PositionUtils.getAbsolutePosition(m.to, piece.color);
+
         if (!m.isEnPassant) {
-          m.capturedPiece = this.boardService.getPieceOnPos(positionToMove);
+          m.capturedPiece = PositionUtils.getPieceOnPos(board, m.to);
         } else {
           let capturedPiecePos: Position = {
             row: m.piece.color === Color.WHITE ? m.to.row - 1 : m.to.row + 1,
             column: m.to.column
           }
 
-          m.capturedPiece = this.boardService.getPieceOnPos(capturedPiecePos);
+          m.capturedPiece = PositionUtils.getPieceOnPos(board, capturedPiecePos);
 
         }
 
         if (!dontSearchForCheck) {
-          m.isCheck = this.isCheck(m);
+          m.isCheck = this.isCheck(board, m);
         }
         return m;
       });
@@ -302,7 +285,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -320,7 +304,8 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -339,7 +324,8 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -357,7 +343,8 @@ export class MoveGenerationService {
         row: piece.position.row
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -375,7 +362,8 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -393,7 +381,8 @@ export class MoveGenerationService {
         row: piece.position.row + index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -411,7 +400,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -429,7 +419,8 @@ export class MoveGenerationService {
         row: piece.position.row - index
       };
 
-      if (!this.boardService.isFree(squareToAdd, piece.color)) {
+      let board = this.boardService.getBoard();
+      if (!PositionUtils.isFree(board, squareToAdd)) {
         quaresToMove.push(squareToAdd);
         break;
       }
@@ -438,9 +429,8 @@ export class MoveGenerationService {
     return quaresToMove;
   }
 
-  private isOppositeColoredPieceOnPos(position: Position, color: Color): boolean {
-    let absPos = PositionUtils.getAbsolutePosition(position, color);
-    let pieceOnPos = this.boardService.getPieceOnPos(absPos);
+  private isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
+    let pieceOnPos = PositionUtils.getPieceOnPos(board, position);
 
     if (pieceOnPos !== undefined) {
       return pieceOnPos.color !== color;

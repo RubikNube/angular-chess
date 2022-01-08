@@ -1,5 +1,7 @@
-import { Color, Position } from "../types/board.t";
+import { Board, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
+import BoardUtils from "../utils/board.utils";
+import PieceUtils from "../utils/piece.utils";
 import PositionUtils from "../utils/position.utils";
 import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -16,11 +18,11 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return piece.type === PieceType.KING;
     }
 
-    getMoves(piece: Piece): Move[] {
-        let squares: Move[] = [];
+    getMoves(piece: Piece, board: Board): Move[] {
+        let moves: Move[] = [];
 
         // surrounding squares:
-        squares = this.generationService.getSurroundingSquares(piece)
+        moves = PositionUtils.getSurroundingSquares(piece)
             .map(p => {
                 return {
                     piece: piece,
@@ -32,20 +34,23 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         // castle
         let castleRights = this.boardService.getCastleRights(piece.color);
 
+        let currentBoard = this.boardService.getBoard();
+        let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(this.generationService, board, PieceUtils.getOpposedColor(piece.color));
         // kingside castle
         if (castleRights.canShortCastle) {
             let squareBeforeCastle = {
                 row: piece.position.row,
-                column: piece.color === Color.WHITE ? piece.position.column + 1 : piece.position.column - 1
+                column: piece.position.column + 1
             }
 
             let castleSquare = {
                 row: piece.position.row,
-                column: piece.color === Color.WHITE ? piece.position.column + 2 : piece.position.column - 2
+                column: piece.position.column + 2
             }
 
-            if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
-                squares.push({
+            if (PositionUtils.isFree(currentBoard, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+                && PositionUtils.isFree(currentBoard, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+                moves.push({
                     piece: piece,
                     from: piece.position,
                     to: castleSquare,
@@ -58,16 +63,17 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         if (castleRights.canLongCastle) {
             let squareBeforeCastle = {
                 row: piece.position.row,
-                column: piece.color === Color.WHITE ? piece.position.column - 1 : piece.position.column + 1
+                column: piece.position.column - 1
             }
 
             let castleSquare = {
                 row: piece.position.row,
-                column: piece.color === Color.WHITE ? piece.position.column - 2 : piece.position.column + 2
+                column: piece.position.column - 2
             }
 
-            if (this.boardService.isFree(squareBeforeCastle, piece.color) && this.boardService.isFree(castleSquare, piece.color)) {
-                squares.push({
+            if (PositionUtils.isFree(currentBoard, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+                && PositionUtils.isFree(currentBoard, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+                moves.push({
                     piece: piece,
                     from: piece.position,
                     to: castleSquare,
@@ -76,20 +82,12 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             }
         }
 
-        return this.filterOutAttackedSquares(piece, squares);
+        return this.filterOutAttackedSquares(piece, board, moves, attackedSquares);
     }
 
-    private filterOutAttackedSquares(piece: Piece, moves: Move[]): Move[] {
-        let attackedSquares: Position[];
-        if (piece.color === Color.WHITE) {
-            attackedSquares = this.boardService.getAttackedSquaresFromBlack();
-        }
-        else {
-            attackedSquares = this.boardService.getAttackedSquaresFromWhite();
-        }
-
+    private filterOutAttackedSquares(piece: Piece, board: Board, moves: Move[], attackedSquares: Position[]): Move[] {
         let filteredMoves: Move[] = moves.filter(move => {
-            return !PositionUtils.includes(attackedSquares, PositionUtils.getAbsolutePosition(move.to, piece.color));
+            return !PositionUtils.includes(attackedSquares, move.to);
         });
 
         console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: moves, filteredSquares: filteredMoves, squaresThatOpponentAttacks: attackedSquares }));
@@ -102,7 +100,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     getCaptures(piece: Piece): Move[] {
-        return this.generationService.getSurroundingSquares(piece).map(p => {
+        return PositionUtils.getSurroundingSquares(piece).map(p => {
             return {
                 piece: piece,
                 from: piece.position,
