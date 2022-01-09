@@ -134,18 +134,23 @@ export default class BoardUtils {
         return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
     }
 
-    public static calculateAttackedSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color): Position[] {
+    public static calculateAttackedSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
         let attackedSquares: Set<Position> = new Set<Position>();
 
         board.pieces
             .filter(p => p.color === colorOfPieces)
             .forEach(p => {
                 if (p.type === PieceType.KING) {
-                    PositionUtils.getSurroundingSquares(p)
-                        .filter(p => PositionUtils.isOnBoard(p))
-                        .forEach(m => {
-                            attackedSquares.add(m);
-                        })
+                    if (includeKing !== undefined && !includeKing) {
+                        return;
+                    }
+                    else {
+                        PositionUtils.getSurroundingSquares(p)
+                            .filter(p => PositionUtils.isOnBoard(p))
+                            .forEach(m => {
+                                attackedSquares.add(m);
+                            })
+                    }
                 }
                 else {
                     if (p.type !== PieceType.PAWN) {
@@ -199,6 +204,9 @@ export default class BoardUtils {
                         return false;
                     }
                 }
+                else if (BoardUtils.canBeBlocked(moveGenerationService, board, attackingMoves[0], king)) {
+                    return false;
+                }
                 else {
                     return true;
                 }
@@ -211,6 +219,80 @@ export default class BoardUtils {
             return false;
         }
     }
+
+    public static canBeBlocked(moveGenerationService: MoveGenerationService, board: Board, move: Move, king: Piece) {
+        if (move.piece.type === PieceType.PAWN || move.piece.type === PieceType.KNIGHT) {
+            return false;
+        }
+        else {
+            let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
+
+            if (king.position.column === move.from.column) {
+                return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
+            } else if (king.position.row === move.from.row) {
+                return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
+            }
+
+            return false;
+        }
+    }
+
+    private static canBlockSameColumn(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+        if (kingPos.row < attackingPos.row) {
+            for (let index = 0; index < attackingPos.row - kingPos.row; index++) {
+                let newPos: Position = {
+                    column: kingPos.column,
+                    row: kingPos.row + 1 + index
+                }
+
+                if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                    return true;
+                }
+            }
+        } else {
+            for (let index = 0; index < kingPos.row - attackingPos.row; index++) {
+                let newPos: Position = {
+                    column: kingPos.column,
+                    row: attackingPos.row - 1 - index
+                }
+
+                if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static canBlockSameRow(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+        if (kingPos.column < attackingPos.column) {
+            for (let index = 0; index < attackingPos.column - kingPos.column; index++) {
+                let newPos: Position = {
+                    column: kingPos.column + 1 + index,
+                    row: kingPos.row
+                }
+
+                if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                    return true;
+                }
+            }
+        } else {
+            for (let index = 0; index < kingPos.column - attackingPos.column; index++) {
+                let newPos: Position = {
+                    column: kingPos.column - 1 - index,
+                    row: attackingPos.row
+                }
+
+                if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     public static isProtected(moveGenerationService: MoveGenerationService, board: Board, piece: Piece) {
         let copiedBoard: Board = {
