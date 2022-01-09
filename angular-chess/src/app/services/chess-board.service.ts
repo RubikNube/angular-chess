@@ -42,17 +42,6 @@ export class ChessBoardService {
     return this.boardSource.getValue();
   }
 
-  public getKing(color: Color): Piece {
-    let king = this.boardSource.getValue().pieces.find(p => p.color === color && p.type === PieceType.KING);
-
-    if (king !== undefined) {
-      return king;
-    }
-    else {
-      throw Error("No king existing with color " + color);
-    }
-  }
-
   public clearEnPassantSquares(): void {
     let currentBoard: Board = this.boardSource.getValue();
     currentBoard.enPassantSquare = undefined;

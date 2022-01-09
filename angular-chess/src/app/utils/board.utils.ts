@@ -1,6 +1,7 @@
 import { MoveGenerationService } from "../services/move-generation.service";
 import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
+import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
 export default class BoardUtils {
@@ -167,4 +168,328 @@ export default class BoardUtils {
 
         return result;
     }
+
+    public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
+        let king: Piece = BoardUtils.getKing(board, board.playerToMove);
+        let validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king);
+        let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
+
+        return validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position);
+    }
+
+    private static getKing(board: Board, color: Color): Piece {
+        let king = board.pieces.find(p => p.color === color && p.type === PieceType.KING);
+
+        if (king !== undefined) {
+            return king;
+        }
+        else {
+            throw Error("No king existing with color " + color);
+        }
+    }
+
+    public static getFreeFrontSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column,
+            row: piece.position.row + index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeBackSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column,
+            row: piece.position.row - index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeFrontLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row + index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeFrontRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row + index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeBackRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row - index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getFreeBackLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row - index
+          };
+    
+          if (PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+          }
+          else {
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+
+      public static getOccupiedBackSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column,
+            row: piece.position.row - index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getOccupiedFrontSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column,
+            row: piece.position.row + index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+    
+      public static getOccupiedLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getOccupiedRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static  getOccupiedFrontLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row + index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getOccupiedFrontRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row + index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getOccupiedBackRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column + index,
+            row: piece.position.row - index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
+    
+      public static getOccupiedBackLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
+        let squaresToMove: Position[] = [];
+    
+        for (let index = 1; index <= maxSquares; index++) {
+          let squareToAdd = {
+            column: piece.position.column - index,
+            row: piece.position.row - index
+          };
+    
+          if (!PositionUtils.isFree(board, squareToAdd)) {
+            squaresToMove.push(squareToAdd);
+            break;
+          }
+        }
+    
+        return squaresToMove;
+      }
 }

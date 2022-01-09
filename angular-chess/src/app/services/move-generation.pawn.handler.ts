@@ -16,11 +16,11 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     return piece.type === PieceType.PAWN;;
   }
 
-  getMoves(piece: Piece): Move[] {
+  getMoves(piece: Piece, board: Board): Move[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
     if (piece.color === Color.WHITE) {
       if (piece.position.row === 2) {
-        return this.generationService.getFreeFrontSquares(piece, 2)
+        return BoardUtils.getFreeFrontSquares(board, piece, 2)
           .map(p => {
             return {
               piece: piece,
@@ -30,7 +30,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
           });
       }
       else {
-        return this.generationService.getFreeFrontSquares(piece, 1)
+        return BoardUtils.getFreeFrontSquares(board, piece, 1)
           .map(p => {
             return {
               piece: piece,
@@ -42,7 +42,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     }
     else {
       if (piece.position.row === 7) {
-        return this.generationService.getFreeBackSquares(piece, 2)
+        return BoardUtils.getFreeBackSquares(board, piece, 2)
           .map(p => {
             return {
               piece: piece,
@@ -52,7 +52,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
           });
       }
       else {
-        return this.generationService.getFreeBackSquares(piece, 1)
+        return BoardUtils.getFreeBackSquares(board, piece, 1)
           .map(p => {
             return {
               piece: piece,

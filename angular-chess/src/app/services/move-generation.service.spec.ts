@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Board, Color } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import PositionUtils from '../utils/position.utils';
 
 import { MoveGenerationService } from './move-generation.service';
 
@@ -117,6 +118,30 @@ describe('MoveGenerationService', () => {
     })
   });
 
+  it('should generate black queen captures', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/7q/8/7P/4K3 w - - 0 1");
+    let queen: Piece = { type: PieceType.QUEEN, position: { column: 8, row: 4 }, color: Color.BLACK };
+    let pp = PositionUtils.getPieceOnPos(board, { column: 8, row: 4 });
+    let validCaptures = service.getValidCaptures(board, queen);
+
+    expect(validCaptures.length).toEqual(2);
+    expect(validCaptures).toContain({
+      piece: queen,
+      capturedPiece: { type: PieceType.PAWN, position: { column: 8, row: 2 }, color: Color.WHITE },
+      from: { column: 8, row: 4 },
+      to: { column: 8, row: 2 },
+      isCheck: false
+    })
+
+    expect(validCaptures).toContain({
+      piece: queen,
+      capturedPiece: { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE },
+      from: { column: 8, row: 4 },
+      to: { column: 5, row: 1 },
+      isCheck: false
+    })
+  });
+
   it('should generate white king short castle', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
@@ -228,4 +253,26 @@ describe('MoveGenerationService', () => {
       isLongCastle: true
     });
   });
+});
+
+describe('isMate', () => {
+  let service: MoveGenerationService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(MoveGenerationService);
+  });
+
+  it('should return false if king is not attacked', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeFalse();
+  });
+
+  it('should return true if king has no escape squares, attacking piece cant be captured and no piece can block the check', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeTrue();
+  });
+
 });
