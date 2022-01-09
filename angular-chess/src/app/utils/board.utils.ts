@@ -213,11 +213,19 @@ export default class BoardUtils {
     }
 
     public static isProtected(moveGenerationService: MoveGenerationService, board: Board, piece: Piece) {
-        board.pieces = board.pieces.filter(p => !PieceUtils.pieceEquals(p, piece));
+        let copiedBoard: Board = {
+            blackCastleRights: board.blackCastleRights,
+            pieces: board.pieces.filter(p => !PieceUtils.pieceEquals(p, piece)),
+            whiteCastleRights: board.whiteCastleRights,
+            playerToMove: board.playerToMove,
+            result: board.result,
+            enPassantSquare: board.enPassantSquare,
+            moveNumber: board.moveNumber
+        };
 
-        let foundPos: Position | undefined = board.pieces
+        let foundPos: Position | undefined = copiedBoard.pieces
             .filter(p => p.color === piece.color)
-            .flatMap(p => moveGenerationService.getValidMoves(board, p).map(m => m.to))
+            .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p).map(m => m.to))
             .find(p => PositionUtils.positionEquals(p, piece.position));
 
         return foundPos !== undefined;
