@@ -275,4 +275,21 @@ describe('isMate', () => {
     expect(service.isMate(board)).toBeTrue();
   });
 
+  it('should return false if check giving piece can be captured', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppp1ppp/8/4p3/5PPq/5N2/PPPPP2P/RNBQKB1R w KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeFalse();
+  });
+
+  it('should return true if check giving piece cant be captured by the king because its protected', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnb1k1nr/pppppppp/8/2b5/8/8/PPPPPqPP/RNBQKBNR w KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeTrue();
+  });
+
+  it('should return false if check giving piece can be captured by the king', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/8/8/8/PPPPPqPP/RNBQKBNR w KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeFalse();
+  });
 });

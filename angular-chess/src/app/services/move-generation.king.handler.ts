@@ -34,7 +34,6 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         // castle
         let castleRights = this.boardService.getCastleRights(piece.color);
 
-        let currentBoard = this.boardService.getBoard();
         let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(this.generationService, board, PieceUtils.getOpposedColor(piece.color));
         // kingside castle
         if (castleRights.canShortCastle) {
@@ -48,8 +47,8 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
                 column: piece.position.column + 2
             }
 
-            if (PositionUtils.isFree(currentBoard, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
-                && PositionUtils.isFree(currentBoard, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+            if (PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+                && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
                 moves.push({
                     piece: piece,
                     from: piece.position,
@@ -71,8 +70,8 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
                 column: piece.position.column - 2
             }
 
-            if (PositionUtils.isFree(currentBoard, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
-                && PositionUtils.isFree(currentBoard, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+            if (PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+                && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
                 moves.push({
                     piece: piece,
                     from: piece.position,
