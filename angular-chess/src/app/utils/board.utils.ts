@@ -174,6 +174,46 @@ export default class BoardUtils {
         return result;
     }
 
+    public static calculateMoveSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
+        let attackedSquares: Set<Position> = new Set<Position>();
+
+        board.pieces
+            .filter(p => p.color === colorOfPieces)
+            .forEach(p => {
+                if (p.type === PieceType.KING) {
+                    if (includeKing !== undefined && !includeKing) {
+                        return;
+                    }
+                    else {
+                        PositionUtils.getSurroundingSquares(p)
+                            .filter(p => PositionUtils.isOnBoard(p))
+                            .forEach(m => {
+                                attackedSquares.add(m);
+                            })
+                    }
+                }
+                else {
+                    if (p.type === PieceType.PAWN) {
+                        moveGenerationService.getValidMoves(board, p)
+                            .map(m => m.to).forEach(m => {
+                                attackedSquares.add(m);
+                            });
+                    }
+
+                    moveGenerationService.getValidCaptures(board, p)
+                        .map(m => m.to).forEach(m => {
+                            attackedSquares.add(m);
+                        });
+                }
+            });
+
+        let result = Array.from(attackedSquares.values());
+
+        console.log("calculateAttackedSquares color:" + colorOfPieces + ", result: " + JSON.stringify(result))
+
+        return result;
+    }
+
     public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
         let king: Piece = BoardUtils.getKing(board, board.playerToMove);
         let validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king);
@@ -225,12 +265,16 @@ export default class BoardUtils {
             return false;
         }
         else {
-            let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
-
+            
             if (king.position.column === move.from.column) {
+                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
             } else if (king.position.row === move.from.row) {
+                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
+            } else if (king.position.column < move.from.column && king.position.row < move.from.row) {
+                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                return this.canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
 
             return false;
@@ -259,6 +303,21 @@ export default class BoardUtils {
                 if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
                     return true;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    private static canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+        for (let i = 0; i < attackingPos.row - kingPos.row; i++) {
+            let newPos: Position = {
+                column: kingPos.column + 1 + i,
+                row: kingPos.row + 1 + i
+            }
+
+            if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                return true;
             }
         }
 
