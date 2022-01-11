@@ -284,6 +284,10 @@ export default class BoardUtils {
                 let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
+            else if (king.position.column > move.from.column && king.position.row > move.from.row) {
+                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                return this.canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
+            }
 
             return false;
         }
@@ -351,6 +355,21 @@ export default class BoardUtils {
         for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
             let newPos: Position = {
                 column: kingPos.column + 1 + i,
+                row: kingPos.row - 1 - i
+            }
+
+            if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+        for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
+            let newPos: Position = {
+                column: kingPos.column - 1 - i,
                 row: kingPos.row - 1 - i
             }
 
