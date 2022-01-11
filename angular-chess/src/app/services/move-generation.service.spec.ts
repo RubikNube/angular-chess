@@ -334,4 +334,10 @@ describe('isMate', () => {
 
     expect(service.isMate(board)).toBeFalse();
   });
+
+  it('should return false if lower right check giving piece can be blocked', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/ppppp1pp/8/5p1Q/8/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1");
+
+    expect(service.isMate(board)).toBeFalse();
+  });
 });
