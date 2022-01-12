@@ -18,6 +18,14 @@ export default class PositionUtils {
             }
         }
     }
+
+    public static calculateDistance(positionA: Position, positionB: Position): number {
+        let rowDistance: number = Math.abs(positionA.row - positionB.row);
+        let columnDistance: number = Math.abs(positionA.column - positionB.column);
+
+        return Math.max(rowDistance, columnDistance);
+    }
+
     public static isOnBoard(position: Position): boolean {
         return position.row >= 1 && position.row <= 8 && position.column >= 1 && position.column <= 8;
     }
@@ -60,20 +68,20 @@ export default class PositionUtils {
 
     public static getSurroundingSquares(piece: Piece): Position[] {
         let fieldsToMove: Position[] = [];
-    
+
         for (let r: number = -1; r <= 1; r++) {
-          for (let c: number = -1; c <= 1; c++) {
-            if (!(r == 0 && c == 0)) {
-              let field: Position = {
-                row: piece.position.row + r,
-                column: piece.position.column + c
-              }
-    
-              fieldsToMove.push(field);
+            for (let c: number = -1; c <= 1; c++) {
+                if (!(r == 0 && c == 0)) {
+                    let field: Position = {
+                        row: piece.position.row + r,
+                        column: piece.position.column + c
+                    }
+
+                    fieldsToMove.push(field);
+                }
             }
-          }
         }
-    
+
         return fieldsToMove;
-      }
+    }
 }

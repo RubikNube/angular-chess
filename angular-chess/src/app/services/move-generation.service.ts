@@ -39,18 +39,17 @@ export class MoveGenerationService {
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
 
-  getExecutableMove(piece: Piece, dropPos: Position): Move | undefined {
-    let currentBoard: Board = this.boardService.getBoard();
-    let move = this.getValidMoves(currentBoard, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+  getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
+    let move = this.getValidMoves(board, piece, true).find(m => PositionUtils.positionEquals(m.to, dropPos));
     if (move !== undefined) {
       return move;
     }
     else {
-      return this.getValidCaptures(currentBoard, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+      return this.getValidCaptures(board, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
     }
   }
 
-  getValidMoves(board: Board, piece: Piece): Move[] {
+  getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
 
     let moves: Move[] = [];
@@ -65,7 +64,9 @@ export class MoveGenerationService {
       .filter(m => PositionUtils.isOnBoard(m.to))
       .filter(m => PositionUtils.isFree(board, m.to))
       .map(m => {
-        m.isCheck = this.isCheck(board, m);
+        if (shouldCalculateCheck) {
+          m.isCheck = this.isCheck(board, m);
+        }
         return m;
       });
   }

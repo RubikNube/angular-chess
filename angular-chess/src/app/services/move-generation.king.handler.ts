@@ -98,13 +98,15 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return color === Color.WHITE ? Color.BLACK : Color.WHITE
     }
 
-    getCaptures(piece: Piece): Move[] {
-        return PositionUtils.getSurroundingSquares(piece).map(p => {
-            return {
-                piece: piece,
-                from: piece.position,
-                to: p
-            }
-        })
-    }
+    getCaptures(piece: Piece, board: Board): Move[] {
+        return PositionUtils.getSurroundingSquares(piece)
+            .map(p => {
+                return {
+                    piece: piece,
+                    from: piece.position,
+                    to: p
+                }
+            })
+            .filter(m => !BoardUtils.isProtected(this.generationService, board, PositionUtils.getPieceOnPos(board, m.to)))
+    };
 }

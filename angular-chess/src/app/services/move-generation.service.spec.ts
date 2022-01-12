@@ -21,7 +21,7 @@ describe('MoveGenerationService', () => {
   it('should generate white pawn moves for one and two squares', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4k3/4p3/8/8/8/8/4P3/4K3 w - - 0 1");
     let pawn: Piece = { type: PieceType.PAWN, position: { column: 5, row: 2 }, color: Color.WHITE };
-    let validMoves = service.getValidMoves(board, pawn);
+    let validMoves = service.getValidMoves(board, pawn, true);
 
     expect(validMoves.length).toEqual(2);
     expect(validMoves[0]).toEqual({ piece: pawn, from: { column: 5, row: 2 }, to: { column: 5, row: 3 }, isCheck: false })
@@ -31,7 +31,7 @@ describe('MoveGenerationService', () => {
   it('should generate black pawn moves for one and two squares', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4k3/4p3/8/8/8/8/4P3/4K3 b - - 0 1");
     let pawn: Piece = { type: PieceType.PAWN, position: { column: 5, row: 7 }, color: Color.BLACK };
-    let validMoves = service.getValidMoves(board, pawn);
+    let validMoves = service.getValidMoves(board, pawn, true);
 
     expect(validMoves.length).toEqual(2);
     expect(validMoves[0]).toEqual({ piece: pawn, from: { column: 5, row: 7 }, to: { column: 5, row: 6 }, isCheck: false })
@@ -142,10 +142,18 @@ describe('MoveGenerationService', () => {
     })
   });
 
+  it('should not generate king captures for protected squares', () => {
+    let board: Board = BoardUtils.loadBoardFromFen("rnb1k1nr/pppppppp/8/2b5/8/8/PPPPPqPP/RNBQKBNR w KQkq - 0 1");
+    let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
+    let validCaptures = service.getValidCaptures(board, king);
+
+    expect(validCaptures.length).toEqual(0);
+  });
+
   it('should generate white king short castle', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).toContain({
       piece: king,
@@ -159,7 +167,7 @@ describe('MoveGenerationService', () => {
   it('should not generate white king short castle when f1 is attacked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4kr2/8/8/8/8/8/8/R3K2R w KQ - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).not.toContain({
       piece: king,
@@ -173,7 +181,7 @@ describe('MoveGenerationService', () => {
   it('should generate white king long castle', () => {
     let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).toContain({
       piece: king,
@@ -187,7 +195,7 @@ describe('MoveGenerationService', () => {
   it('should not generate white king long castle when d1 is attacked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("3rk3/8/8/8/8/8/8/R3K2R w KQ - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).not.toContain({
       piece: king,
@@ -201,7 +209,7 @@ describe('MoveGenerationService', () => {
   it('should generate black king short castle', () => {
     let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 8 }, color: Color.BLACK };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).toContain({
       piece: king,
@@ -215,7 +223,7 @@ describe('MoveGenerationService', () => {
   it('should generate black king long castle', () => {
     let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 8 }, color: Color.BLACK };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).toContain({
       piece: king,
@@ -229,7 +237,7 @@ describe('MoveGenerationService', () => {
   it('should not generate black king short castle if f8 is attacked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/4KR2 b - - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 8 }, color: Color.BLACK };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).not.toContain({
       piece: king,
@@ -243,7 +251,7 @@ describe('MoveGenerationService', () => {
   it('should not generate black king long castle if d8 is attacked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/3RK3 b - - 0 1");
     let king: Piece = { type: PieceType.KING, position: { column: 5, row: 8 }, color: Color.BLACK };
-    let validMoves = service.getValidMoves(board, king);
+    let validMoves = service.getValidMoves(board, king, true);
 
     expect(validMoves).not.toContain({
       piece: king,
@@ -322,7 +330,7 @@ describe('isMate', () => {
 
     expect(service.isMate(board)).toBeTrue();
   });
-  
+
   it('should return false if upper right check giving piece can be blocked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/8/5P1q/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1");
 
@@ -340,7 +348,7 @@ describe('isMate', () => {
 
     expect(service.isMate(board)).toBeFalse();
   });
-  
+
   it('should return false if lower left check giving piece can be blocked', () => {
     let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/ppp1pppp/8/3p4/Q7/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1");
 

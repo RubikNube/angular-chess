@@ -154,7 +154,7 @@ export default class BoardUtils {
                 }
                 else {
                     if (p.type !== PieceType.PAWN) {
-                        moveGenerationService.getValidMoves(board, p)
+                        moveGenerationService.getValidMoves(board, p, true)
                             .map(m => m.to).forEach(m => {
                                 attackedSquares.add(m);
                             });
@@ -194,7 +194,7 @@ export default class BoardUtils {
                 }
                 else {
                     if (p.type === PieceType.PAWN) {
-                        moveGenerationService.getValidMoves(board, p)
+                        moveGenerationService.getValidMoves(board, p, true)
                             .map(m => m.to).forEach(m => {
                                 attackedSquares.add(m);
                             });
@@ -216,7 +216,7 @@ export default class BoardUtils {
 
     public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
         let king: Piece = BoardUtils.getKing(board, board.playerToMove);
-        let validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king);
+        let validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
         let opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
         let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
 
@@ -232,16 +232,10 @@ export default class BoardUtils {
                     let movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
 
                     if (movesThatCaptureCheckGivingPiece.length === 1) {
-                        let moveThatCaptureCheckGivingPiece: Move = movesThatCaptureCheckGivingPiece[0];
-                        if (moveThatCaptureCheckGivingPiece.piece.type === PieceType.KING) {
-                            return BoardUtils.isProtected(moveGenerationService, board, attackingMoves[0].piece);
-                        }
-                        else {
-                            return false;
-                        }
+                        return false;
                     }
                     else {
-                        return false;
+                        return PositionUtils.calculateDistance(king.position, attackingMoves[0].piece.position) === 1;
                     }
                 }
                 else if (BoardUtils.canBeBlocked(moveGenerationService, board, attackingMoves[0], king)) {
@@ -410,7 +404,11 @@ export default class BoardUtils {
     }
 
 
-    public static isProtected(moveGenerationService: MoveGenerationService, board: Board, piece: Piece) {
+    public static isProtected(moveGenerationService: MoveGenerationService, board: Board, piece: Piece | undefined) {
+        if (piece === undefined) {
+            return false;
+        }
+
         let copiedBoard: Board = {
             blackCastleRights: board.blackCastleRights,
             pieces: board.pieces.filter(p => !PieceUtils.pieceEquals(p, piece)),
@@ -423,10 +421,12 @@ export default class BoardUtils {
 
         let foundPos: Position | undefined = copiedBoard.pieces
             .filter(p => p.color === piece.color)
-            .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p).map(m => m.to))
+            .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p, false).map(m => m.to))
             .find(p => PositionUtils.positionEquals(p, piece.position));
 
-        return foundPos !== undefined;
+        let isProtected = foundPos !== undefined;
+
+        return isProtected;
     }
 
     private static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {

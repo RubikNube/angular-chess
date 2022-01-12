@@ -46,7 +46,7 @@ export class ChessBoardComponent implements OnInit {
     let currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
     if (this.grabbedPiece !== undefined) {
-      let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece).map(m => {
+      let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.GREEN
@@ -71,7 +71,8 @@ export class ChessBoardComponent implements OnInit {
     }
 
     let dropPos: Position = this.positioningService.getMousePosition(e);
-    let executableMove = this.moveGenerationService.getExecutableMove(this.grabbedPiece, dropPos);
+    let currentBoard: Board = this.boardService.getBoard();
+    let executableMove = this.moveGenerationService.getExecutableMove(currentBoard, this.grabbedPiece, dropPos);
 
     if (executableMove !== undefined) {
       this.moveExecutionService.executeMove(executableMove);
