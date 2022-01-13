@@ -1,11 +1,12 @@
 <div class="board">
-  <div *ngFor="let piece of this.boardService.getPieces()" class="piece {{piece.color}}_{{piece.type}} square-{{piece.position.row}}{{piece.position.column}}"
+  <div *ngFor="let piece of this.boardService.getPieces()" class="piece piece-{{piece.color}}"
   [style.top.%]="getTopPosition(piece.position)"
   [style.left.%]="getLeftPosition(piece.position)"
   [style.cursor]="getCursor(piece)"
   pDraggable="piece"
   (onDragStart)="dragStart($event,piece)" 
   (onDragEnd)="dragEnd($event)">
+  {{getPieceChar(piece)}}
   </div>
 
   <div *ngFor="let square of this.highlightingService.getSquares()|async" 

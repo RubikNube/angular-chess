@@ -4,8 +4,9 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, HighlightColor, Position } from '../types/board.t';
-import { Piece } from '../types/pieces.t';
+import { Board, Color, HighlightColor, Position } from '../types/board.t';
+import { Piece, PieceType } from '../types/pieces.t';
+import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -26,6 +27,24 @@ export class ChessBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  public getPieceChar(piece: Piece): string {
+    switch (piece.type) {
+      case PieceType.PAWN:
+        return 'o';
+      case PieceType.KNIGHT:
+        return 'm';
+      case PieceType.BISHOP:
+        return 'v';
+      case PieceType.ROOK:
+        return 't';
+      case PieceType.QUEEN:
+        return 'w';
+      case PieceType.KING:
+        return 'l';
+    }
+
   }
 
 
