@@ -6,7 +6,7 @@
   pDraggable="piece"
   (onDragStart)="dragStart($event,piece)" 
   (onDragEnd)="dragEnd($event)">
-  {{getPieceChar(piece)}}
+  {{getBlackPieceChar(piece)}}
   </div>
 
   <div *ngFor="let square of this.highlightingService.getSquares()|async" 
