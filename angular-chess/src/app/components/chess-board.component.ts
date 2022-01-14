@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position } from '../types/board.t';
+import { Board, HighlightColor, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
-import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -14,7 +13,7 @@ import PositionUtils from '../utils/position.utils';
   templateUrl: './chess-board.component.html',
   styleUrls: ['./chess-board.component.scss']
 })
-export class ChessBoardComponent implements OnInit {
+export class ChessBoardComponent {
   dragPos: Position = { row: 0, column: 0 };
   grabbedPiece: Piece | undefined = undefined;
 
@@ -24,9 +23,6 @@ export class ChessBoardComponent implements OnInit {
     public positioningService: PositioningService,
     public moveExecutionService: MoveExecutionService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
-  }
-
-  ngOnInit(): void {
   }
 
   public getPieceChar(piece: Piece): string {

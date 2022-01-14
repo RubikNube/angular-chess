@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -9,7 +9,7 @@ import PositionUtils from 'src/app/utils/position.utils';
   templateUrl: './move-history.component.html',
   styleUrls: ['./move-history.component.scss']
 })
-export class MoveHistoryComponent implements OnInit {
+export class MoveHistoryComponent {
   fullMoveHistory: FullMove[] = [];
 
   constructor(public moveHistoryService: MoveHistoryService) {
@@ -18,9 +18,6 @@ export class MoveHistoryComponent implements OnInit {
         this.fullMoveHistory = p;
       }
     );
-  }
-
-  ngOnInit(): void {
   }
 
   getMoveRepresentation(move: Move): string {
