@@ -9,11 +9,11 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
 
     }
 
-    canHandle(piece: Piece): boolean {
+    public canHandle(piece: Piece): boolean {
         return piece.type === PieceType.KNIGHT;
     }
 
-    getMoves(piece: Piece): Move[] {
+    public getMoves(piece: Piece): Move[] {
         return this.getValidKnightMoves(piece)
             .map(p => {
                 return {
@@ -24,7 +24,7 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
             });
     }
 
-    getCaptures(piece: Piece): Move[] {
+    public getCaptures(piece: Piece): Move[] {
         return this.getValidKnightMoves(piece)
             .map(p => {
                 return {
@@ -35,10 +35,8 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
             });
     }
 
-    getValidKnightMoves(piece: Piece): Position[] {
-        let fieldsToMove: Position[] = [];
-
-        fieldsToMove.push(
+    private getValidKnightMoves(piece: Piece): Position[] {
+        return [
             {
                 row: piece.position.row + 1,
                 column: piece.position.column - 2
@@ -70,8 +68,6 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
             {
                 row: piece.position.row - 2,
                 column: piece.position.column + 1
-            })
-
-        return fieldsToMove;
+            }];
     }
 }

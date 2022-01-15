@@ -2,7 +2,6 @@ import { Board, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "../utils/board.utils";
 import PositionUtils from "../utils/position.utils";
-import { ChessBoardService } from "./chess-board.service";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
@@ -12,11 +11,11 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
   }
 
-  canHandle(piece: Piece): boolean {
+  public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.PAWN;;
   }
 
-  getMoves(piece: Piece, board: Board): Move[] {
+  public getMoves(piece: Piece, board: Board): Move[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
     if (piece.color === Color.WHITE) {
       if (piece.position.row === 2) {
@@ -64,7 +63,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     }
   }
 
-  getCaptures(piece: Piece, board: Board): Move[] {
+  public getCaptures(piece: Piece, board: Board): Move[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
     let fieldsToCapture: Position[] = [];
 

@@ -10,18 +10,21 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
 
     }
 
-    canHandle(piece: Piece): boolean {
+    public canHandle(piece: Piece): boolean {
         return piece.type === PieceType.ROOK;
     }
 
-    getMoves(piece: Piece, board: Board): Move[] {
-        let fieldsToMove: Position[] = [];
-        let frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
-        let backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
-        let leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
-        let rightSquares: Position[] = BoardUtils.getFreeRightSquares(board, piece, 8 - piece.position.column);
+    public getMoves(piece: Piece, board: Board): Move[] {
+        const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
+        const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
+        const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
+        const rightSquares: Position[] = BoardUtils.getFreeRightSquares(board, piece, 8 - piece.position.column);
 
-        fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
+        const fieldsToMove = [
+            ...frontSquares,
+            ...backSquares,
+            ...leftSquares,
+            ...rightSquares];
 
         return fieldsToMove.map(p => {
             return {
@@ -32,14 +35,17 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
         });;
     }
 
-    getCaptures(piece: Piece, board: Board): Move[] {
-        let fieldsToMove: Position[] = [];
-        let frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
-        let backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
-        let leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
-        let rightSquares: Position[] = BoardUtils.getOccupiedRightSquare(board, piece, 8 - piece.position.column);
+    public getCaptures(piece: Piece, board: Board): Move[] {
+        const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
+        const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
+        const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
+        const rightSquares: Position[] = BoardUtils.getOccupiedRightSquare(board, piece, 8 - piece.position.column);
 
-        fieldsToMove.push(...frontSquares, ...backSquares, ...leftSquares, ...rightSquares);
+        const fieldsToMove = [
+            ...frontSquares,
+            ...backSquares,
+            ...leftSquares,
+            ...rightSquares];
 
         return fieldsToMove.map(p => {
             return {

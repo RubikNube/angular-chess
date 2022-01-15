@@ -14,11 +14,11 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
     }
 
-    canHandle(piece: Piece): boolean {
+    public canHandle(piece: Piece): boolean {
         return piece.type === PieceType.KING;
     }
 
-    getMoves(piece: Piece, board: Board): Move[] {
+    public getMoves(piece: Piece, board: Board): Move[] {
         let moves: Move[] = [];
 
         // surrounding squares:
@@ -94,11 +94,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
         return filteredMoves;
     }
 
-    swapColor(color: Color): Color {
-        return color === Color.WHITE ? Color.BLACK : Color.WHITE
-    }
-
-    getCaptures(piece: Piece, board: Board): Move[] {
+    public getCaptures(piece: Piece, board: Board): Move[] {
         return PositionUtils.getSurroundingSquares(piece)
             .map(p => {
                 return {

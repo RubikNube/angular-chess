@@ -10,18 +10,21 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
 
     }
 
-    canHandle(piece: Piece): boolean {
+    public canHandle(piece: Piece): boolean {
         return piece.type === PieceType.BISHOP;
     }
 
-    getMoves(piece: Piece, board: Board): Move[] {
-        let fieldsToMove: Position[] = [];
-        let frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-        let frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-        let backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-        let backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
+    public getMoves(piece: Piece, board: Board): Move[] {
+        const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
+        const frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
+        const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
+        const backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
 
-        fieldsToMove.push(...frontLeftSquares, ...frontRightSquares, ...backLeftSquares, ...backRightSquares);
+        const fieldsToMove = [
+            ...frontLeftSquares,
+            ...frontRightSquares,
+            ...backLeftSquares,
+            ...backRightSquares];
 
         return fieldsToMove.map(p => {
             return {
@@ -32,14 +35,17 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
         });
     }
 
-    getCaptures(piece: Piece, board: Board): Move[] {
-        let fieldsToMove: Position[] = [];
-        let frontLeftSquare: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-        let frontRightSquare: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-        let backLeftSquare: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-        let backRightSquare: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
+    public getCaptures(piece: Piece, board: Board): Move[] {
+        const frontLeftSquares: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
+        const frontRightSquares: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
+        const backLeftSquares: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
+        const backRightSquares: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
 
-        fieldsToMove.push(...frontLeftSquare, ...frontRightSquare, ...backLeftSquare, ...backRightSquare);
+        const fieldsToMove = [
+            ...frontLeftSquares,
+            ...frontRightSquares,
+            ...backLeftSquares,
+            ...backRightSquares];
 
         return fieldsToMove.map(p => {
             return {
