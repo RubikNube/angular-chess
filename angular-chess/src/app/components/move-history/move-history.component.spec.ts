@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MoveHistoryComponent } from './move-history.component';
+
 
 describe('MoveHistoryComponent', () => {
   let component: MoveHistoryComponent;
@@ -8,9 +8,9 @@ describe('MoveHistoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MoveHistoryComponent ]
+      declarations: [MoveHistoryComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('MoveHistoryComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 });

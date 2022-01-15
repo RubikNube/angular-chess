@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Color } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
-
 import { ChessBoardService } from './chess-board.service';
+
 
 describe('ChessBoardService', () => {
   let service: ChessBoardService;
@@ -15,139 +15,126 @@ describe('ChessBoardService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-});
 
-describe('removePiece', () => {
-  let service: ChessBoardService;
+  describe('removePiece', () => {
+    it('should remove a piece with the given type and position', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ChessBoardService);
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+      let pieceToRemove: Piece = {
+        type: PieceType.ROOK,
+        position: {
+          row: 1,
+          column: 1
+        },
+        color: Color.WHITE
+      }
+
+      service.removePiece(pieceToRemove);
+
+      expect(service.getBoard().pieces.length).toEqual(31);
+    });
   });
 
-  it('should remove a piece with the given type and position', () => {
-    let pieceToRemove: Piece = {
-      type: PieceType.ROOK,
-      position: {
-        row: 1,
-        column: 1
-      },
-      color: Color.WHITE
-    }
+  describe('importFen', () => {
+    it('should empty the board for empty fen', () => {
+      service.importFen("8/8/8//8/8/8/8/8");
+      expect(service.getBoard().pieces).toEqual([]);
+    });
 
-    service.removePiece(pieceToRemove);
+    it('should load start FEN', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+      expect(service.getBoard().pieces.sort(comparePositions())).toEqual([
+        { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 1 } },
+        { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 2 } },
+        { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 3 } },
+        { color: Color.WHITE, type: PieceType.QUEEN, position: { row: 1, column: 4 } },
+        { color: Color.WHITE, type: PieceType.KING, position: { row: 1, column: 5 } },
+        { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 6 } },
+        { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 7 } },
+        { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 8 } },
 
-    expect(service.getBoard().pieces.length).toEqual(31);
-  });
-});
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 1 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 2 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 3 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 4 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 5 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 6 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 7 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 8 } },
 
-describe('importFen', () => {
-  let service: ChessBoardService;
+        { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 1 } },
+        { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 2 } },
+        { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 3 } },
+        { color: Color.BLACK, type: PieceType.QUEEN, position: { row: 8, column: 4 } },
+        { color: Color.BLACK, type: PieceType.KING, position: { row: 8, column: 5 } },
+        { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 6 } },
+        { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 7 } },
+        { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 8 } },
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ChessBoardService);
-  });
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 1 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 2 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 3 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 4 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 5 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 6 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 7 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 8 } },
 
-  it('should empty the board for empty fen', () => {
-    service.importFen("8/8/8//8/8/8/8/8");
-    expect(service.getBoard().pieces).toEqual([]);
-  });
+      ]
+        .sort(comparePositions()));
+    });
 
-  it('should load start FEN', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-    expect(service.getBoard().pieces.sort(comparePositions())).toEqual([
-      { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 1 } },
-      { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 2 } },
-      { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 3 } },
-      { color: Color.WHITE, type: PieceType.QUEEN, position: { row: 1, column: 4 } },
-      { color: Color.WHITE, type: PieceType.KING, position: { row: 1, column: 5 } },
-      { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 6 } },
-      { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 7 } },
-      { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 8 } },
+    it('should set white player to move if "w" after position', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
 
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 1 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 2 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 3 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 4 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 5 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 6 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 7 } },
-      { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 8 } },
+      expect(service.getPlayerToMove()).toEqual(Color.WHITE);
+    });
 
-      { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 1 } },
-      { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 2 } },
-      { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 3 } },
-      { color: Color.BLACK, type: PieceType.QUEEN, position: { row: 8, column: 4 } },
-      { color: Color.BLACK, type: PieceType.KING, position: { row: 8, column: 5 } },
-      { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 6 } },
-      { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 7 } },
-      { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 8 } },
+    it('should set black player to move if "b" after position', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b");
 
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 1 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 2 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 3 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 4 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 5 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 6 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 7 } },
-      { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 8 } },
+      expect(service.getPlayerToMove()).toEqual(Color.BLACK);
+    });
 
-    ]
-      .sort(comparePositions()));
-  });
+    it('should set castle rights for "KQkq"', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
-  it('should set white player to move if "w" after position', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
+      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
+    });
 
-    expect(service.getPlayerToMove()).toEqual(Color.WHITE);
-  });
+    it('should set castle rights for "KQ"', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ");
 
-  it('should set black player to move if "b" after position', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b");
+      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
+      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+    });
 
-    expect(service.getPlayerToMove()).toEqual(Color.BLACK);
-  });
+    it('should set castle rights for "Kk"', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk");
 
-  it('should set castle rights for "KQkq"', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: true });
+      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: true });
+    });
 
-    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
-  });
+    it('should set castle rights for empty castle fen', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
 
-  it('should set castle rights for "KQ"', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ");
+      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: false });
+      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+    });
 
-    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
-  });
+    it('should set en passant square to e3', () => {
+      service.importFen("rnbqkbnr/ppppp1pp/8/8/4Pp2/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
 
-  it('should set castle rights for "Kk"', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk");
+      expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 3 });
+    });
 
-    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: true });
-    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: true });
-  });
+    it('should set en passant square to e6', () => {
+      service.importFen("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
 
-  it('should set castle rights for empty castle fen', () => {
-    service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
-
-    expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: false });
-    expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
-  });
-
-  it('should set en passant square to e3', () => {
-    service.importFen("rnbqkbnr/ppppp1pp/8/8/4Pp2/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-
-    expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 3 });
-  });
-
-  it('should set en passant square to e6', () => {
-    service.importFen("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
-
-    expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 6 });
+      expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 6 });
+    });
   });
 });
 
