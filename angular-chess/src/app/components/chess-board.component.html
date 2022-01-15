@@ -9,7 +9,7 @@
   {{getBlackPieceChar(piece)}}
   </div>
 
-  <div *ngFor="let square of this.highlightingService.getSquares()|async" 
+  <div *ngFor="let square of this.highlightingService.getSquares$()|async" 
   class="field color-{{square.highlight}}"
   [style.top.%]="getTopPosition(square.position)"
   [style.left.%]="getLeftPosition(square.position)"></div>

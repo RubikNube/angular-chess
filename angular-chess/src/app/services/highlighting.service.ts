@@ -6,23 +6,23 @@ import { Square } from '../types/board.t';
   providedIn: 'root'
 })
 export class HighlightingService {
-  private quaresSource: BehaviorSubject<Square[]> = new BehaviorSubject<Square[]>([]);
-  quares$: Observable<Square[]> = this.quaresSource.asObservable();
+  private squares$$: BehaviorSubject<Square[]> = new BehaviorSubject<Square[]>([]);
+  private squares$: Observable<Square[]> = this.squares$$.asObservable();
 
   constructor() { }
 
-  public getSquares(): Observable<Square[]> {
-    return this.quares$;
+  public getSquares$(): Observable<Square[]> {
+    return this.squares$;
   }
 
   public clearSquares(): void {
-    this.quaresSource.next([]);
+    this.squares$$.next([]);
   }
 
   public addSquares(...squaresToAdd: Square[]): void {
-    let currentSquares: Square[] = this.quaresSource.getValue();
+    let currentSquares: Square[] = this.squares$$.getValue();
     currentSquares.push(...squaresToAdd);
 
-    this.quaresSource.next(currentSquares);
+    this.squares$$.next(currentSquares);
   }
 }
