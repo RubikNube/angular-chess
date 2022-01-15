@@ -9,8 +9,8 @@ import { MoveGenerationService } from "./move-generation.service";
 
 export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
-    constructor(public generationService: MoveGenerationService,
-        public boardService: ChessBoardService) {
+    constructor(private generationService: MoveGenerationService,
+        private boardService: ChessBoardService) {
 
     }
 
@@ -81,10 +81,10 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
             }
         }
 
-        return this.filterOutAttackedSquares(piece, board, moves, attackedSquares);
+        return this.filterOutAttackedSquares(piece, moves, attackedSquares);
     }
 
-    private filterOutAttackedSquares(piece: Piece, board: Board, moves: Move[], attackedSquares: Position[]): Move[] {
+    private filterOutAttackedSquares(piece: Piece, moves: Move[], attackedSquares: Position[]): Move[] {
         let filteredMoves: Move[] = moves.filter(move => {
             return !PositionUtils.includes(attackedSquares, move.to);
         });

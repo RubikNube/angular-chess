@@ -18,7 +18,7 @@ import { MoveGenerationRookHandler } from './move-generation.rook.handler';
 export class MoveGenerationService {
   generationHandlers: MoveGenerationHandler[];
 
-  constructor(private boardService: ChessBoardService) {
+  constructor(boardService: ChessBoardService) {
     this.generationHandlers = [
       new MoveGenerationRookHandler(this),
       new MoveGenerationKnightHandler(this),
@@ -39,7 +39,7 @@ export class MoveGenerationService {
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
 
-  getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
+  public getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
     let move = this.getValidMoves(board, piece, true).find(m => PositionUtils.positionEquals(m.to, dropPos));
     if (move !== undefined) {
       return move;
@@ -49,7 +49,7 @@ export class MoveGenerationService {
     }
   }
 
-  getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
+  public getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
     console.log("getValidMoves: " + JSON.stringify(piece));
 
     let moves: Move[] = [];

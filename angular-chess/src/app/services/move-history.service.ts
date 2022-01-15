@@ -8,40 +8,40 @@ import MoveHistoryUtils from '../utils/move.history.utils';
   providedIn: 'root'
 })
 export class MoveHistoryService {
-  moveHistorySource: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
-  moveHistory$: Observable<Move[]> = this.moveHistorySource.asObservable();
+  private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
+  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable();
 
   fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
 
   constructor() { }
 
   public addMoveToHistory(move: Move): void {
-    let moveHistory = this.moveHistorySource.getValue();
+    const moveHistory = this.moveHistory$$.getValue();
     moveHistory.push(move);
-    this.moveHistorySource.next(moveHistory);
+    this.moveHistory$$.next(moveHistory);
   }
 
-  resetMoveHistory(): void {
-    return this.moveHistorySource.next([]);
+  public resetMoveHistory(): void {
+    return this.moveHistory$$.next([]);
   }
 
-  getFullMoveHistory$(): Observable<FullMove[]> {
+  public getFullMoveHistory$(): Observable<FullMove[]> {
     return this.fullMoveHistory$;
   }
 
-  createFullMoveHistory$(): Observable<FullMove[]> {
+  public createFullMoveHistory$(): Observable<FullMove[]> {
     return this.moveHistory$.pipe(map(moveHistory => {
-      let fullMoveHistory: FullMove[] = [];
-      let moveMap: Map<number, FullMove> = new Map<number, FullMove>();
+      const fullMoveHistory: FullMove[] = [];
+      const moveMap: Map<number, FullMove> = new Map<number, FullMove>();
 
-      let firstMove = moveHistory[0];
-      let startingColor: Color = firstMove?.piece.color;
+      const firstMove = moveHistory[0];
+      const startingColor: Color = firstMove?.piece.color;
 
 
       for (let index = 0; index < moveHistory.length; index++) {
-        let move = moveHistory[index];
+        const move = moveHistory[index];
 
-        let moveCount = MoveHistoryUtils.getMoveCount(startingColor, move.piece.color, index);
+        const moveCount = MoveHistoryUtils.getMoveCount(startingColor, move.piece.color, index);
 
         let fullMove: FullMove | undefined = moveMap.get(moveCount);
 
