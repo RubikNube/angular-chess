@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, throwIfEmpty } from 'rxjs';
-import { Board, Color, Position } from '../types/board.t';
-import { FullMove, Move, PieceType } from '../types/pieces.t';
+import { Color } from '../types/board.t';
+import { Move, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
-import MoveHistoryUtils from '../utils/move.history.utils';
-import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
@@ -14,12 +11,9 @@ import { MoveHistoryService } from './move-history.service';
   providedIn: 'root'
 })
 export class MoveExecutionService {
-  attackedSquaresFromBlack: Position[] = [];
-  attackedSquaresFromWhite: Position[] = [];
-
-  constructor(public boardService: ChessBoardService,
-    public moveGenerationService: MoveGenerationService,
-    public moveHistoryService: MoveHistoryService) {
+  constructor(private boardService: ChessBoardService,
+    private moveGenerationService: MoveGenerationService,
+    private moveHistoryService: MoveHistoryService) {
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
       let board = boardService.getBoard();
@@ -28,11 +22,7 @@ export class MoveExecutionService {
     })
   }
 
-  public getAttackedSquares(colorOfPieces: Color): Position[] {
-    return colorOfPieces === Color.WHITE ? this.attackedSquaresFromWhite : this.attackedSquaresFromBlack;
-  }
-
-  public executeMove(move: Move) {
+  public executeMove(move: Move): void {
     console.log("executeMove: " + JSON.stringify(move));
 
     if (move.piece.color !== this.boardService.getPlayerToMove()) {
@@ -83,7 +73,7 @@ export class MoveExecutionService {
     this.finishMove(move);
   }
 
-  private finishMove(move: Move) {
+  private finishMove(move: Move): void {
     if (!(move.isShortCastle || move.isLongCastle)) {
       this.movePiece(move);
     }
@@ -101,7 +91,7 @@ export class MoveExecutionService {
     }
   }
 
-  private capturePiece(move: Move) {
+  private capturePiece(move: Move): void {
     console.log("capturePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
 
@@ -112,21 +102,14 @@ export class MoveExecutionService {
     this.boardService.addPiece(move.piece);
   }
 
-  private movePiece(move: Move) {
+  private movePiece(move: Move): void {
     console.log("movePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
     move.piece.position = move.to;
     this.boardService.addPiece(move.piece);
   }
 
-  private unmovePiece(move: Move) {
-    console.log("movePiece: " + JSON.stringify(move));
-    this.boardService.removePiece(move.piece);
-    move.piece.position = move.from;
-    this.boardService.addPiece(move.piece);
-  }
-
-  private executeLongCastle(move: Move) {
+  private executeLongCastle(move: Move): void {
     console.log("executeLongCastle: " + JSON.stringify(move));
     let currentBoard = this.boardService.getBoard();
     let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 1, row: move.piece.position.row });
@@ -137,7 +120,7 @@ export class MoveExecutionService {
     }
   }
 
-  private executeShortCastle(move: Move) {
+  private executeShortCastle(move: Move): void {
     console.log("executeShortCastle: " + JSON.stringify(move));
     let currentBoard = this.boardService.getBoard();
     let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 8, row: move.piece.position.row });
