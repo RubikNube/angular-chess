@@ -12,7 +12,7 @@ import PositionUtils from 'src/app/utils/position.utils';
 export class MoveHistoryComponent {
   fullMoveHistory: FullMove[] = [];
 
-  constructor(public moveHistoryService: MoveHistoryService) {
+  constructor(private moveHistoryService: MoveHistoryService) {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
       p => {
         this.fullMoveHistory = p;
@@ -20,7 +20,7 @@ export class MoveHistoryComponent {
     );
   }
 
-  getMoveRepresentation(move: Move): string {
+  public getMoveRepresentation(move: Move): string {
     if (move === undefined) {
       return "";
     }
@@ -33,7 +33,7 @@ export class MoveHistoryComponent {
     }
   }
 
-  getPieceChar(move: Move): string {
+  public getPieceChar(move: Move): string {
     if (move.isLongCastle || move.isShortCastle) {
       return "";
     }
@@ -42,15 +42,15 @@ export class MoveHistoryComponent {
     }
   }
 
-  getCheckOrMateRepresentation(move: Move): string {
+  private getCheckOrMateRepresentation(move: Move): string {
     return move.isCheck ? move.isMate ? "#" : " +" : "";
   }
 
-  getMoveDelimiter(move: Move): string {
+  private getMoveDelimiter(move: Move): string {
     return move.capturedPiece === undefined ? "-" : "x";
   }
 
-  getEnPassantRepresentation(move: Move): string {
+  private getEnPassantRepresentation(move: Move): string {
     return move.isEnPassant ? " e.p" : "";
   }
 

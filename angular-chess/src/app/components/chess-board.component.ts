@@ -19,10 +19,10 @@ export class ChessBoardComponent {
   grabbedPiece: Piece | undefined = undefined;
 
   constructor(public boardService: ChessBoardService,
-    public moveGenerationService: MoveGenerationService,
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
-    public moveExecutionService: MoveExecutionService) {
+    private moveGenerationService: MoveGenerationService,
+    private moveExecutionService: MoveExecutionService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
   }
 
@@ -31,19 +31,19 @@ export class ChessBoardComponent {
   }
 
 
-  getTopPosition(position: Position): number {
+  public getTopPosition(position: Position): number {
     let uiRow = this.positioningService.getUiPosition(position).row;
 
     return (8 - uiRow) * 12.5;
   }
 
-  getLeftPosition(position: Position): number {
+  public getLeftPosition(position: Position): number {
     let uiCol = this.positioningService.getUiPosition(position).column;
 
     return (uiCol - 1) * 12.5
   }
 
-  dragStart(e: MouseEvent, c: any) {
+  public dragStart(e: MouseEvent, c: any) {
     this.dragPos = this.positioningService.getMousePosition(e);
     let currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
@@ -66,7 +66,7 @@ export class ChessBoardComponent {
     }
   }
 
-  dragEnd(e: MouseEvent) {
+  public dragEnd(e: MouseEvent) {
     this.highlightingService.clearSquares();
     if (this.grabbedPiece === undefined) {
       return;
@@ -82,7 +82,7 @@ export class ChessBoardComponent {
 
   }
 
-  getCursor(piece: Piece) {
+  public getCursor(piece: Piece) {
     return "grab";
   }
 }
