@@ -15,8 +15,8 @@ import PositionUtils from '../utils/position.utils';
   styleUrls: ['./chess-board.component.scss']
 })
 export class ChessBoardComponent {
-  dragPos: Position = { row: 0, column: 0 };
-  grabbedPiece: Piece | undefined = undefined;
+  private dragPos: Position = { row: 0, column: 0 };
+  private grabbedPiece: Piece | undefined = undefined;
 
   constructor(public boardService: ChessBoardService,
     public highlightingService: HighlightingService,

@@ -1,37 +1,34 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
+import { Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import PieceUtils from '../utils/piece.utils';
-import PositionUtils from '../utils/position.utils';
-import { HighlightingService } from './highlighting.service';
 import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChessBoardService {
-  initialBoard: Board = {
+  private initialBoard: Board = {
     pieces: [],
     whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
     blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
     playerToMove: Color.WHITE,
     result: Result.UNKNOWN,
   };
-  boardSource: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
-  board$: Observable<Board> = this.boardSource.asObservable();
+  private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
+  private board$: Observable<Board> = this.board$$.asObservable();
 
-  attackedSquaresFromBlackSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
-  attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlackSource.asObservable();
-  attackedSquaresFromWhiteSource: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
-  attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhiteSource.asObservable();
+  private attackedSquaresFromBlack$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
+  private attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlack$$.asObservable();
+  private attackedSquaresFromWhite$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
+  private attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhite$$.asObservable();
 
-  private fenSource: BehaviorSubject<string> = new BehaviorSubject("");
-  fen$ = this.fenSource.asObservable();
+  private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
+  private fen$ = this.fen$$.asObservable();
 
-  constructor(public highlightingService: HighlightingService,
-    public moveHistoryService: MoveHistoryService) {
+  constructor(private moveHistoryService: MoveHistoryService) {
   }
 
   public getBoard$(): Observable<Board> {
@@ -39,33 +36,33 @@ export class ChessBoardService {
   }
 
   public getBoard(): Board {
-    return this.boardSource.getValue();
+    return this.board$$.getValue();
   }
 
   public clearEnPassantSquares(): void {
-    let currentBoard: Board = this.boardSource.getValue();
+    let currentBoard: Board = this.board$$.getValue();
     currentBoard.enPassantSquare = undefined;
-    this.boardSource.next(currentBoard);
+    this.board$$.next(currentBoard);
   }
 
-  public setEnPassantSquares(enPassantSquare: Position) {
-    let currentBoard: Board = this.boardSource.getValue();
+  public setEnPassantSquares(enPassantSquare: Position): void {
+    let currentBoard: Board = this.board$$.getValue();
     currentBoard.enPassantSquare = enPassantSquare;
-    this.boardSource.next(currentBoard);
+    this.board$$.next(currentBoard);
   }
 
   public getEnPassantSquare(): Position | undefined {
-    return this.boardSource.getValue().enPassantSquare;
+    return this.board$$.getValue().enPassantSquare;
   }
 
   public getEnPassantSquare$(): Observable<Position | undefined> {
-    return this.boardSource.pipe(map(b => {
+    return this.board$$.pipe(map(b => {
       return b.enPassantSquare;
     }));
   }
 
-  public setCastleRights(castleRights: CastleRights) {
-    let currentBoard: Board = this.boardSource.getValue();
+  public setCastleRights(castleRights: CastleRights): void {
+    let currentBoard: Board = this.board$$.getValue();
 
     if (castleRights.player === Color.WHITE) {
       currentBoard.whiteCastleRights = castleRights;
@@ -74,19 +71,19 @@ export class ChessBoardService {
       currentBoard.blackCastleRights = castleRights;
     }
 
-    this.boardSource.next(currentBoard);
+    this.board$$.next(currentBoard);
   }
 
-  public getCastleRights(player: Color) {
+  public getCastleRights(player: Color): CastleRights {
     if (player === Color.WHITE) {
-      return this.boardSource.getValue().whiteCastleRights;
+      return this.board$$.getValue().whiteCastleRights;
     }
     else {
-      return this.boardSource.getValue().blackCastleRights;
+      return this.board$$.getValue().blackCastleRights;
     }
   }
 
-  public getCastleRights$(player: Color) {
+  public getCastleRights$(player: Color): Observable<CastleRights> {
     if (player === Color.WHITE) {
       return this.board$.pipe(map(b => {
         return b.whiteCastleRights;
@@ -100,26 +97,26 @@ export class ChessBoardService {
   }
 
   public togglePlayerToMove(): void {
-    let currentBoard: Board = this.boardSource.getValue();
+    let currentBoard: Board = this.board$$.getValue();
     let currentPlayerToMove: Color = currentBoard.playerToMove;
 
     currentBoard.playerToMove = currentPlayerToMove === Color.WHITE ? Color.BLACK : Color.WHITE
 
-    this.boardSource.next(currentBoard);
+    this.board$$.next(currentBoard);
   }
 
-  public getPlayerToMove$() {
+  public getPlayerToMove$(): Observable<Color> {
     return this.board$.pipe(map(b => {
       return b.playerToMove;
     }));
   }
 
-  public getPlayerToMove() {
-    return this.boardSource.getValue().playerToMove;
+  public getPlayerToMove(): Color {
+    return this.board$$.getValue().playerToMove;
   }
 
-  public setAttackedSquaresFromBlack(squares: Position[]) {
-    this.attackedSquaresFromBlackSource.next(squares);
+  public setAttackedSquaresFromBlack(squares: Position[]): void {
+    this.attackedSquaresFromBlack$$.next(squares);
   }
 
   public getAttackedSquaresFromBlack$(): Observable<Position[]> {
@@ -128,19 +125,19 @@ export class ChessBoardService {
 
   public getAttackedSquares(color: Color): Position[] {
     if (color === Color.WHITE) {
-      return this.attackedSquaresFromWhiteSource.getValue();
+      return this.attackedSquaresFromWhite$$.getValue();
     }
     else {
-      return this.attackedSquaresFromBlackSource.getValue();
+      return this.attackedSquaresFromBlack$$.getValue();
     }
   }
 
   public getAttackedSquaresFromBlack(): Position[] {
-    return this.attackedSquaresFromBlackSource.getValue();
+    return this.attackedSquaresFromBlack$$.getValue();
   }
 
   public setAttackedSquaresFromWhite(squares: Position[]) {
-    this.attackedSquaresFromWhiteSource.next(squares);
+    this.attackedSquaresFromWhite$$.next(squares);
   }
 
   public getAttackedSquaresFromWhite$(): Observable<Position[]> {
@@ -148,16 +145,16 @@ export class ChessBoardService {
   }
 
   public getAttackedSquaresFromWhite(): Position[] {
-    return this.attackedSquaresFromWhiteSource.getValue();
+    return this.attackedSquaresFromWhite$$.getValue();
   }
 
-  public setFen(fen: string) {
-    this.fenSource.next(fen);
+  public setFen(fen: string): void {
+    this.fen$$.next(fen);
     this.moveHistoryService.resetMoveHistory();
   }
 
   public getPieces(): Piece[] {
-    return this.boardSource.getValue().pieces;
+    return this.board$$.getValue().pieces;
   }
 
   public importFen(newFen: string): void {
@@ -167,19 +164,19 @@ export class ChessBoardService {
 
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
 
-    this.boardSource.next(board);
-    this.fenSource.next(newFen);
+    this.board$$.next(board);
+    this.fen$$.next(newFen);
   }
 
-  addPiece(piece: Piece) {
-    let currentBoard = this.boardSource.getValue();
+  public addPiece(piece: Piece): void {
+    let currentBoard = this.board$$.getValue();
     currentBoard.pieces.push(piece);
-    this.boardSource.next(currentBoard);
+    this.board$$.next(currentBoard);
   }
 
-  removePiece(draggedPiece: Piece) {
+  public removePiece(draggedPiece: Piece): void {
     let index = -1;
-    let currentPieces = this.boardSource.getValue().pieces;
+    let currentPieces = this.board$$.getValue().pieces;
 
     for (let i = 0; i < currentPieces.length; i++) {
       const piece = currentPieces[i];
@@ -193,9 +190,9 @@ export class ChessBoardService {
 
     if (index > -1) {
       currentPieces.splice(index, 1);
-      let currentBoard = this.boardSource.getValue();
+      let currentBoard = this.board$$.getValue();
       currentBoard.pieces = currentPieces;
-      this.boardSource.next(currentBoard);
+      this.board$$.next(currentBoard);
     }
   }
 }
