@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color } from '../types/board.t';
+import { Color, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import PositionUtils from '../utils/position.utils';
@@ -84,7 +84,12 @@ export class MoveExecutionService {
 
     if (move.isCheck) {
       move.isMate = this.moveGenerationService.isMate(this.boardService.getBoard());
+
+      if (move.isMate) {
+        this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
+      }
     }
+
 
     if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
       this.boardService.clearEnPassantSquares();

@@ -31,6 +31,19 @@ export class ChessBoardService {
   constructor(private moveHistoryService: MoveHistoryService) {
   }
 
+  public updateResult(result: Result) {
+    const currentBoard = this.board$$.getValue();
+    currentBoard.result = result;
+
+    return this.board$$.next(currentBoard);
+  }
+
+  public getResult$(): Observable<Result> {
+    return this.board$.pipe(
+      map(b => b.result)
+    );
+  }
+
   public getBoard$(): Observable<Board> {
     return this.board$;
   }

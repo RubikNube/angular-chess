@@ -1,23 +1,19 @@
 <div class="board">
   <div *ngFor="let piece of this.boardService.getPieces()" class="piece piece-{{piece.color}}"
-  [style.top.%]="getTopPosition(piece.position)"
-  [style.left.%]="getLeftPosition(piece.position)"
-  [style.cursor]="getCursor(piece)"
-  pDraggable="piece"
-  (onDragStart)="dragStart($event,piece)" 
-  (onDragEnd)="dragEnd($event)">
-  {{getBlackPieceChar(piece)}}
+    [style.top.%]="getTopPosition(piece.position)" [style.left.%]="getLeftPosition(piece.position)"
+    [style.cursor]="getCursor(piece)" pDraggable="piece" (onDragStart)="dragStart($event,piece)"
+    (onDragEnd)="dragEnd($event)">
+    {{getBlackPieceChar(piece)}}
   </div>
 
-  <div *ngFor="let square of this.highlightingService.getSquares$()|async" 
-  class="field color-{{square.highlight}}"
-  [style.top.%]="getTopPosition(square.position)"
-  [style.left.%]="getLeftPosition(square.position)"></div>
+  <div *ngFor="let square of this.highlightingService.getSquares$()|async" class="field color-{{square.highlight}}"
+    [style.top.%]="getTopPosition(square.position)" [style.left.%]="getLeftPosition(square.position)"></div>
 </div>
 
 <div class="p-inputgroup board-btn-group">
   <div class="{{this.boardService.getPlayerToMove$()|async}}-playerToMove"></div>
+  <div class="result">{{getResultRepresentation(this.boardService.getResult$()|async)}}</div>
   <button pButton type="button" label="Switch Board" (click)="this.positioningService.switchPerspective()"></button>
-  <input id="fen" #fen name="fen" type="text" pInputText placeholder="FEN">         
+  <input id="fen" #fen name="fen" type="text" pInputText placeholder="FEN">
   <button type="button" pButton pRipple label="Import FEN" (click)="this.boardService.importFen(fen.value)"></button>
 </div>

@@ -4,8 +4,8 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position } from '../types/board.t';
-import { Piece, PieceType } from '../types/pieces.t';
+import { Board, Color, HighlightColor, Position, Result } from '../types/board.t';
+import { Piece } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
@@ -26,10 +26,26 @@ export class ChessBoardComponent {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
   }
 
+  public getResultRepresentation(result: Result | null): string {
+    if (!result) {
+      return "*";
+    }
+
+    switch (result) {
+      case Result.UNKNOWN:
+        return "*";
+      case Result.REMIS:
+        return "½ : ½";
+      case Result.WHITE_WIN:
+        return "1 : 0";
+      case Result.BLACK_WIN:
+        return "0 : 1";
+    }
+  }
+
   public getBlackPieceChar(piece: Piece): string {
     return PieceUtils.getPieceChar(piece.type, Color.BLACK);
   }
-
 
   public getTopPosition(position: Position): number {
     let uiRow = this.positioningService.getUiPosition(position).row;
