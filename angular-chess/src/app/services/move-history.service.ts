@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { Color } from '../types/board.t';
 import { FullMove, Move } from '../types/pieces.t';
 import MoveHistoryUtils from '../utils/move.history.utils';
 
@@ -11,7 +11,7 @@ export class MoveHistoryService {
   private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
   private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable();
 
-  fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
+  private fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
 
   constructor() { }
 

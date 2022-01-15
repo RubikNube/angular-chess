@@ -5,7 +5,7 @@ import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
 export default class BoardUtils {
-    static initialBoard: Board = {
+    private static initialBoard: Board = {
         pieces: [],
         whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
         blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
@@ -14,26 +14,26 @@ export default class BoardUtils {
     };
 
     public static loadBoardFromFen(newFen: string): Board {
-        let currentBoard: Board = BoardUtils.initialBoard;
-        let pieces: Piece[] = [];
+        const currentBoard: Board = BoardUtils.initialBoard;
+        const pieces: Piece[] = [];
 
-        let fenSections = newFen.split(' ');
+        const fenSections = newFen.split(' ');
 
-        let fenRows: string[] = fenSections[0].split("/");
+        const fenRows: string[] = fenSections[0].split("/");
         for (let j = 0; j < fenRows.length; j++) {
-            let fenRow: string = fenRows[j];
+            const fenRow: string = fenRows[j];
             let currentPos: number = 0;
             for (let i = 0; i < fenRow.length; i++) {
                 const currentChar = fenRow[i];
                 console.log("currentChar " + currentChar);
 
                 if (currentChar.match("\\d")) {
-                    let columnsToAdd = parseInt(currentChar);
+                    const columnsToAdd = parseInt(currentChar);
                     console.log("columnsToAdd " + columnsToAdd);
                     currentPos += columnsToAdd;
                 }
                 else if (currentChar.toUpperCase().match("[R|B|Q|K|N|P]")) {
-                    let newPiece: Piece = {
+                    const newPiece: Piece = {
                         color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
                         type: BoardUtils.getPiece(currentChar),
                         position: { row: 8 - j, column: currentPos + 1 }
@@ -59,10 +59,10 @@ export default class BoardUtils {
 
 
         if (fenSections.length > 2) {
-            let castleFen = fenSections[2];
+            const castleFen = fenSections[2];
 
-            let whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-            let blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+            const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+            const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
 
             for (let index = 0; index < castleFen.length; index++) {
                 const castleChar = castleFen[index];
@@ -91,17 +91,17 @@ export default class BoardUtils {
             currentBoard.blackCastleRights = blackCastleRights;
         }
         else {
-            let whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-            let blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+            const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+            const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
 
             currentBoard.whiteCastleRights = whiteCastleRights;
             currentBoard.blackCastleRights = blackCastleRights;
         }
 
         if (fenSections.length > 3) {
-            let enPassantFen = fenSections[3];
+            const enPassantFen = fenSections[3];
 
-            let enPassantPosition = PositionUtils.getPositionFromCoordinate(enPassantFen);
+            const enPassantPosition = PositionUtils.getPositionFromCoordinate(enPassantFen);
             currentBoard.enPassantSquare = enPassantPosition;
         }
 
@@ -129,13 +129,13 @@ export default class BoardUtils {
     }
 
     public static isEnPassantSquare(board: Board, position: Position): boolean {
-        let enPassantSquare = board.enPassantSquare;
+        const enPassantSquare = board.enPassantSquare;
 
         return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
     }
 
     public static calculateAttackedSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
-        let attackedSquares: Set<Position> = new Set<Position>();
+        const attackedSquares: Set<Position> = new Set<Position>();
 
         board.pieces
             .filter(p => p.color === colorOfPieces)
@@ -175,7 +175,7 @@ export default class BoardUtils {
     }
 
     public static calculateMoveSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
-        let attackedSquares: Set<Position> = new Set<Position>();
+        const attackedSquares: Set<Position> = new Set<Position>();
 
         board.pieces
             .filter(p => p.color === colorOfPieces)
@@ -207,7 +207,7 @@ export default class BoardUtils {
                 }
             });
 
-        let result = Array.from(attackedSquares.values());
+        const result = Array.from(attackedSquares.values());
 
         console.log("calculateAttackedSquares color:" + colorOfPieces + ", result: " + JSON.stringify(result))
 
@@ -215,21 +215,21 @@ export default class BoardUtils {
     }
 
     public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
-        let king: Piece = BoardUtils.getKing(board, board.playerToMove);
-        let validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
-        let opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
-        let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
+        const king: Piece = BoardUtils.getKing(board, board.playerToMove);
+        const validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
+        const opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
+        const attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
 
 
         if (validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position)) {
-            let attackingMoves: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, king);
+            const attackingMoves: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, king);
 
             if (attackingMoves.length === 1) {
-                let attackingPosition: Position = attackingMoves[0].from;
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
+                const attackingPosition: Position = attackingMoves[0].from;
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
 
                 if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
-                    let movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
+                    const movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
 
                     if (movesThatCaptureCheckGivingPiece.length === 1) {
                         return false;
@@ -261,25 +261,25 @@ export default class BoardUtils {
         else {
 
             if (king.position.column === move.from.column) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
             } else if (king.position.row === move.from.row) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
             } else if (king.position.column < move.from.column && king.position.row < move.from.row) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
             else if (king.position.column > move.from.column && king.position.row < move.from.row) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
             else if (king.position.column < move.from.column && king.position.row > move.from.row) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
             else if (king.position.column > move.from.column && king.position.row > move.from.row) {
-                let attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+                const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
                 return this.canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
             }
 
@@ -290,7 +290,7 @@ export default class BoardUtils {
     private static canBlockSameColumn(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         if (kingPos.row < attackingPos.row) {
             for (let index = 0; index < attackingPos.row - kingPos.row; index++) {
-                let newPos: Position = {
+                const newPos: Position = {
                     column: kingPos.column,
                     row: kingPos.row + 1 + index
                 }
@@ -301,7 +301,7 @@ export default class BoardUtils {
             }
         } else {
             for (let index = 0; index < kingPos.row - attackingPos.row; index++) {
-                let newPos: Position = {
+                const newPos: Position = {
                     column: kingPos.column,
                     row: attackingPos.row - 1 - index
                 }
@@ -317,7 +317,7 @@ export default class BoardUtils {
 
     private static canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         for (let i = 0; i < attackingPos.row - kingPos.row; i++) {
-            let newPos: Position = {
+            const newPos: Position = {
                 column: kingPos.column + 1 + i,
                 row: kingPos.row + 1 + i
             }
@@ -332,7 +332,7 @@ export default class BoardUtils {
 
     private static canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         for (let i = 0; i < attackingPos.row - kingPos.row; i++) {
-            let newPos: Position = {
+            const newPos: Position = {
                 column: kingPos.column - 1 - i,
                 row: kingPos.row + 1 + i
             }
@@ -347,7 +347,7 @@ export default class BoardUtils {
 
     private static canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
-            let newPos: Position = {
+            const newPos: Position = {
                 column: kingPos.column + 1 + i,
                 row: kingPos.row - 1 - i
             }
@@ -362,7 +362,7 @@ export default class BoardUtils {
 
     private static canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
-            let newPos: Position = {
+            const newPos: Position = {
                 column: kingPos.column - 1 - i,
                 row: kingPos.row - 1 - i
             }
@@ -378,7 +378,7 @@ export default class BoardUtils {
     private static canBlockSameRow(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
         if (kingPos.column < attackingPos.column) {
             for (let index = 0; index < attackingPos.column - kingPos.column; index++) {
-                let newPos: Position = {
+                const newPos: Position = {
                     column: kingPos.column + 1 + index,
                     row: kingPos.row
                 }
@@ -389,7 +389,7 @@ export default class BoardUtils {
             }
         } else {
             for (let index = 0; index < kingPos.column - attackingPos.column; index++) {
-                let newPos: Position = {
+                const newPos: Position = {
                     column: kingPos.column - 1 - index,
                     row: attackingPos.row
                 }
@@ -409,7 +409,7 @@ export default class BoardUtils {
             return false;
         }
 
-        let copiedBoard: Board = {
+        const copiedBoard: Board = {
             blackCastleRights: board.blackCastleRights,
             pieces: board.pieces.filter(p => !PieceUtils.pieceEquals(p, piece)),
             whiteCastleRights: board.whiteCastleRights,
@@ -419,18 +419,18 @@ export default class BoardUtils {
             moveNumber: board.moveNumber
         };
 
-        let foundPos: Position | undefined = copiedBoard.pieces
+        const foundPos: Position | undefined = copiedBoard.pieces
             .filter(p => p.color === piece.color)
             .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p, false).map(m => m.to))
             .find(p => PositionUtils.positionEquals(p, piece.position));
 
-        let isProtected = foundPos !== undefined;
+        const isProtected = foundPos !== undefined;
 
         return isProtected;
     }
 
     private static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {
-        let attackingMoves: Set<Move> = new Set<Move>();
+        const attackingMoves: Set<Move> = new Set<Move>();
 
         board.pieces
             .filter(p => p.color !== piece.color)
@@ -446,7 +446,7 @@ export default class BoardUtils {
     }
 
     private static getKing(board: Board, color: Color): Piece {
-        let king = board.pieces.find(p => p.color === color && p.type === PieceType.KING);
+        const king = board.pieces.find(p => p.color === color && p.type === PieceType.KING);
 
         if (king !== undefined) {
             return king;
@@ -457,10 +457,10 @@ export default class BoardUtils {
     }
 
     public static getFreeFrontSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column,
                 row: piece.position.row + index
             };
@@ -477,10 +477,10 @@ export default class BoardUtils {
     }
 
     public static getFreeBackSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column,
                 row: piece.position.row - index
             };
@@ -497,10 +497,10 @@ export default class BoardUtils {
     }
 
     public static getFreeLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row
             };
@@ -517,10 +517,10 @@ export default class BoardUtils {
     }
 
     public static getFreeRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row
             };
@@ -537,10 +537,10 @@ export default class BoardUtils {
     }
 
     public static getFreeFrontLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row + index
             };
@@ -557,10 +557,10 @@ export default class BoardUtils {
     }
 
     public static getFreeFrontRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row + index
             };
@@ -577,10 +577,10 @@ export default class BoardUtils {
     }
 
     public static getFreeBackRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row - index
             };
@@ -597,10 +597,10 @@ export default class BoardUtils {
     }
 
     public static getFreeBackLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row - index
             };
@@ -617,10 +617,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedBackSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column,
                 row: piece.position.row - index
             };
@@ -635,10 +635,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedFrontSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column,
                 row: piece.position.row + index
             };
@@ -654,10 +654,10 @@ export default class BoardUtils {
 
 
     public static getOccupiedLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row
             };
@@ -672,10 +672,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row
             };
@@ -690,10 +690,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedFrontLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row + index
             };
@@ -708,10 +708,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedFrontRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row + index
             };
@@ -726,10 +726,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedBackRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column + index,
                 row: piece.position.row - index
             };
@@ -744,10 +744,10 @@ export default class BoardUtils {
     }
 
     public static getOccupiedBackLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-        let squaresToMove: Position[] = [];
+        const squaresToMove: Position[] = [];
 
         for (let index = 1; index <= maxSquares; index++) {
-            let squareToAdd = {
+            const squareToAdd = {
                 column: piece.position.column - index,
                 row: piece.position.row - index
             };
