@@ -12,46 +12,6 @@ export default class PieceUtils {
         return color === Color.WHITE ? Color.BLACK : Color.WHITE;
     }
 
-    public static getSymbol(type: PieceType, color: Color): string {
-        if (color === Color.WHITE) {
-            switch (type) {
-                case PieceType.KING:
-                    return "♔"
-                case PieceType.QUEEN:
-                    return "♕"
-                case PieceType.ROOK:
-                    return "♖"
-                case PieceType.BISHOP:
-                    return "♗"
-                case PieceType.KNIGHT:
-                    return "♘"
-                case PieceType.PAWN:
-                    return "♙"
-                default:
-                    return "";
-            }
-        }
-        else {
-            switch (type) {
-                case PieceType.KING:
-                    return "♚"
-                case PieceType.QUEEN:
-                    return "♛"
-                case PieceType.ROOK:
-                    return "♜"
-                case PieceType.BISHOP:
-                    return "♝"
-                case PieceType.KNIGHT:
-                    return "♞"
-                case PieceType.PAWN:
-                    return "♟︎"
-                default:
-                    return "";
-            }
-        }
-    }
-
-    
     public static getPieceChar(type: PieceType, color: Color): string {
         if (color === Color.WHITE) {
             switch (type) {

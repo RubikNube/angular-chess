@@ -20,8 +20,8 @@ export default class PositionUtils {
     }
 
     public static calculateDistance(positionA: Position, positionB: Position): number {
-        let rowDistance: number = Math.abs(positionA.row - positionB.row);
-        let columnDistance: number = Math.abs(positionA.column - positionB.column);
+        const rowDistance: number = Math.abs(positionA.row - positionB.row);
+        const columnDistance: number = Math.abs(positionA.column - positionB.column);
 
         return Math.max(rowDistance, columnDistance);
     }
@@ -39,7 +39,7 @@ export default class PositionUtils {
     }
 
     public static getPositionFromCoordinate(coordinate: string): Position | undefined {
-        let matching = coordinate.match("^[a-h][1-8]$");
+        const matching = coordinate.match("^[a-h][1-8]$");
 
         if (matching !== null) {
             return {
@@ -61,18 +61,18 @@ export default class PositionUtils {
     }
 
     public static isFree(board: Board, position: Position): boolean {
-        let result = PositionUtils.getPieceOnPos(board, position) === undefined;
+        const result = PositionUtils.getPieceOnPos(board, position) === undefined;
         console.log("isFree position:" + JSON.stringify(position) + ", result: " + result);
         return result;
     }
 
     public static getSurroundingSquares(piece: Piece): Position[] {
-        let fieldsToMove: Position[] = [];
+        const fieldsToMove: Position[] = [];
 
         for (let r: number = -1; r <= 1; r++) {
             for (let c: number = -1; c <= 1; c++) {
                 if (!(r == 0 && c == 0)) {
-                    let field: Position = {
+                    const field: Position = {
                         row: piece.position.row + r,
                         column: piece.position.column + c
                     }
