@@ -1,4 +1,4 @@
-name: NodeJS with Grunt
+name: Build and test
 
 on:
   push:
@@ -26,7 +26,6 @@ jobs:
       run: |
         cd angular-chess/
         npm install
-        grunt
         
   test:
     runs-on: ubuntu-latest
@@ -47,7 +46,6 @@ jobs:
       run: |
         cd angular-chess/
         npm install
-        grunt
         
     - name: Test
       run: ng test
