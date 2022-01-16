@@ -23,14 +23,18 @@ jobs:
       with:
         node-version: '16.x'
 
-    - name: echo files
-      run: ls
     - name: Install dependencies
-      run: npm ci
+      run: |
+        cd angular-chess/
+        npm ci
     - name: Build
-      run: npm run build:ci
+      run: |
+        cd angular-chess/
+        npm run build:ci
     - name: Test
-      run: npm run test:ci
+      run: |
+        cd angular-chess/
+        npm run test:ci
 
     - name: Archive build
       if: success()
