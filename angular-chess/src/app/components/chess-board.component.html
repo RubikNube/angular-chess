@@ -17,3 +17,5 @@
   <input id="fen" #fen name="fen" type="text" pInputText placeholder="FEN">
   <button type="button" pButton pRipple label="Import FEN" (click)="this.boardService.importFen(fen.value)"></button>
 </div>
+
+<p-toast position="top-center"></p-toast>

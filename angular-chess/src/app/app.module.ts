@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ButtonModule } from 'primeng/button';
+import { DragDropModule } from 'primeng/dragdrop';
+import { SplitterModule } from "primeng/splitter";
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 import { AppComponent } from './app.component';
 import { ChessBoardComponent } from './components/chess-board.component';
-import {ButtonModule} from 'primeng/button';
-import { FormsModule } from '@angular/forms';
-import {DragDropModule} from 'primeng/dragdrop';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
-import { SplitterModule } from "primeng/splitter";
-import {TableModule} from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,9 @@ import {TableModule} from 'primeng/table';
     FormsModule,
     DragDropModule,
     SplitterModule,
-    TableModule
+    TableModule,
+    ToastModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

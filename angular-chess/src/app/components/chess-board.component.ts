@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { distinctUntilChanged, tap } from 'rxjs';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
@@ -12,7 +14,8 @@ import PositionUtils from '../utils/position.utils';
 @Component({
   selector: 'app-chess-board',
   templateUrl: './chess-board.component.html',
-  styleUrls: ['./chess-board.component.scss']
+  styleUrls: ['./chess-board.component.scss'],
+  providers: [MessageService]
 })
 export class ChessBoardComponent {
   private dragPos: Position = { row: 0, column: 0 };
@@ -22,8 +25,22 @@ export class ChessBoardComponent {
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
     private moveGenerationService: MoveGenerationService,
-    private moveExecutionService: MoveExecutionService) {
+    private moveExecutionService: MoveExecutionService,
+    private messageService: MessageService) {
     boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+
+    boardService.getResult$()
+      .pipe(
+        tap(r => console.log("getResult: " + r)),
+        distinctUntilChanged())
+      .subscribe(r => this.showResultToast(r));
+  }
+
+  private showResultToast(result: Result) {
+    console.log("showResultToast: " + result);
+    if (result !== Result.UNKNOWN) {
+      this.messageService.add({ severity: 'info', summary: 'Info', detail: this.getResultRepresentation(result) });
+    }
   }
 
   public getResultRepresentation(result: Result | null): string {
@@ -35,11 +52,11 @@ export class ChessBoardComponent {
       case Result.UNKNOWN:
         return "*";
       case Result.REMIS:
-        return "½ : ½";
+        return "Remis";
       case Result.WHITE_WIN:
-        return "1 : 0";
+        return "White wins";
       case Result.BLACK_WIN:
-        return "0 : 1";
+        return "Black wins";
     }
   }
 

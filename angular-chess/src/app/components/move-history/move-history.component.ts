@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
-import { FullMove, Move, Piece } from 'src/app/types/pieces.t';
+import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
@@ -34,7 +34,11 @@ export class MoveHistoryComponent {
   }
 
   public getPieceChar(move: Move): string {
-    if (move.isLongCastle || move.isShortCastle) {
+    if (move === undefined) {
+      return "";
+    }
+
+    if (move?.isLongCastle || move?.isShortCastle) {
       return "";
     }
     else {

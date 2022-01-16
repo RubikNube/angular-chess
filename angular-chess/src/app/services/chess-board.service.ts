@@ -32,6 +32,7 @@ export class ChessBoardService {
   }
 
   public updateResult(result: Result) {
+    console.log("updateResult: " + result)
     const currentBoard = this.board$$.getValue();
     currentBoard.result = result;
 
@@ -174,6 +175,7 @@ export class ChessBoardService {
     console.log("importFen: " + newFen);
 
     this.moveHistoryService.resetMoveHistory();
+    this.updateResult(Result.UNKNOWN);
 
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
 
