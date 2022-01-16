@@ -23,6 +23,8 @@ jobs:
       with:
         node-version: '16.x'
 
+    - name: LS
+      run: ls
     - name: Install dependencies
       run: npm ci
     - name: Build
