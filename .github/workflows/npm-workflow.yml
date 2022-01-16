@@ -24,9 +24,7 @@ jobs:
         node-version: '16.x'
 
     - name: Install dependencies
-      run: |
-      ls 
-      npm ci
+      run: npm ci
     - name: Build
       run: npm run build:ci
     - name: Test
