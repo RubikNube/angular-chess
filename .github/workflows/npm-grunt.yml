@@ -24,6 +24,7 @@ jobs:
 
     - name: Build
       run: |
+        cd angular-chess/
         npm install
         grunt
         
@@ -44,6 +45,7 @@ jobs:
 
     - name: Build
       run: |
+        cd angular-chess/
         npm install
         grunt
         
