@@ -80,7 +80,7 @@ export class ChessBoardComponent {
     this.dragPos = this.positioningService.getMousePosition(e);
     let currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
-    if (this.grabbedPiece !== undefined) {
+    if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
       let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(m => {
         return {
           position: m.to,
