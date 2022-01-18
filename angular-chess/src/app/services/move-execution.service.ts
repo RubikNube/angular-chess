@@ -78,7 +78,7 @@ export class MoveExecutionService {
       this.boardService.clearEnPassantSquares();
     }
 
-    if (!(move.isShortCastle || move.isLongCastle)) {
+    if (!(this.isCastle(move))) {
       this.movePiece(move);
     }
 
@@ -93,6 +93,10 @@ export class MoveExecutionService {
         this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
     }
+  }
+
+  private isCastle(move: Move): boolean | undefined {
+    return move.isShortCastle || move.isLongCastle;
   }
 
   private capturePiece(move: Move): void {
