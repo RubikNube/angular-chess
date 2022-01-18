@@ -74,6 +74,10 @@ export class MoveExecutionService {
   }
 
   private finishMove(move: Move): void {
+    if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
+      this.boardService.clearEnPassantSquares();
+    }
+
     if (!(move.isShortCastle || move.isLongCastle)) {
       this.movePiece(move);
     }
@@ -88,11 +92,6 @@ export class MoveExecutionService {
       if (move.isMate) {
         this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
-    }
-
-
-    if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
-      this.boardService.clearEnPassantSquares();
     }
   }
 
