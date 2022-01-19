@@ -74,7 +74,11 @@ export class MoveExecutionService {
   }
 
   private finishMove(move: Move): void {
-    if (!(move.isShortCastle || move.isLongCastle)) {
+    if (!this.hasPawnGoneLongStep(move)) {
+      this.boardService.clearEnPassantSquares();
+    }
+
+    if (!(this.isCastle(move))) {
       this.movePiece(move);
     }
 
@@ -89,11 +93,14 @@ export class MoveExecutionService {
         this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
     }
+  }
 
+  private hasPawnGoneLongStep(move: Move): boolean {
+    return move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2;
+  }
 
-    if (!(move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2)) {
-      this.boardService.clearEnPassantSquares();
-    }
+  private isCastle(move: Move): boolean | undefined {
+    return move.isShortCastle || move.isLongCastle;
   }
 
   private capturePiece(move: Move): void {
