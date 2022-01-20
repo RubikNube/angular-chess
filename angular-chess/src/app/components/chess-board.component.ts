@@ -115,7 +115,7 @@ export class ChessBoardComponent {
 
   }
 
-  public getCursor(piece: Piece) {
-    return "grab";
+  public getCursor(piece: Piece, board: Board) {
+    return piece.color === board.playerToMove ? "grab" : "default";
   }
 }

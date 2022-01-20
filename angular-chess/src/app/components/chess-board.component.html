@@ -1,8 +1,9 @@
 <div class="board">
   <div *ngFor="let piece of this.boardService.getPieces()" class="piece piece-{{piece.color}}"
     [style.top.%]="getTopPosition(piece.position)" [style.left.%]="getLeftPosition(piece.position)"
-    [style.cursor]="getCursor(piece)" pDraggable="piece" (onDragStart)="dragStart($event,piece)"
-    (onDragEnd)="dragEnd($event)">
+    [style.cursor]="getCursor(piece, this.boardService.getBoard())" pDraggable="piece"
+    [pDraggableDisabled]="piece.color !== this.boardService.getBoard().playerToMove"
+    (onDragStart)="dragStart($event,piece)" (onDragEnd)="dragEnd($event)">
     {{getBlackPieceChar(piece)}}
   </div>
 
