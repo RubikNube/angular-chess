@@ -8,6 +8,7 @@ export type Board = {
     enPassantSquare?: Position;
     playerToMove: Color;
     result: Result;
+    plyCount?: number;
 }
 
 export enum Color {

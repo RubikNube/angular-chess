@@ -75,6 +75,10 @@ export class ChessBoardService {
     }));
   }
 
+  public getPlyCount(): number | undefined {
+    return this.board$$.getValue().plyCount;
+  }
+
   public setCastleRights(castleRights: CastleRights): void {
     let currentBoard: Board = this.board$$.getValue();
 
