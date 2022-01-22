@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -12,7 +13,8 @@ import PositionUtils from 'src/app/utils/position.utils';
 export class MoveHistoryComponent {
   fullMoveHistory: FullMove[] = [];
 
-  constructor(private moveHistoryService: MoveHistoryService) {
+  constructor(private moveHistoryService: MoveHistoryService,
+    public boardService: ChessBoardService) {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
       p => {
         this.fullMoveHistory = p;

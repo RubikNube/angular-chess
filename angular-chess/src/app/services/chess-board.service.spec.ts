@@ -147,6 +147,18 @@ describe('ChessBoardService', () => {
 
       expect(service.getPlyCount()).toEqual(42);
     });
+
+    it('should set number of moves to 22', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 22");
+
+      expect(service.getMoveCount()).toEqual(22);
+    });
+
+    it('should set number of moves to 42', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 42");
+
+      expect(service.getMoveCount()).toEqual(42);
+    });
   });
 });
 
