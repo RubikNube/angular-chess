@@ -105,6 +105,12 @@ export default class BoardUtils {
             currentBoard.enPassantSquare = enPassantPosition;
         }
 
+        if (fenSections.length > 4) {
+            const plyCount = fenSections[4];
+
+            currentBoard.plyCount = +plyCount;
+        }
+
         return currentBoard;
     }
 

@@ -135,6 +135,18 @@ describe('ChessBoardService', () => {
 
       expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 6 });
     });
+
+    it('should set number of plies to 24', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 24 1");
+
+      expect(service.getPlyCount()).toEqual(24);
+    });
+
+    it('should set number of plies to 42', () => {
+      service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 42 1");
+
+      expect(service.getPlyCount()).toEqual(42);
+    });
   });
 });
 
