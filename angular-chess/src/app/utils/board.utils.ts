@@ -11,6 +11,7 @@ export default class BoardUtils {
         blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
         playerToMove: Color.WHITE,
         result: Result.UNKNOWN,
+        moveCount: 0
     };
 
     public static loadBoardFromFen(newFen: string): Board {
@@ -109,6 +110,12 @@ export default class BoardUtils {
             const plyCount = fenSections[4];
 
             currentBoard.plyCount = +plyCount;
+        }
+
+        if (fenSections.length > 5) {
+            const moveCount = fenSections[5];
+
+            currentBoard.moveCount = +moveCount;
         }
 
         return currentBoard;
@@ -422,7 +429,7 @@ export default class BoardUtils {
             playerToMove: board.playerToMove,
             result: board.result,
             enPassantSquare: board.enPassantSquare,
-            moveNumber: board.moveNumber
+            moveCount: board.moveCount
         };
 
         const foundPos: Position | undefined = copiedBoard.pieces

@@ -4,7 +4,7 @@ export type Board = {
     pieces: Piece[];
     whiteCastleRights: CastleRights;
     blackCastleRights: CastleRights;
-    moveNumber?: number;
+    moveCount: number;
     enPassantSquare?: Position;
     playerToMove: Color;
     result: Result;

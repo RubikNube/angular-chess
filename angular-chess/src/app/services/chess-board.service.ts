@@ -16,6 +16,7 @@ export class ChessBoardService {
     blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
     playerToMove: Color.WHITE,
     result: Result.UNKNOWN,
+    moveCount: 1
   };
   private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   private board$: Observable<Board> = this.board$$.asObservable();
@@ -77,6 +78,10 @@ export class ChessBoardService {
 
   public getPlyCount(): number | undefined {
     return this.board$$.getValue().plyCount;
+  }
+
+  public getMoveCount(): number | undefined {
+    return this.board$$.getValue().moveCount;
   }
 
   public setCastleRights(castleRights: CastleRights): void {
