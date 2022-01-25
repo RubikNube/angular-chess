@@ -1,47 +1,47 @@
 import { Piece } from "./pieces.t"
 
 export type Board = {
-    pieces: Piece[];
-    whiteCastleRights: CastleRights;
-    blackCastleRights: CastleRights;
-    moveCount: number;
-    enPassantSquare?: Position;
-    playerToMove: Color;
-    result: Result;
-    plyCount?: number;
+  pieces: Piece[];
+  whiteCastleRights: CastleRights;
+  blackCastleRights: CastleRights;
+  moveCount: number;
+  enPassantSquare?: Position;
+  playerToMove: Color;
+  result: Result;
+  plyCount?: number;
 }
 
 export enum Color {
-    WHITE = "WHITE",
-    BLACK = "BLACK"
+  WHITE = "WHITE",
+  BLACK = "BLACK"
 }
 
 export type Position = {
-    row: number;
-    column: number
+  row: number;
+  column: number
 }
 
 export type Square = {
-    highlight: HighlightColor;
-    position: Position
+  highlight: HighlightColor;
+  position: Position
 }
 
 export enum HighlightColor {
-    NONE = "NONE",
-    YELLOW = "YELLOW",
-    GREEN = "GREEN",
-    RED = "RED"
+  NONE = "NONE",
+  YELLOW = "YELLOW",
+  GREEN = "GREEN",
+  RED = "RED"
 }
 
 export type CastleRights = {
-    player: Color,
-    canShortCastle: boolean,
-    canLongCastle: boolean
+  player: Color,
+  canShortCastle: boolean,
+  canLongCastle: boolean
 }
 
 export enum Result {
-    UNKNOWN = "UNKNOWN",
-    REMIS = "REMIS",
-    WHITE_WIN = "WHITE_WIN",
-    BLACK_WIN = "BLACK_WIN"
+  UNKNOWN = "UNKNOWN",
+  REMIS = "REMIS",
+  WHITE_WIN = "WHITE_WIN",
+  BLACK_WIN = "BLACK_WIN"
 }

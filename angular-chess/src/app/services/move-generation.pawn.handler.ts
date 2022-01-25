@@ -110,6 +110,4 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
         }
       });
   }
-
-
 }

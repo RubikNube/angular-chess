@@ -1,8 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Color } from '../types/board.t';
-
 import { ChessBoardComponent } from './chess-board.component';
-import {  PieceType } from '../types/pieces.t';
 
 describe('ChessBoardComponent', () => {
   let component: ChessBoardComponent;
