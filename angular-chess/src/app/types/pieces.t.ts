@@ -1,34 +1,34 @@
 import { Color, Position } from "./board.t"
 
 export type Piece = {
-    type: PieceType;
-    color: Color;
-    position: Position;
+  type: PieceType;
+  color: Color;
+  position: Position;
 }
 
 export enum PieceType {
-    KING = "KING",
-    QUEEN = "QUEEN",
-    BISHOP = "BISHOP",
-    KNIGHT = "KNIGHT",
-    PAWN = "PAWN",
-    ROOK = "ROOK"
+  KING = "KING",
+  QUEEN = "QUEEN",
+  BISHOP = "BISHOP",
+  KNIGHT = "KNIGHT",
+  PAWN = "PAWN",
+  ROOK = "ROOK"
 }
 
 export type Move = {
-    piece: Piece;
-    from: Position;
-    to: Position;
-    capturedPiece?: Piece;
-    isEnPassant?: boolean;
-    isShortCastle?: boolean;
-    isLongCastle?: boolean;
-    isCheck?: boolean;
-    isMate?: boolean;
+  piece: Piece;
+  from: Position;
+  to: Position;
+  capturedPiece?: Piece;
+  isEnPassant?: boolean;
+  isShortCastle?: boolean;
+  isLongCastle?: boolean;
+  isCheck?: boolean;
+  isMate?: boolean;
 }
 
 export type FullMove = {
-    count: number,
-    whiteMove?: Move,
-    blackMove?: Move
+  count: number,
+  whiteMove?: Move,
+  blackMove?: Move
 }

@@ -1,23 +1,32 @@
-<p-table [value]="fullMoveHistory" [scrollable]="true" scrollHeight="90vh" responsiveLayout="scroll"
-    [resizableColumns]="true" styleClass="p-datatable-lg">
-    <ng-template pTemplate="header">
-        <tr>
-            <th>Move</th>
-            <th>White</th>
-            <th>Black</th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-fullMove>
-        <tr>
-            <td>{{this.boardService.getMoveCount() + fullMove?.count}}</td>
-            <td>
-                <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
-                {{getMoveRepresentation(fullMove?.whiteMove)}}
-            </td>
-            <td>
-                <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
-                {{getMoveRepresentation(fullMove?.blackMove)}}
-            </td>
-        </tr>
-    </ng-template>
+<p-table
+  [value]="fullMoveHistory"
+  [scrollable]="true"
+  scrollHeight="90vh"
+  responsiveLayout="scroll"
+  [resizableColumns]="true"
+  styleClass="p-datatable-lg"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Move</th>
+      <th>White</th>
+      <th>Black</th>
+    </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-fullMove
+  >
+    <tr>
+      <td>{{this.boardService.getMoveCount() + fullMove?.count}}</td>
+      <td>
+        <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
+        {{getMoveRepresentation(fullMove?.whiteMove)}}
+      </td>
+      <td>
+        <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
+        {{getMoveRepresentation(fullMove?.blackMove)}}
+      </td>
+    </tr>
+  </ng-template>
 </p-table>

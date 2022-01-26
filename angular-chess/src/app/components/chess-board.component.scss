@@ -1,101 +1,101 @@
 div.board {
-    background-image: url("../../../images/Board.png");
-    background-repeat: no-repeat;
-    background-size: 100%;
-    border-radius: 3px;
-    max-width: 99vh;
-    max-height: 99vh;
-    box-sizing: border-box;
-    display: block;
-    overflow: initial;
-    position: relative;
-    margin: 2.5vw 0;
-    width: 75vh;
-    height: 75vh;
+  background-image: url("../../../images/Board.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  border-radius: 3px;
+  max-width: 99vh;
+  max-height: 99vh;
+  box-sizing: border-box;
+  display: block;
+  overflow: initial;
+  position: relative;
+  margin: 2.5vw 0;
+  width: 75vh;
+  height: 75vh;
 }
 
 div.piece {
-    height: 12.5%;
-    width: 12.5%;
-    font-size: 9.3vh;
-    background-repeat: no-repeat;
-    background-size: 100%;
-    z-index: 20;
-    position: absolute;
-    font-family: "Chess Motif";
-    font-weight: normal;
-    font-style: normal;
+  height: 12.5%;
+  width: 12.5%;
+  font-size: 9.3vh;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  z-index: 20;
+  position: absolute;
+  font-family: "Chess Motif";
+  font-weight: normal;
+  font-style: normal;
 }
 
 div.piece-WHITE {
-    color: white;
+  color: white;
 }
 
 div.piece-BLACK {
-    color: black;
+  color: black;
 }
 
 div.field {
-    height: 12.5%;
-    width: 12.5%;
-    z-index: 10;
-    position: absolute;
-    opacity: 50%;
+  height: 12.5%;
+  width: 12.5%;
+  z-index: 10;
+  position: absolute;
+  opacity: 50%;
 }
 
 div.color-RED {
-    background: red;
+  background: red;
 }
 
 div.color-GREEN {
-    background: green;
+  background: green;
 }
 
 div.color-YELLOW {
-    background: yellow;
+  background: yellow;
 }
 
 .cdk-drag {
-    &.cdk-drag-preview > * {
-        cursor: move;
-        cursor: grabbing;
-        cursor: -moz-grabbing;
-        cursor: -webkit-grabbing;
-    }
+  &.cdk-drag-preview > * {
+    cursor: move;
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+  }
 
-    &.cdk-drag-placeholder > * {
-        opacity: 0;
-    }
+  &.cdk-drag-placeholder > * {
+    opacity: 0;
+  }
 }
 
 button {
-    background-color: #238522;
-    margin-left: 1em;
-    margin-top: 1em;
-    margin-bottom: 1em;
+  background-color: #238522;
+  margin-left: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 div.board-btn-group {
-    margin-top: 1em;
+  margin-top: 1em;
 }
 
 div.WHITE-playerToMove {
-    width: 3em;
-    height: 3em;
-    background-color: white;
+  width: 3em;
+  height: 3em;
+  background-color: white;
 }
 
 div.BLACK-playerToMove {
-    width: 3em;
-    height: 3em;
-    background-color: black;
+  width: 3em;
+  height: 3em;
+  background-color: black;
 }
 
 div.result {
-    width: 3em;
-    height: 3em;
-    background-color: #238522;
-    color: white;
-    padding-left: 0.5em;
-    padding-top: 1em;
+  width: 3em;
+  height: 3em;
+  background-color: #238522;
+  color: white;
+  padding-left: 0.5em;
+  padding-top: 1em;
 }

@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { PositioningService } from './positioning.service';
 
 describe('PositioningService', () => {

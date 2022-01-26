@@ -1,8 +1,12 @@
 {
-    "editor.formatOnSave": true,
-    "[typescript]": {
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true
-        }
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "html.format.wrapAttributes": "force-expand-multiline",
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
     }
+  }
 }
