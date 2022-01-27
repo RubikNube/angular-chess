@@ -111,14 +111,14 @@ export class MoveExecutionService {
       this.boardService.removePiece(move.capturedPiece);
     }
     move.piece.position = move.to;
-    this.boardService.addPiece(move.piece);
+    this.boardService.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
   }
 
   private movePiece(move: Move): void {
     console.log("movePiece: " + JSON.stringify(move));
     this.boardService.removePiece(move.piece);
     move.piece.position = move.to;
-    this.boardService.addPiece(move.piece);
+    this.boardService.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
   }
 
   private executeLongCastle(move: Move): void {
