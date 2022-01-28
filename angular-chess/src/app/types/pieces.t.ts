@@ -25,6 +25,7 @@ export type Move = {
   isLongCastle?: boolean;
   isCheck?: boolean;
   isMate?: boolean;
+  promotedPiece?: Piece;
 }
 
 export type FullMove = {

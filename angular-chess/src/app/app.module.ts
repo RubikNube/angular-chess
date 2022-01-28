@@ -4,6 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { DragDropModule } from 'primeng/dragdrop';
+import { ListboxModule } from 'primeng/listbox';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SplitterModule } from "primeng/splitter";
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
@@ -25,7 +27,9 @@ import { MoveHistoryComponent } from './components/move-history/move-history.com
     SplitterModule,
     TableModule,
     ToastModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    OverlayPanelModule,
+    ListboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

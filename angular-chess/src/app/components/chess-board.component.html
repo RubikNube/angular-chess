@@ -21,6 +21,15 @@
   ></div>
 </div>
 
+<p-overlayPanel #op>
+  <ng-template pTemplate>
+    <p-listbox
+      [options]="possiblePromotionPieces"
+      (onClick)="selectPromotionPiece($event)"
+    ></p-listbox>
+  </ng-template>
+</p-overlayPanel>
+
 <div class="p-inputgroup board-btn-group">
   <div class="{{this.boardService.getPlayerToMove$()|async}}-playerToMove"></div>
   <div class="result">{{getResultRepresentation(this.boardService.getResult$()|async)}}</div>
