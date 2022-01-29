@@ -35,6 +35,11 @@ export class MoveHistoryComponent {
     }
   }
 
+
+  public getPromotionRepresentation(move: Move): string {
+    return move.promotedPiece ? "=" + PieceUtils.getPieceChar(move.promotedPiece.type, move.promotedPiece.color) : "";
+  }
+
   public getPieceChar(move: Move): string {
     if (move === undefined) {
       return "";
