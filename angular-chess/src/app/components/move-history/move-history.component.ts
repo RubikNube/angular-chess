@@ -31,7 +31,7 @@ export class MoveHistoryComponent {
     } else if (move?.isLongCastle) {
       return "O-O-O";
     } else {
-      return PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move) + this.getCheckOrMateRepresentation(move);
+      return PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move);
     }
   }
 
@@ -53,7 +53,7 @@ export class MoveHistoryComponent {
     }
   }
 
-  private getCheckOrMateRepresentation(move: Move): string {
+  public getCheckOrMateRepresentation(move: Move): string {
     return move.isCheck ? move.isMate ? "#" : " +" : "";
   }
 

@@ -31,7 +31,7 @@ export class MoveGenerationService {
 
   public isCheck(board: Board, move: Move): boolean {
     let validCaptures = this.getValidCaptures(board, {
-      type: move.piece.type,
+      type: move.promotedPiece ? move.promotedPiece.type : move.piece.type,
       color: move.piece.color,
       position: move.to
     }, true);
