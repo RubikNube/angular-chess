@@ -22,10 +22,18 @@
       <td>
         <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
         {{getMoveRepresentation(fullMove?.whiteMove)}}
+        <div
+          *ngIf="fullMove?.whiteMove?.promotedPiece"
+          class="chess-motif"
+        >{{this.getPromotionRepresentation(fullMove?.whiteMove)}}</div>
       </td>
       <td>
         <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
         {{getMoveRepresentation(fullMove?.blackMove)}}
+        <div
+          *ngIf="fullMove?.blackMove?.promotedPiece"
+          class="chess-motif"
+        >{{this.getPromotionRepresentation(fullMove?.blackMove)}}</div>
       </td>
     </tr>
   </ng-template>
