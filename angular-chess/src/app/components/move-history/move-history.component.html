@@ -26,6 +26,7 @@
           *ngIf="fullMove?.whiteMove?.promotedPiece"
           class="chess-motif"
         >{{this.getPromotionRepresentation(fullMove?.whiteMove)}}</div>
+        {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
       </td>
       <td>
         <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
@@ -34,6 +35,7 @@
           *ngIf="fullMove?.blackMove?.promotedPiece"
           class="chess-motif"
         >{{this.getPromotionRepresentation(fullMove?.blackMove)}}</div>
+        {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
       </td>
     </tr>
   </ng-template>

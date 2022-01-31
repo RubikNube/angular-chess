@@ -84,7 +84,8 @@ export class MoveExecutionService {
 
     this.boardService.togglePlayerToMove();
 
-    this.moveHistoryService.addMoveToHistory(move);
+
+    move.isCheck = this.moveGenerationService.isCheck(this.boardService.getBoard(), move);
 
     if (move.isCheck) {
       move.isMate = this.moveGenerationService.isMate(this.boardService.getBoard());
@@ -93,6 +94,8 @@ export class MoveExecutionService {
         this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
     }
+
+    this.moveHistoryService.addMoveToHistory(move);
   }
 
   private hasPawnGoneLongStep(move: Move): boolean {
