@@ -25,13 +25,7 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       ...leftSquares,
       ...rightSquares];
 
-    return fieldsToMove.map(p => {
-      return {
-        piece: piece,
-        from: piece.position,
-        to: p
-      }
-    });;
+    return fieldsToMove.map(this.mapToMove(piece))
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
@@ -46,13 +40,16 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       ...leftSquares,
       ...rightSquares];
 
-    return fieldsToMove.map(p => {
+    return fieldsToMove.map(this.mapToMove(piece));
+  }
+
+  private mapToMove(piece: Piece): (moveTo: Position) => Move {
+    return p => {
       return {
         piece: piece,
         from: piece.position,
         to: p
-      }
-    });
+      };
+    };
   }
-
 }
