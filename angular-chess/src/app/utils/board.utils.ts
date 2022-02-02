@@ -5,6 +5,8 @@ import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
 export default class BoardUtils {
+  private static readonly PIECES_MATCHER_CHARS = "[R|B|Q|K|N|P]";
+
   private static initialBoard: Board = {
     pieces: [],
     whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
@@ -16,77 +18,23 @@ export default class BoardUtils {
 
   public static loadBoardFromFen(newFen: string): Board {
     const currentBoard: Board = BoardUtils.initialBoard;
-    const pieces: Piece[] = [];
 
     const fenSections = newFen.split(' ');
-
     const fenRows: string[] = fenSections[0].split("/");
-    for (let j = 0; j < fenRows.length; j++) {
-      const fenRow: string = fenRows[j];
-      let currentPos: number = 0;
-      for (let i = 0; i < fenRow.length; i++) {
-        const currentChar = fenRow[i];
-        console.log("currentChar " + currentChar);
 
-        if (currentChar.match("\\d")) {
-          const columnsToAdd = parseInt(currentChar);
-          console.log("columnsToAdd " + columnsToAdd);
-          currentPos += columnsToAdd;
-        }
-        else if (currentChar.toUpperCase().match("[R|B|Q|K|N|P]")) {
-          const newPiece: Piece = {
-            color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
-            type: BoardUtils.getPiece(currentChar),
-            position: { row: 8 - j, column: currentPos + 1 }
-          };
-
-          console.log("add piece " + JSON.stringify(newPiece))
-
-          pieces.push(newPiece);
-          currentPos++;
-        } else {
-          console.error("Not a number or a piece char: " + currentChar);
-        }
-      }
-    };
-
-    currentBoard.pieces = pieces;
+    currentBoard.pieces = this.readPieces(fenRows);
 
     if (fenSections.length > 1) {
       let playerChar = fenSections[1];
 
-      currentBoard.playerToMove = playerChar === 'w' ? Color.WHITE : Color.BLACK;
+      currentBoard.playerToMove = this.readPlayerToMove(playerChar);
     }
 
 
     if (fenSections.length > 2) {
       const castleFen = fenSections[2];
 
-      const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-      const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
-
-      for (let index = 0; index < castleFen.length; index++) {
-        const castleChar = castleFen[index];
-
-
-        switch (castleChar) {
-          case 'K':
-            whiteCastleRights.canShortCastle = true;
-            break;
-          case 'Q':
-            whiteCastleRights.canLongCastle = true;
-            break;
-          case 'k':
-            blackCastleRights.canShortCastle = true;
-            break;
-          case 'q':
-            blackCastleRights.canLongCastle = true;
-            break;
-
-          default:
-            break;
-        }
-      }
+      const { whiteCastleRights, blackCastleRights }: { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } = this.readCastleRights(castleFen);
 
       currentBoard.whiteCastleRights = whiteCastleRights;
       currentBoard.blackCastleRights = blackCastleRights;
@@ -121,6 +69,65 @@ export default class BoardUtils {
     return currentBoard;
   }
 
+  private static readCastleRights(castleFen: string): { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } {
+    const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+    const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+
+    for (let castleChar of castleFen) {
+      switch (castleChar) {
+        case 'K':
+          whiteCastleRights.canShortCastle = true;
+          break;
+        case 'Q':
+          whiteCastleRights.canLongCastle = true;
+          break;
+        case 'k':
+          blackCastleRights.canShortCastle = true;
+          break;
+        case 'q':
+          blackCastleRights.canLongCastle = true;
+          break;
+
+        default:
+          break;
+      }
+    }
+    return { whiteCastleRights, blackCastleRights };
+  }
+
+  private static readPlayerToMove(playerChar: string): Color {
+    return playerChar === 'w' ? Color.WHITE : Color.BLACK;
+  }
+
+  private static readPieces(fenRows: string[]): Piece[] {
+    const pieces = [];
+
+    for (let j = 0; j < fenRows.length; j++) {
+      const fenRow: string = fenRows[j];
+      let currentPos: number = 0;
+
+      for (let currentChar of fenRow) {
+        if (currentChar.match("\\d")) {
+          const columnsToAdd = parseInt(currentChar);
+          currentPos += columnsToAdd;
+        }
+        else if (currentChar.toUpperCase().match(this.PIECES_MATCHER_CHARS)) {
+          const newPiece: Piece = {
+            color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
+            type: BoardUtils.getPiece(currentChar),
+            position: { row: 8 - j, column: currentPos + 1 }
+          };
+
+          pieces.push(newPiece);
+          currentPos++;
+        } else {
+          console.error("Not a number or a piece char: " + currentChar);
+        }
+      }
+    }
+
+    return pieces;
+  }
 
   public static getPiece(pieceChar: string): PieceType {
     switch (pieceChar.toUpperCase()) {
@@ -159,7 +166,7 @@ export default class BoardUtils {
           }
           else {
             PositionUtils.getSurroundingSquares(p)
-              .filter(p => PositionUtils.isOnBoard(p))
+              .filter(BoardUtils.isOnBoardFunction())
               .forEach(m => {
                 attackedSquares.add(m);
               })
@@ -187,6 +194,10 @@ export default class BoardUtils {
     return result;
   }
 
+  private static isOnBoardFunction(): (value: Position, index: number, array: Position[]) => unknown {
+    return p => PositionUtils.isOnBoard(p);
+  }
+
   public static calculateMoveSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
     const attackedSquares: Set<Position> = new Set<Position>();
 
@@ -199,7 +210,7 @@ export default class BoardUtils {
           }
           else {
             PositionUtils.getSurroundingSquares(p)
-              .filter(p => PositionUtils.isOnBoard(p))
+              .filter(BoardUtils.isOnBoardFunction())
               .forEach(m => {
                 attackedSquares.add(m);
               })
@@ -437,9 +448,7 @@ export default class BoardUtils {
       .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p, false).map(m => m.to))
       .find(p => PositionUtils.positionEquals(p, piece.position));
 
-    const isProtected = foundPos !== undefined;
-
-    return isProtected;
+    return foundPos !== undefined;
   }
 
   private static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {
