@@ -239,35 +239,14 @@ export default class BoardUtils {
   }
 
   public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
-    const king: Piece = BoardUtils.getKing(board, board.playerToMove);
-    const validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
-    const opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
-    const attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
+    const king: Piece = this.getKing(board, board.playerToMove);
 
-
-    if (validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position)) {
-      const attackingMoves: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, king);
+    if (this.hasNoEscapeSquares(moveGenerationService, board, king)) {
+      const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
 
       if (attackingMoves.length === 1) {
-        const attackingPosition: Position = attackingMoves[0].from;
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
-
-        if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
-          const movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
-
-          if (movesThatCaptureCheckGivingPiece.length === 1) {
-            return false;
-          }
-          else {
-            return PositionUtils.calculateDistance(king.position, attackingMoves[0].piece.position) === 1;
-          }
-        }
-        else if (BoardUtils.canBeBlocked(moveGenerationService, board, attackingMoves[0], king)) {
-          return false;
-        }
-        else {
-          return true;
-        }
+        return !this.canCaptureCheckGivingPiece(moveGenerationService, board, king, attackingMoves[0])
+          && !this.canBeBlocked(moveGenerationService, board, attackingMoves[0], king);
       }
       else {
         return true;
@@ -276,6 +255,32 @@ export default class BoardUtils {
     else {
       return false;
     }
+  }
+
+  private static canCaptureCheckGivingPiece(moveGenerationService: MoveGenerationService, board: Board, king: Piece, attackingMove: Move) {
+    const attackingPosition: Position = attackingMove.from;
+    const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
+
+    if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
+      const movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMove.piece);
+
+      if (movesThatCaptureCheckGivingPiece.length === 1) {
+        return false;
+      }
+      else {
+        return PositionUtils.calculateDistance(king.position, attackingMove.piece.position) === 1;
+      }
+    }
+
+    return false;
+  }
+
+  private static hasNoEscapeSquares(moveGenerationService: MoveGenerationService, board: Board, king: Piece) {
+    const opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
+    const attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
+    const validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
+
+    return validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position);
   }
 
   public static canBeBlocked(moveGenerationService: MoveGenerationService, board: Board, move: Move, king: Piece) {
