@@ -17,7 +17,7 @@ export default class BoardUtils {
   };
 
   public static loadBoardFromFen(newFen: string): Board {
-    const currentBoard: Board = BoardUtils.initialBoard;
+    const currentBoard: Board = this.initialBoard;
 
     const fenSections = newFen.split(' ');
     const fenRows: string[] = fenSections[0].split("/");
@@ -69,36 +69,6 @@ export default class BoardUtils {
     return currentBoard;
   }
 
-  private static readCastleRights(castleFen: string): { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } {
-    const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-    const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
-
-    for (let castleChar of castleFen) {
-      switch (castleChar) {
-        case 'K':
-          whiteCastleRights.canShortCastle = true;
-          break;
-        case 'Q':
-          whiteCastleRights.canLongCastle = true;
-          break;
-        case 'k':
-          blackCastleRights.canShortCastle = true;
-          break;
-        case 'q':
-          blackCastleRights.canLongCastle = true;
-          break;
-
-        default:
-          break;
-      }
-    }
-    return { whiteCastleRights, blackCastleRights };
-  }
-
-  private static readPlayerToMove(playerChar: string): Color {
-    return playerChar === 'w' ? Color.WHITE : Color.BLACK;
-  }
-
   private static readPieces(fenRows: string[]): Piece[] {
     const pieces = [];
 
@@ -114,7 +84,7 @@ export default class BoardUtils {
         else if (currentChar.toUpperCase().match(this.PIECES_MATCHER_CHARS)) {
           const newPiece: Piece = {
             color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
-            type: BoardUtils.getPiece(currentChar),
+            type: this.getPiece(currentChar),
             position: { row: 8 - j, column: currentPos + 1 }
           };
 
@@ -148,6 +118,36 @@ export default class BoardUtils {
     }
   }
 
+  private static readPlayerToMove(playerChar: string): Color {
+    return playerChar === 'w' ? Color.WHITE : Color.BLACK;
+  }
+
+  private static readCastleRights(castleFen: string): { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } {
+    const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
+    const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+
+    for (let castleChar of castleFen) {
+      switch (castleChar) {
+        case 'K':
+          whiteCastleRights.canShortCastle = true;
+          break;
+        case 'Q':
+          whiteCastleRights.canLongCastle = true;
+          break;
+        case 'k':
+          blackCastleRights.canShortCastle = true;
+          break;
+        case 'q':
+          blackCastleRights.canLongCastle = true;
+          break;
+
+        default:
+          break;
+      }
+    }
+    return { whiteCastleRights, blackCastleRights };
+  }
+
   public static isEnPassantSquare(board: Board, position: Position): boolean {
     const enPassantSquare = board.enPassantSquare;
 
@@ -166,7 +166,7 @@ export default class BoardUtils {
           }
           else {
             PositionUtils.getSurroundingSquares(p)
-              .filter(BoardUtils.isOnBoardFunction())
+              .filter(this.isOnBoardFunction())
               .forEach(m => {
                 attackedSquares.add(m);
               })
@@ -187,11 +187,7 @@ export default class BoardUtils {
         }
       });
 
-    let result = Array.from(attackedSquares.values());
-
-    console.log("calculateAttackedSquares color:" + colorOfPieces + ", result: " + JSON.stringify(result))
-
-    return result;
+    return Array.from(attackedSquares.values());
   }
 
   private static isOnBoardFunction(): (value: Position, index: number, array: Position[]) => unknown {
@@ -210,32 +206,24 @@ export default class BoardUtils {
           }
           else {
             PositionUtils.getSurroundingSquares(p)
-              .filter(BoardUtils.isOnBoardFunction())
-              .forEach(m => {
-                attackedSquares.add(m);
-              })
+              .filter(this.isOnBoardFunction())
+              .forEach(m => attackedSquares.add(m))
           }
         }
         else {
           if (p.type === PieceType.PAWN) {
             moveGenerationService.getValidMoves(board, p, true)
-              .map(m => m.to).forEach(m => {
-                attackedSquares.add(m);
-              });
+              .map(m => m.to)
+              .forEach(m => attackedSquares.add(m))
           }
 
           moveGenerationService.getValidCaptures(board, p)
-            .map(m => m.to).forEach(m => {
-              attackedSquares.add(m);
-            });
+            .map(m => m.to)
+            .forEach(m => attackedSquares.add(m))
         }
       });
 
-    const result = Array.from(attackedSquares.values());
-
-    console.log("calculateAttackedSquares color:" + colorOfPieces + ", result: " + JSON.stringify(result))
-
-    return result;
+    return Array.from(attackedSquares.values());
   }
 
   public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
@@ -243,10 +231,21 @@ export default class BoardUtils {
 
     if (this.hasNoEscapeSquares(moveGenerationService, board, king)) {
       const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
+      const attackingPosition: Position = attackingMoves[0].from;
+      const attackedSquaresOfPlayerToMove: Position[] = this.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
 
-      if (attackingMoves.length === 1) {
-        return !this.canCaptureCheckGivingPiece(moveGenerationService, board, king, attackingMoves[0])
-          && !this.canBeBlocked(moveGenerationService, board, attackingMoves[0], king);
+      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
+        const movesThatCaptureCheckGivingPiece: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
+
+        if (movesThatCaptureCheckGivingPiece.length === 1) {
+          return false;
+        }
+        else {
+          return PositionUtils.calculateDistance(king.position, attackingMoves[0].piece.position) === 1;
+        }
+      }
+      else if (this.canBeBlocked(moveGenerationService, board, attackingMoves[0], king)) {
+        return false;
       }
       else {
         return true;
@@ -257,27 +256,9 @@ export default class BoardUtils {
     }
   }
 
-  private static canCaptureCheckGivingPiece(moveGenerationService: MoveGenerationService, board: Board, king: Piece, attackingMove: Move) {
-    const attackingPosition: Position = attackingMove.from;
-    const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
-
-    if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
-      const movesThatCaptureCheckGivingPiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMove.piece);
-
-      if (movesThatCaptureCheckGivingPiece.length === 1) {
-        return false;
-      }
-      else {
-        return PositionUtils.calculateDistance(king.position, attackingMove.piece.position) === 1;
-      }
-    }
-
-    return false;
-  }
-
   private static hasNoEscapeSquares(moveGenerationService: MoveGenerationService, board: Board, king: Piece) {
     const opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
-    const attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, opposedColor);
+    const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, opposedColor);
     const validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
 
     return validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position);
@@ -290,25 +271,25 @@ export default class BoardUtils {
     else {
 
       if (king.position.column === move.from.column) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
       } else if (king.position.row === move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateAttackedSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
       } else if (king.position.column < move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column > move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column < move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column > move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = BoardUtils.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateMoveSquares(moveGenerationService, board, board.playerToMove, false);
         return this.canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
 
