@@ -2,7 +2,7 @@ import { Color } from "../types/board.t";
 
 export default class MoveHistoryUtils {
 
-  public static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number) {
+  public static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number): number {
     if (startingColor === Color.WHITE) {
       return Math.floor(moveHistoryIndex / 2) + 1;
     }
