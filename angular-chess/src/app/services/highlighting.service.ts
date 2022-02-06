@@ -9,8 +9,6 @@ export class HighlightingService {
   private squares$$: BehaviorSubject<Square[]> = new BehaviorSubject<Square[]>([]);
   private squares$: Observable<Square[]> = this.squares$$.asObservable();
 
-  constructor() { }
-
   public getSquares$(): Observable<Square[]> {
     return this.squares$;
   }

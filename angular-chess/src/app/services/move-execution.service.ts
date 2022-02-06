@@ -30,22 +30,8 @@ export class MoveExecutionService {
       return;
     }
 
-    if (move.piece.type === PieceType.KING) {
-      this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
-
-      // kingside castle
-      if (move.isShortCastle) {
-        this.executeShortCastle(move);
-        this.finishMove(move);
-        return;
-      }
-
-      // queenside castle
-      if (move.isLongCastle) {
-        this.executeLongCastle(move);
-        this.finishMove(move);
-        return;
-      }
+    if (move.piece.type === PieceType.KING && this.executeKingCastle(move)) {
+      return;
     }
 
     if (move.capturedPiece === undefined) { // move
@@ -71,6 +57,26 @@ export class MoveExecutionService {
     }
 
     this.finishMove(move);
+  }
+
+  private executeKingCastle(move: Move): boolean {
+    this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
+
+    // kingside castle
+    if (move.isShortCastle) {
+      this.executeShortCastle(move);
+      this.finishMove(move);
+      return true;
+    }
+
+    // queenside castle
+    if (move.isLongCastle) {
+      this.executeLongCastle(move);
+      this.finishMove(move);
+      return true;
+    }
+
+    return false;
   }
 
   private finishMove(move: Move): void {
