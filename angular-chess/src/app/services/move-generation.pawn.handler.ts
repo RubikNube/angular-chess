@@ -12,7 +12,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
   }
 
   public canHandle(piece: Piece): boolean {
-    return piece.type === PieceType.PAWN;;
+    return piece.type === PieceType.PAWN;
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
@@ -20,45 +20,21 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     if (piece.color === Color.WHITE) {
       if (piece.position.row === 2) {
         return BoardUtils.getFreeFrontSquares(board, piece, 2)
-          .map(p => {
-            return {
-              piece: piece,
-              from: piece.position,
-              to: p
-            }
-          });
+          .map(PositionUtils.positionToMoveFunction(piece));
       }
       else {
         return BoardUtils.getFreeFrontSquares(board, piece, 1)
-          .map(p => {
-            return {
-              piece: piece,
-              from: piece.position,
-              to: p
-            }
-          });
+          .map(PositionUtils.positionToMoveFunction(piece));
       }
     }
     else {
       if (piece.position.row === 7) {
         return BoardUtils.getFreeBackSquares(board, piece, 2)
-          .map(p => {
-            return {
-              piece: piece,
-              from: piece.position,
-              to: p
-            }
-          });
+          .map(PositionUtils.positionToMoveFunction(piece));
       }
       else {
         return BoardUtils.getFreeBackSquares(board, piece, 1)
-          .map(p => {
-            return {
-              piece: piece,
-              from: piece.position,
-              to: p
-            }
-          });
+          .map(PositionUtils.positionToMoveFunction(piece));
       }
     }
   }

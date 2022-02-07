@@ -1,6 +1,7 @@
 import { Board, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "../utils/board.utils";
+import PositionUtils from "../utils/position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationService } from "./move-generation.service";
 
@@ -62,12 +63,6 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       ...backLeftSquares,
       ...backRightSquares];
 
-    return fieldsToMove.map(p => {
-      return {
-        piece: piece,
-        from: piece.position,
-        to: p
-      }
-    });
+    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
   }
 }

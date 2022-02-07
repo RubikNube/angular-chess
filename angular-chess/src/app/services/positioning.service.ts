@@ -10,8 +10,6 @@ export class PositioningService {
   perspectiveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
   perspective$: Observable<Color> = this.perspectiveSource.asObservable();
 
-  constructor() { }
-
   public switchPerspective(): void {
     this.perspectiveSource.next(this.perspectiveSource.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE);
   }

@@ -13,8 +13,6 @@ export class MoveHistoryService {
 
   private fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
 
-  constructor() { }
-
   public addMoveToHistory(move: Move): void {
     const moveHistory = this.moveHistory$$.getValue();
     moveHistory.push(move);

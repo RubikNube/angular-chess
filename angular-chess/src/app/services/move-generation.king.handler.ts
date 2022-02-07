@@ -96,13 +96,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
   public getCaptures(piece: Piece, board: Board): Move[] {
     return PositionUtils.getSurroundingSquares(piece)
-      .map(p => {
-        return {
-          piece: piece,
-          from: piece.position,
-          to: p
-        }
-      })
+      .map(PositionUtils.positionToMoveFunction(piece))
       .filter(m => !BoardUtils.isProtected(this.generationService, board, PositionUtils.getPieceOnPos(board, m.to)))
-  };
+  }
 }
