@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { Board, Color } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
-import PositionUtils from '../utils/position.utils';
 import { MoveGenerationService } from './move-generation.service';
 
 
@@ -232,7 +231,6 @@ describe('MoveGenerationService', () => {
     it('should generate black queen captures', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/7q/8/7P/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, position: { column: 8, row: 4 }, color: Color.BLACK };
-      let pp = PositionUtils.getPieceOnPos(board, { column: 8, row: 4 });
       let validCaptures = service.getValidCaptures(board, queen);
 
       expect(validCaptures.length).toEqual(2);

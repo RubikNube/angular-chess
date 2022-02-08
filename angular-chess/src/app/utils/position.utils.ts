@@ -1,5 +1,5 @@
 import { Board, Color, Position } from "../types/board.t";
-import { Piece } from "../types/pieces.t";
+import { Move, Piece } from "../types/pieces.t";
 
 export default class PositionUtils {
 
@@ -83,5 +83,15 @@ export default class PositionUtils {
     }
 
     return fieldsToMove;
+  }
+
+  public static positionToMoveFunction(piece: Piece): (value: Position, index: number, array: Position[]) => Move {
+    return p => {
+      return {
+        piece: piece,
+        from: piece.position,
+        to: p
+      };
+    };
   }
 }
