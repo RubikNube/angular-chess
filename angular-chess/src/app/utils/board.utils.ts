@@ -768,4 +768,108 @@ export default class BoardUtils {
 
     return squaresToMove;
   }
+
+  public static getFen(board: Board): string {
+    return BoardUtils.getPieceFen(board) + " "
+      + BoardUtils.getMoveRightFen(board) + " "
+      + BoardUtils.getCastleRightFen(board) + " "
+      + BoardUtils.getEnPassantFen(board) + " "
+      + BoardUtils.getPlyFen(board) + " "
+      + BoardUtils.getMoveFen(board);
+  }
+
+  public static getMoveFen(board: Board): string {
+    return board.moveCount + "";
+  }
+
+  public static getPlyFen(board: Board): string {
+    return board.plyCount !== undefined ? board.plyCount + "" : "0";
+  }
+
+  public static getEnPassantFen(board: Board): string {
+    return board.enPassantSquare !== undefined ? PositionUtils.getCoordinate(board.enPassantSquare) : "-";
+  }
+
+  public static getCastleRightFen(board: Board): string {
+    let castleRightFen: string = "";
+
+    if (board.whiteCastleRights.canShortCastle) {
+      castleRightFen += "K";
+    }
+    if (board.whiteCastleRights.canLongCastle) {
+      castleRightFen += "Q";
+    }
+    if (board.blackCastleRights.canShortCastle) {
+      castleRightFen += "k";
+    }
+    if (board.blackCastleRights.canLongCastle) {
+      castleRightFen += "q";
+    }
+
+    return castleRightFen !== "" ? castleRightFen : "-";
+  }
+
+  public static getMoveRightFen(board: Board): string {
+    return board.playerToMove === Color.WHITE ? "w" : "b";
+  }
+
+  public static getPieceFen(board: Board): string {
+    const pieces: Piece[] = Object.assign([], board.pieces);
+
+    pieces.sort((a, b) =>
+      this.comparePositions(a.position, b.position)
+    )
+
+    let rows: Piece[][] = [[]];
+    for (let index = 0; index < 8; index++) {
+      rows[index] = [];
+    }
+
+    pieces.forEach(piece => {
+      console.info("piece:" + JSON.stringify(piece));
+      rows[piece.position.row - 1].push(piece);
+    });
+
+    rows
+      .reverse();
+
+    return rows
+      .map(row => BoardUtils.getRowFen(row))
+      .join("/");
+  }
+
+  public static getRowFen(row: Piece[]): string {
+    let rowFen: string = "";
+
+    let lastColumn: number = 0;
+
+    row.forEach(p => {
+      let columnDif: number = p.position.column - lastColumn;
+      if (p.position.column - lastColumn > 1) {
+        rowFen += columnDif - 1;
+      }
+      lastColumn = p.position.column;
+      rowFen += PieceUtils.getPieceFenChar(p.type, p.color);
+    });
+
+    if (lastColumn < 8) {
+      rowFen += 8 - lastColumn;
+    }
+
+    return rowFen;
+  }
+
+  private static comparePositions(a: Position, b: Position): number {
+    const rowDifference = a.row - b.row;
+
+    if (rowDifference < 0) {
+      return 1;
+    }
+    else if (rowDifference > 0) {
+      return -1;
+    }
+    else {
+      return a.column - b.column;
+    }
+  }
 }
