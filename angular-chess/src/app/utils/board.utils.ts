@@ -770,12 +770,14 @@ export default class BoardUtils {
   }
 
   public static getFen(board: Board): string {
-    return BoardUtils.getPieceFen(board) + " "
-      + BoardUtils.getMoveRightFen(board) + " "
-      + BoardUtils.getCastleRightFen(board) + " "
-      + BoardUtils.getEnPassantFen(board) + " "
-      + BoardUtils.getPlyFen(board) + " "
-      + BoardUtils.getMoveFen(board);
+    return [
+      this.getPieceFen(board),
+      this.getMoveRightFen(board),
+      this.getCastleRightFen(board),
+      this.getEnPassantFen(board),
+      this.getPlyFen(board),
+      this.getMoveFen(board)
+    ].join(" ");
   }
 
   public static getMoveFen(board: Board): string {
@@ -830,8 +832,7 @@ export default class BoardUtils {
       rows[piece.position.row - 1].push(piece);
     });
 
-    rows
-      .reverse();
+    rows.reverse();
 
     return rows
       .map(row => BoardUtils.getRowFen(row))
