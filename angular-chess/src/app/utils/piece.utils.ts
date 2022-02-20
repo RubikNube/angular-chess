@@ -46,4 +46,31 @@ export default class PieceUtils {
       }
     }
   }
+
+  public static getPieceFenChar(type: PieceType, color: Color): string {
+    let typeChar = "";
+
+    switch (type) {
+      case PieceType.PAWN:
+        typeChar = 'P';
+        break;
+      case PieceType.KNIGHT:
+        typeChar = 'N';
+        break;
+      case PieceType.BISHOP:
+        typeChar = 'B';
+        break;
+      case PieceType.ROOK:
+        typeChar = 'R';
+        break;
+      case PieceType.QUEEN:
+        typeChar = 'Q';
+        break;
+      case PieceType.KING:
+        typeChar = 'K';
+        break;
+    }
+
+    return color === Color.WHITE ? typeChar : typeChar.toLowerCase();
+  }
 }
