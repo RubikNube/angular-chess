@@ -62,7 +62,6 @@ export default class PositionUtils {
 
   public static isFree(board: Board, position: Position): boolean {
     const result = PositionUtils.getPieceOnPos(board, position) === undefined;
-    console.log("isFree position:" + JSON.stringify(position) + ", result: " + result);
     return result;
   }
 

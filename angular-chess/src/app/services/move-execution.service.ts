@@ -25,6 +25,7 @@ export class MoveExecutionService {
   public executeMove(move: Move): void {
     console.log("executeMove: " + JSON.stringify(move));
 
+    move.board = JSON.parse(JSON.stringify(this.boardService.getBoard()));
     if (move.piece.color !== this.boardService.getPlayerToMove()) {
       console.warn("Not the right player to move. Ignore move.")
       return;

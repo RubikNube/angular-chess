@@ -1,4 +1,4 @@
-import { Color, Position } from "./board.t"
+import { Board, Color, Position } from "./board.t"
 
 export type Piece = {
   type: PieceType;
@@ -26,6 +26,7 @@ export type Move = {
   isCheck?: boolean;
   isMate?: boolean;
   promotedPiece?: Piece;
+  board?: Board
 }
 
 export type FullMove = {

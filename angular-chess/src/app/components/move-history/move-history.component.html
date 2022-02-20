@@ -5,6 +5,9 @@
   responsiveLayout="scroll"
   [resizableColumns]="true"
   styleClass="p-datatable-lg"
+  selectionMode="single"
+  [(contextMenuSelection)]="selectedMove"
+  [contextMenu]="resetBoardContextMenu"
 >
   <ng-template pTemplate="header">
     <tr>
@@ -17,7 +20,11 @@
     pTemplate="body"
     let-fullMove
   >
-    <tr>
+    <tr
+      [pSelectableRow]="fullMove"
+      [pContextMenuRow]="fullMove"
+    >
+
       <td>{{this.boardService.getMoveCount() + fullMove?.count}}</td>
       <td>
         <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
@@ -40,3 +47,8 @@
     </tr>
   </ng-template>
 </p-table>
+
+<p-contextMenu
+  #resetBoardContextMenu
+  [model]="menuItems"
+></p-contextMenu>
