@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
+import { ContextMenuModule } from 'primeng/contextmenu';
 import { DragDropModule } from 'primeng/dragdrop';
 import { ListboxModule } from 'primeng/listbox';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
@@ -29,7 +30,8 @@ import { MoveHistoryComponent } from './components/move-history/move-history.com
     ToastModule,
     BrowserAnimationsModule,
     OverlayPanelModule,
-    ListboxModule
+    ListboxModule,
+    ContextMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]
