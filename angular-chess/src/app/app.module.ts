@@ -5,20 +5,24 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { DragDropModule } from 'primeng/dragdrop';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ListboxModule } from 'primeng/listbox';
+import { MenubarModule } from 'primeng/menubar';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SplitterModule } from "primeng/splitter";
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { AppComponent } from './app.component';
 import { ChessBoardComponent } from './components/chess-board.component';
+import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChessBoardComponent,
-    MoveHistoryComponent
+    MoveHistoryComponent,
+    MainMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +35,9 @@ import { MoveHistoryComponent } from './components/move-history/move-history.com
     BrowserAnimationsModule,
     OverlayPanelModule,
     ListboxModule,
-    ContextMenuModule
+    ContextMenuModule,
+    MenubarModule,
+    DynamicDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
