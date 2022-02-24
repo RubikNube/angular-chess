@@ -1,25 +1,31 @@
 import { Component } from '@angular/core';
-import { MenuItem, PrimeIcons } from 'primeng/api';
+import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { PositioningService } from 'src/app/services/positioning.service';
+import { ImportFenComponent } from './import-fen/import-fen.component';
 
 @Component({
   selector: 'app-main-menu',
   templateUrl: './main-menu.component.html',
-  styleUrls: ['./main-menu.component.css']
+  styleUrls: ['./main-menu.component.css'],
+  providers: [DialogService, MessageService]
 })
 export class MainMenuComponent {
   public menuItems: MenuItem[];
+  private ref: DynamicDialogRef | undefined;
 
   constructor(
     private boardService: ChessBoardService,
-    private positioningService: PositioningService) {
+    private positioningService: PositioningService,
+    public dialogService: DialogService,
+    public messageService: MessageService) {
     this.menuItems = [
       {
         label: 'Edit',
         icon: PrimeIcons.PENCIL,
         items: [
-          { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD },
+          { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportFenDialog() },
           { label: 'Export FEN', icon: PrimeIcons.UPLOAD },
           { label: 'Reset Board', icon: PrimeIcons.REFRESH, command: () => this.resetBoard() }
         ]
@@ -40,4 +46,15 @@ export class MainMenuComponent {
     this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
   }
 
+  private showImportFenDialog(): void {
+    this.ref = this.dialogService.open(ImportFenComponent, {
+      header: 'Import FEN'
+    });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.ref) {
+      this.ref.close();
+    }
+  }
 }
