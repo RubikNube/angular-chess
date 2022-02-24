@@ -1,3 +1,4 @@
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,9 +15,9 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { AppComponent } from './app.component';
 import { ChessBoardComponent } from './components/chess-board.component';
+import { ImportFenComponent } from './components/main-menu/import-fen/import-fen.component';
 import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
-import { ImportFenComponent } from './components/main-menu/import-fen/import-fen.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { ImportFenComponent } from './components/main-menu/import-fen/import-fen
     ListboxModule,
     ContextMenuModule,
     MenubarModule,
-    DynamicDialogModule
+    DynamicDialogModule,
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

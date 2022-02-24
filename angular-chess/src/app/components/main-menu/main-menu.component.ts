@@ -1,8 +1,10 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { PositioningService } from 'src/app/services/positioning.service';
+import BoardUtils from 'src/app/utils/board.utils';
 import { ImportFenComponent } from './import-fen/import-fen.component';
 
 @Component({
@@ -19,14 +21,15 @@ export class MainMenuComponent {
     private boardService: ChessBoardService,
     private positioningService: PositioningService,
     public dialogService: DialogService,
-    public messageService: MessageService) {
+    public messageService: MessageService,
+    private clipboard: Clipboard) {
     this.menuItems = [
       {
         label: 'Edit',
         icon: PrimeIcons.PENCIL,
         items: [
           { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportFenDialog() },
-          { label: 'Export FEN', icon: PrimeIcons.UPLOAD },
+          { label: 'Copy FEN To Clipboard', icon: PrimeIcons.UPLOAD, command: () => this.copyCurrentFenToClipboard() },
           { label: 'Reset Board', icon: PrimeIcons.REFRESH, command: () => this.resetBoard() }
         ]
       },
@@ -56,5 +59,10 @@ export class MainMenuComponent {
     if (this.ref) {
       this.ref.close();
     }
+  }
+
+  private copyCurrentFenToClipboard() {
+    const currentFen = BoardUtils.getFen(this.boardService.getBoard());
+    this.clipboard.copy(currentFen);
   }
 }
