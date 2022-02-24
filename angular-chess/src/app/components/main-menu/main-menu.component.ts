@@ -64,5 +64,11 @@ export class MainMenuComponent {
   private copyCurrentFenToClipboard() {
     const currentFen = BoardUtils.getFen(this.boardService.getBoard());
     this.clipboard.copy(currentFen);
+
+    this.showInfo(`Copied '${currentFen}'`)
+  }
+
+  private showInfo(message: string) {
+    this.messageService.add({ key: 'tc', severity: 'info', summary: 'Copy FEN', detail: message });
   }
 }
