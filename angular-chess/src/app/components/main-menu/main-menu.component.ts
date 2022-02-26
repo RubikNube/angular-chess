@@ -10,7 +10,7 @@ import { ImportFenComponent } from './import-fen/import-fen.component';
 @Component({
   selector: 'app-main-menu',
   templateUrl: './main-menu.component.html',
-  styleUrls: ['./main-menu.component.css'],
+  styleUrls: ['./main-menu.component.scss'],
   providers: [DialogService, MessageService]
 })
 export class MainMenuComponent {

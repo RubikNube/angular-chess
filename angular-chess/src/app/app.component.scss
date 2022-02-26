@@ -1,3 +1,5 @@
+@import "../z-Indexes.scss";
+
 /* Application-wide Styles */
 h1 {
   color: #369;
@@ -31,4 +33,12 @@ app-move-history {
 /* everywhere else */
 * {
   font-family: Arial, Helvetica, sans-serif;
+}
+
+app-main-menu {
+  z-index: $menu-index;
+}
+
+app-chess-board {
+  z-index: $base-index;
 }
