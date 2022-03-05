@@ -226,13 +226,6 @@ export default class BoardUtils {
     return Array.from(attackedSquares.values());
   }
 
-  // isMate(board): boolean
-  // return king is in check 
-  // && king has no escape squares
-  // && check can't be blocked
-  // && check giving piece can't be captured
-  //    
-
   public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
     const king: Piece = this.getKing(board, board.playerToMove);
     const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
