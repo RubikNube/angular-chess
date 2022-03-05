@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { MoveGenerationService } from "../services/move-generation.service";
 import { Board, Color, Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 
 describe('BoardUtils', () => {
@@ -209,6 +209,21 @@ describe('BoardUtils', () => {
 
       const actualFen = BoardUtils.getFen(board);
       expect(actualFen).toEqual(initFen);
+    });
+  });
+
+  describe('calculateMovesThatCapturePiece', () => {
+    it('should be able to return many pieces', () => {
+      const initFen = "rnb1kbnr/ppp1pppp/8/8/8/5N2/PPPq1PPP/RNBQKB1R w KQkq - 0 1";
+      const board: Board = BoardUtils.loadBoardFromFen(initFen);
+      let attackingQueen: Piece = {
+        color: Color.BLACK,
+        type: PieceType.QUEEN,
+        position: { row: 2, column: 4 }
+      }
+      const moveThatCanCapturePiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingQueen);
+
+      expect(moveThatCanCapturePiece.length).toEqual(5);
     });
   });
 });
