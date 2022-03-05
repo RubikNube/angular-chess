@@ -246,7 +246,7 @@ export default class BoardUtils {
     return PositionUtils.includes(attackedSquares, kingPosition);
   }
 
-  public static hasEscapeSquares(board: Board, attackedSquares: Position[], king: Piece): boolean {
+  private static hasEscapeSquares(board: Board, attackedSquares: Position[], king: Piece): boolean {
     return PositionUtils.getSurroundingSquares(king)
       .find(s => PositionUtils.isOnBoard(s)
         && PositionUtils.isFree(board, s)
@@ -464,7 +464,7 @@ export default class BoardUtils {
     return Array.from(attackingMoves.values());
   }
 
-  public static getKing(board: Board, color: Color): Piece {
+  private static getKing(board: Board, color: Color): Piece {
     const king = board.pieces.find(p => p.color === color && p.type === PieceType.KING);
 
     if (king !== undefined) {
