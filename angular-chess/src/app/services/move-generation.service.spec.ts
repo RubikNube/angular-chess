@@ -292,12 +292,6 @@ describe('MoveGenerationService', () => {
       expect(service.isMate(board)).toBeFalse();
     });
 
-    it('should return false if check giving piece can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/8/5P1q/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1");
-
-      expect(service.isMate(board)).toBeFalse();
-    });
-
     it('should return false if check giving piece on the same column can be blocked', () => {
       let board: Board = BoardUtils.loadBoardFromFen("rnbqkbn1/pppppppp/8/4r3/8/8/PPPP1PPP/RNBQKBNR w KQq - 0 1");
 
@@ -342,6 +336,12 @@ describe('MoveGenerationService', () => {
 
     it('should return false if lower left check giving piece can be blocked', () => {
       let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/ppp1pppp/8/3p4/Q7/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1");
+
+      expect(service.isMate(board)).toBeFalse();
+    });
+
+    it('should return false if check giving piece can be captured', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/ppp1pppp/8/8/8/5N2/PPPq1PPP/RNBQKB1R w KQkq - 0 1");
 
       expect(service.isMate(board)).toBeFalse();
     });
