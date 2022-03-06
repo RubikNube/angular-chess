@@ -1,0 +1,43 @@
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10vh;
+  width: 10vh;
+}
+
+.field--dark {
+  background-image: url(../../../../images/board_field_dark.png);
+}
+
+.field--light {
+  background-image: url(../../../../images/board_field_light.png);
+}
+
+.piece {
+  height: 100%;
+  width: 100%;
+  font-size: 9.3vh;
+  font-family: "Chess Motif";
+  text-align: center;
+}
+
+.piece-WHITE {
+  color: white;
+}
+
+.piece-BLACK {
+  color: black;
+}
+
+.color-RED {
+  background: rgba(red, 0.4);
+}
+
+.color-GREEN {
+  background: rgba(green, 0.4);
+}
+
+.color-YELLOW {
+  background: rgba(yellow, 0.4);
+}

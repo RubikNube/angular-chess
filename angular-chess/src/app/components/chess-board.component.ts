@@ -7,7 +7,7 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position, Result } from '../types/board.t';
+import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -77,30 +77,31 @@ export class ChessBoardComponent {
   }
 
   public getTopPosition(position: Position): number {
-    let uiRow = this.positioningService.getUiPosition(position).row;
-
-    return (8 - uiRow) * 12.5;
+    return this.positioningService.getUiPosition(position).row;
   }
 
   public getLeftPosition(position: Position): number {
-    let uiCol = this.positioningService.getUiPosition(position).column;
-
-    return (uiCol - 1) * 12.5
+    return this.positioningService.getUiPosition(position).column;
   }
 
-  public dragStart(e: MouseEvent, c: any) {
-    this.dragPos = this.positioningService.getMousePosition(e);
-    let currentBoard: Board = this.boardService.getBoard();
+  public dragStart(event: DragEvent) {
+    this.dragPos = this.positioningService.getMousePosition(event);
+    const currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
+    console.log('dragStart - grabbedPiece: ', this.grabbedPiece);
+    this.updateHighlightingSquares(currentBoard);
+  }
+
+  private updateHighlightingSquares(currentBoard: Board): void {
     if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
-      let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(m => {
+      const validSquares: Square[] = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
         return {
-          position: m.to,
+          position: move.to,
           highlight: HighlightColor.GREEN
         }
       });
 
-      let getValidCaptures = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
+      const getValidCaptures: Square[] = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED
@@ -111,7 +112,8 @@ export class ChessBoardComponent {
     }
   }
 
-  public dragEnd(e: MouseEvent) {
+  public dragEnd(e: DragEvent) {
+    console.log('dragEnd: ', e);
     this.highlightingService.clearSquares();
     if (this.grabbedPiece === undefined) {
       return;

@@ -1,0 +1,23 @@
+<div
+  [style.grid-column]="columnIndex"
+  [style.grid-row]="rowIndex"
+  class="field"
+  [class.field--dark]="isFieldDark()"
+  [class.field--light]="!isFieldDark()"
+>
+  <div
+    *ngIf="piece"
+    class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
+    [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
+    pDraggable="piece"
+    [pDraggableDisabled]="piece.color !== activePlayer"
+    (onDragStart)="dragStart.emit($event)"
+    (onDragEnd)="dragEnd.emit($event)"
+  >
+    {{ getPieceChar() }}
+  </div>
+  <div
+    *ngIf="square?.highlight === HighlightColor.GREEN"
+    class="piece color-GREEN"
+  ></div>
+</div>

@@ -50,7 +50,7 @@ export class MoveGenerationService {
   }
 
   public getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
-    console.log("getValidMoves: " + JSON.stringify(piece));
+    console.log("getValidMoves: ", JSON.stringify(piece));
 
     let moves: Move[] = [];
 
@@ -75,10 +75,9 @@ export class MoveGenerationService {
     console.log("getValidCaptures: " + JSON.stringify(piece));
     let captureMoves: Move[] = [];
 
-    let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
+    const matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
 
     if (matchingHandler !== undefined) {
-      console.log("getValidMoves: matchingHandler: " + matchingHandler)
       captureMoves = matchingHandler.getCaptures(piece, board);
     }
     else {
@@ -110,14 +109,12 @@ export class MoveGenerationService {
   }
 
   private isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
-    let pieceOnPos = PositionUtils.getPieceOnPos(board, position);
+    const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
 
     if (pieceOnPos !== undefined) {
       return pieceOnPos.color !== color;
     }
-    else {
-      return false;
-    }
+    return false;
   }
 
 
