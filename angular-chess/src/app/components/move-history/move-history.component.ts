@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
+import { MenuItem } from 'primeng/api';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
+import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
+import BoardUtils from 'src/app/utils/board.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
@@ -12,6 +15,11 @@ import PositionUtils from 'src/app/utils/position.utils';
 })
 export class MoveHistoryComponent {
   fullMoveHistory: FullMove[] = [];
+  public selectedMove: FullMove = { count: 0 };
+  public menuItems: MenuItem[] = [
+    { label: "white", command: () => this.resetBoard(this.selectedMove.whiteMove?.board) },
+    { label: "black", command: () => this.resetBoard(this.selectedMove.blackMove?.board) }
+  ];
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
@@ -20,6 +28,16 @@ export class MoveHistoryComponent {
         this.fullMoveHistory = p;
       }
     );
+  }
+
+  public resetBoard(board: Board | undefined): void {
+    console.log("selectedMove: " + JSON.stringify(this.selectedMove));
+    console.log("resetBoard: " + JSON.stringify(board));
+
+    if (board !== undefined) {
+      const fen: string = BoardUtils.getFen(board);
+      this.boardService.importFen(fen);
+    }
   }
 
   public getMoveRepresentation(move: Move): string {
@@ -36,7 +54,11 @@ export class MoveHistoryComponent {
   }
 
 
-  public getPromotionRepresentation(move: Move): string {
+  public getPromotionRepresentation(move: Move | undefined): string {
+    if (move === undefined) {
+      return "";
+    }
+
     return move.promotedPiece ? "=" + PieceUtils.getPieceChar(move.promotedPiece.type, move.promotedPiece.color) : "";
   }
 
@@ -53,7 +75,11 @@ export class MoveHistoryComponent {
     }
   }
 
-  public getCheckOrMateRepresentation(move: Move): string {
+  public getCheckOrMateRepresentation(move: Move | undefined): string {
+    if (move === undefined) {
+      return "";
+    }
+
     return move.isCheck ? move.isMate ? "#" : " +" : "";
   }
 
@@ -64,5 +90,4 @@ export class MoveHistoryComponent {
   private getEnPassantRepresentation(move: Move): string {
     return move.isEnPassant ? " e.p" : "";
   }
-
 }

@@ -228,40 +228,51 @@ export default class BoardUtils {
 
   public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
     const king: Piece = this.getKing(board, board.playerToMove);
+    const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
+    const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
 
-    if (this.hasNoEscapeSquares(moveGenerationService, board, king)) {
-      const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
-      const attackingPosition: Position = attackingMoves[0].from;
-      const attackedSquaresOfPlayerToMove: Position[] = this.calculateAttackedSquares(moveGenerationService, board, board.playerToMove);
+    const isCheck = this.isCheck(attackedSquares, king.position);
+    const hasNoEscapeSquares = !this.hasEscapeSquares(board, attackedSquares, king);
+    const cannotBlockChecks = !this.canBlockChecks(moveGenerationService, board, king, attackingMoves);
+    const cannotCaptureAttackingPiece = !this.canCaptureAttackingPiece(moveGenerationService, board, attackingMoves);
 
-      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, attackingPosition)) {
-        const movesThatCaptureCheckGivingPiece: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, attackingMoves[0].piece);
-
-        if (movesThatCaptureCheckGivingPiece.length === 1) {
-          return false;
-        }
-        else {
-          return PositionUtils.calculateDistance(king.position, attackingMoves[0].piece.position) === 1;
-        }
-      }
-      else if (this.canBeBlocked(moveGenerationService, board, attackingMoves[0], king)) {
-        return false;
-      }
-      else {
-        return true;
-      }
-    }
-    else {
-      return false;
-    }
+    return isCheck
+      && hasNoEscapeSquares
+      && cannotBlockChecks
+      && cannotCaptureAttackingPiece;
   }
 
-  private static hasNoEscapeSquares(moveGenerationService: MoveGenerationService, board: Board, king: Piece) {
-    const opposedColor: Color = PieceUtils.getOpposedColor(board.playerToMove);
-    const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, opposedColor);
-    const validKingMoves: Move[] = moveGenerationService.getValidMoves(board, king, true);
+  private static isCheck(attackedSquares: Position[], kingPosition: Position): boolean {
+    return PositionUtils.includes(attackedSquares, kingPosition);
+  }
 
-    return validKingMoves.length === 0 && PositionUtils.includes(attackedSquares, king.position);
+  private static hasEscapeSquares(board: Board, attackedSquares: Position[], king: Piece): boolean {
+    return PositionUtils.getSurroundingSquares(king)
+      .find(s => PositionUtils.isOnBoard(s)
+        && PositionUtils.isFree(board, s)
+        && !PositionUtils.includes(attackedSquares, s))
+      !== undefined;
+  }
+
+  private static canBlockChecks(moveGenerationService: MoveGenerationService, board: Board, king: Piece, attackingMoves: Move[]): boolean {
+    return attackingMoves.find(m => !this.canBeBlocked(moveGenerationService, board, m, king)) === undefined;
+  }
+
+  private static canCaptureAttackingPiece(moveGenerationService: MoveGenerationService, board: Board, attackingMoves: Move[]): boolean {
+    const attackingPieces: Piece[] = attackingMoves.map(m => m.piece);
+
+    if (attackingPieces.length === 0) {
+      return true;
+    } else if (attackingPieces.length === 1) {
+      const attackingPiece = attackingPieces[0];
+
+      const moveThatCaptureAttackingPiece = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingPiece);
+
+      return moveThatCaptureAttackingPiece.length > 0;
+    }
+    else {
+      return true;
+    }
   }
 
   public static canBeBlocked(moveGenerationService: MoveGenerationService, board: Board, move: Move, king: Piece) {
@@ -437,7 +448,7 @@ export default class BoardUtils {
     return foundPos !== undefined;
   }
 
-  private static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {
+  public static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {
     const attackingMoves: Set<Move> = new Set<Move>();
 
     board.pieces

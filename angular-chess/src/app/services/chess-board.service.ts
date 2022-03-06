@@ -27,7 +27,6 @@ export class ChessBoardService {
   private attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhite$$.asObservable();
 
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
-  private fen$ = this.fen$$.asObservable();
 
   constructor(private moveHistoryService: MoveHistoryService) {
   }
