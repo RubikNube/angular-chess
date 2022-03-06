@@ -1,7 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
-import { distinctUntilChanged, tap } from 'rxjs';
+import { distinctUntilChanged, map, Observable, tap } from 'rxjs';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
@@ -18,7 +18,12 @@ import PositionUtils from '../utils/position.utils';
   styleUrls: ['./chess-board.component.scss'],
   providers: [MessageService]
 })
-export class ChessBoardComponent {
+export class ChessBoardComponent implements OnInit {
+  public readonly numbersOneToEight: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+  public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
+
+  public playerPerspectiveRows$: Observable<number[]> | undefined;
+  public playerPerspectiveColumns$: Observable<number[]> | undefined;
   private dragPos: Position = { row: 0, column: 0 };
   private grabbedPiece: Piece | undefined = undefined;
   public selectedPromotionPiece: PieceType | undefined;
@@ -39,13 +44,26 @@ export class ChessBoardComponent {
     private moveGenerationService: MoveGenerationService,
     private moveExecutionService: MoveExecutionService,
     private messageService: MessageService) {
-    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+    this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
-    boardService.getResult$()
+    this.boardService.getResult$()
       .pipe(
         tap(r => console.log("getResult: " + r)),
         distinctUntilChanged())
       .subscribe(r => this.showResultToast(r));
+  }
+
+  ngOnInit(): void {
+    this.playerPerspectiveRows$ = this.positioningService.perspective$.pipe(
+      tap(perspective => console.log("ngOnInit perspective: ", perspective)),
+      map(perspective =>
+        perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
+      ),
+      tap(data => console.log("ngOnInit result: ", data)),
+    );
+    this.playerPerspectiveColumns$ = this.positioningService.perspective$.pipe(map(perspective =>
+      perspective === Color.WHITE ? this.numbersOneToEight : this.numbersOneToEightDesc
+    ));
   }
 
   private showResultToast(result: Result) {
@@ -70,18 +88,6 @@ export class ChessBoardComponent {
       case Result.BLACK_WIN:
         return "Black wins";
     }
-  }
-
-  public getBlackPieceChar(piece: Piece): string {
-    return PieceUtils.getPieceChar(piece.type, Color.BLACK);
-  }
-
-  public getTopPosition(position: Position): number {
-    return this.positioningService.getUiPosition(position).row;
-  }
-
-  public getLeftPosition(position: Position): number {
-    return this.positioningService.getUiPosition(position).column;
   }
 
   public dragStart(event: DragEvent) {
@@ -147,6 +153,7 @@ export class ChessBoardComponent {
 
   }
 
+  // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any) {
     console.log("selectedPromotionPiece event: " + JSON.stringify(event));
 
@@ -159,6 +166,7 @@ export class ChessBoardComponent {
     this.overlayPanel?.hide();
   }
 
+  // TODO: Move this function to PieceUtils
   private getPieceType(pieceName: string) {
     switch (pieceName) {
       case "QUEEN":
@@ -172,9 +180,5 @@ export class ChessBoardComponent {
       default:
         return PieceType.QUEEN;
     }
-  }
-
-  public getCursor(piece: Piece, board: Board) {
-    return piece.color === board.playerToMove ? "grab" : "default";
   }
 }

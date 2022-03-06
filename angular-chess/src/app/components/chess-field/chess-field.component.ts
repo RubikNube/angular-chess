@@ -23,7 +23,7 @@ export class ChessFieldComponent {
   public piece: Piece | undefined | null = undefined;
 
   @Input()
-  public activePlayer: Color = Color.WHITE;
+  public activePlayer: Color | null = Color.WHITE;
 
   @Input()
   public square: Square | undefined | null = undefined;

@@ -1,11 +1,11 @@
 <div class="board">
-  <ng-container *ngFor="let rowIndex of [8, 7, 6, 5, 4, 3, 2, 1]">
-    <ng-container *ngFor="let columnIndex of [1, 2, 3, 4, 5, 6, 7, 8]">
+  <ng-container *ngFor="let rowIndex of playerPerspectiveRows$ | async">
+    <ng-container *ngFor="let columnIndex of playerPerspectiveColumns$ | async">
       <app-chess-field
         [rowIndex]="rowIndex"
         [columnIndex]="columnIndex"
         [piece]="boardService.getPiece$(columnIndex, rowIndex) | async"
-        [activePlayer]="boardService.getBoard().playerToMove"
+        [activePlayer]="boardService.activePlayer$ | async"
         [square]="
           highlightingService.getSquare$({ row: rowIndex, column: columnIndex })
             | async
@@ -16,28 +16,6 @@
       ></app-chess-field>
     </ng-container>
   </ng-container>
-  <!-- <div
-    *ngFor="let piece of boardService.getPieces()"
-    class="piece piece-{{ piece.color }}"
-    [style.grid-row]="getTopPosition(piece.position)"
-    [style.grid-column]="getLeftPosition(piece.position)"
-    [style.cursor]="getCursor(piece, boardService.getBoard())"
-    pDraggable="piece"
-    [pDraggableDisabled]="
-      piece.color !== boardService.getBoard().playerToMove
-    "
-    (onDragStart)="dragStart($event, piece)"
-    (onDragEnd)="dragEnd($event)"
-  >
-    {{ getBlackPieceChar(piece) }}
-  </div>
-
-  <div
-    *ngFor="let square of highlightingService.getSquares$() | async"
-    class="field color-{{ square.highlight }}"
-    [style.top.%]="getTopPosition(square.position)"
-    [style.left.%]="getLeftPosition(square.position)"
-  ></div> -->
 </div>
 
 <p-overlayPanel #op>
