@@ -34,6 +34,15 @@ describe('MoveGenerationService', () => {
       expect(validMoves[1]).toEqual({ piece: pawn, from: { column: 5, row: 7 }, to: { column: 5, row: 5 }, isCheck: false })
     });
 
+    it('should not generate move if piece is pinned', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pp1ppppp/8/q1p5/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 0");
+      let pawn: Piece = { type: PieceType.PAWN, position: { column: 4, row: 2 }, color: Color.WHITE };
+      console.error("### board: " + JSON.stringify(board));
+      let validMoves = service.getValidMoves(board, pawn, true);
+
+      expect(validMoves).not.toContain({ piece: pawn, from: { column: 4, row: 2 }, to: { column: 4, row: 4 }, isCheck: false });
+    });
+
     it('should generate white king short castle', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1");
       let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };

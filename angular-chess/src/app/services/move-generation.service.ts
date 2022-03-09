@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Board, Color, Position } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import CopyUtils from '../utils/copy.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
@@ -68,7 +69,14 @@ export class MoveGenerationService {
           m.isCheck = this.isCheck(board, m);
         }
         return m;
-      });
+      })
+      .filter(m => this.isInCheck(board, m));
+  }
+
+  private isInCheck(board: Board, m: Move): boolean {
+    const copiedBoard = CopyUtils.deepCopyElement(board);
+
+    return false;
   }
 
   public getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
@@ -125,3 +133,5 @@ export class MoveGenerationService {
     return BoardUtils.isMate(this, board);
   }
 }
+
+

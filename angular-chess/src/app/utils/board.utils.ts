@@ -231,7 +231,7 @@ export default class BoardUtils {
     const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
     const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
 
-    const isCheck = this.isCheck(attackedSquares, king.position);
+    const isCheck = PositionUtils.includes(attackedSquares, king.position);
     const hasNoEscapeSquares = !this.hasEscapeSquares(board, attackedSquares, king);
     const cannotBlockChecks = !this.canBlockChecks(moveGenerationService, board, king, attackingMoves);
     const cannotCaptureAttackingPiece = !this.canCaptureAttackingPiece(moveGenerationService, board, attackingMoves);
@@ -242,8 +242,11 @@ export default class BoardUtils {
       && cannotCaptureAttackingPiece;
   }
 
-  private static isCheck(attackedSquares: Position[], kingPosition: Position): boolean {
-    return PositionUtils.includes(attackedSquares, kingPosition);
+  public static isCheck(moveGenerationService: MoveGenerationService, board: Board): boolean {
+    const king: Piece = this.getKing(board, board.playerToMove);
+    const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
+
+    return PositionUtils.includes(attackedSquares, king.position);
   }
 
   private static hasEscapeSquares(board: Board, attackedSquares: Position[], king: Piece): boolean {
