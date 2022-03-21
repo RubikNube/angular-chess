@@ -20,6 +20,7 @@
   font-size: 9.3vh;
   font-family: "Chess Motif";
   text-align: center;
+  z-index: 0; // To grab only the piece.
 }
 
 .piece-WHITE {
