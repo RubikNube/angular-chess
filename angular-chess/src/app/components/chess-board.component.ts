@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { distinctUntilChanged, map, Observable, tap } from 'rxjs';
+import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
@@ -38,12 +39,15 @@ export class ChessBoardComponent implements OnInit {
   @ViewChild("op")
   public overlayPanel: OverlayPanel | undefined;
 
-  constructor(public boardService: ChessBoardService,
+  constructor(
+    public boardService: ChessBoardService,
+    public readonly themingService: BoardThemingService,
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
     private moveGenerationService: MoveGenerationService,
     private moveExecutionService: MoveExecutionService,
-    private messageService: MessageService) {
+    private messageService: MessageService
+  ) {
     this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
     this.boardService.getResult$()

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { BoardThemeConfig } from 'src/app/services/board-theming.service';
 import { Color, HighlightColor, Square } from 'src/app/types/board.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -27,6 +28,9 @@ export class ChessFieldComponent {
 
   @Input()
   public square: Square | undefined | null = undefined;
+
+  @Input()
+  public boardTheme: BoardThemeConfig | undefined | null;
 
   @Output()
   public dragStart: EventEmitter<DragEvent> = new EventEmitter();

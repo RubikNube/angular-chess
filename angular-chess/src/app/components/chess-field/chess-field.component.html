@@ -2,8 +2,9 @@
   [style.grid-column]="columnIndex"
   [style.grid-row]="rowIndex"
   class="field"
-  [class.field--dark]="isFieldDark()"
-  [class.field--light]="!isFieldDark()"
+  [style.background]="
+    isFieldDark() ? boardTheme?.darkField : boardTheme?.lightField
+  "
 >
   <div
     *ngIf="piece"

@@ -6,6 +6,7 @@
         [columnIndex]="columnIndex"
         [piece]="boardService.getPiece$(columnIndex, rowIndex) | async"
         [activePlayer]="boardService.activePlayer$ | async"
+        [boardTheme]="themingService.selectedTheme$ | async"
         [square]="
           highlightingService.getSquare$({ row: rowIndex, column: columnIndex })
             | async
