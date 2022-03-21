@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Color, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
-import CopyUtils from '../utils/copy.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveGenerationService } from './move-generation.service';
@@ -24,41 +23,7 @@ export class MoveExecutionService {
   }
 
   public executeMove(move: Move): void {
-    console.log("executeMove: " + JSON.stringify(move));
-
-    move.board = CopyUtils.deepCopyElement(this.boardService.getBoard());
-    if (move.piece.color !== this.boardService.getPlayerToMove()) {
-      console.warn("Not the right player to move. Ignore move.")
-      return;
-    }
-
-    if (move.piece.type === PieceType.KING && this.executeKingCastle(move)) {
-      return;
-    }
-
-    if (move.capturedPiece === undefined) { // move
-      if (move.piece.type === PieceType.PAWN) {
-        if (move.piece.color === Color.WHITE && move.to.row === 4) {
-          this.boardService.setEnPassantSquares({ row: 3, column: move.from.column });
-
-          this.finishMove(move);
-          return;
-        }
-        else if (move.piece.color === Color.BLACK && move.to.row === 5) {
-          this.boardService.setEnPassantSquares({ row: 6, column: move.from.column });
-
-          this.finishMove(move);
-          return;
-        }
-      }
-
-      this.movePiece(move);
-    }
-    else { // capture
-      this.capturePiece(move);
-    }
-
-    this.finishMove(move);
+    BoardUtils.executeMove(move, this.boardService.getBoard(), this.moveGenerationService);
   }
 
   private executeKingCastle(move: Move): boolean {

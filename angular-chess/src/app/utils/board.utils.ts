@@ -1,6 +1,7 @@
 import { MoveGenerationService } from "../services/move-generation.service";
 import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
+import CopyUtils from "./copy.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
@@ -886,5 +887,174 @@ export default class BoardUtils {
     else {
       return a.column - b.column;
     }
+  }
+
+  public static executeMove(move: Move, board: Board, generationService: MoveGenerationService): Board {
+    console.log("executeMove: " + JSON.stringify(move));
+    const copiedBoard = CopyUtils.deepCopyElement(board);
+
+    if (move.piece.color !== copiedBoard.playerToMove) {
+      throw new Error("Not the right player to move. Ignore move.");
+    }
+
+    if (move.piece.type === PieceType.KING && this.isCastle(move)) {
+      return this.executeKingCastle(move, copiedBoard);
+    }
+
+    if (move.capturedPiece === undefined) { // move
+      if (move.piece.type === PieceType.PAWN) {
+        if (move.piece.color === Color.WHITE && move.to.row === 4) {
+          copiedBoard.enPassantSquare = { row: 3, column: move.from.column };
+
+        }
+        else if (move.piece.color === Color.BLACK && move.to.row === 5) {
+          copiedBoard.enPassantSquare = { row: 6, column: move.from.column };
+        }
+      }
+      else {
+        this.movePiece(move, copiedBoard);
+      }
+    }
+    else { // capture
+      this.capturePiece(move, copiedBoard);
+    }
+
+    this.finishMove(move, copiedBoard, generationService);
+
+    return copiedBoard;
+  }
+
+  private static capturePiece(move: Move, board: Board): void {
+    console.log("capturePiece: " + JSON.stringify(move));
+    this.removePiece(move.piece, board);
+
+    if (move.capturedPiece !== undefined) {
+      this.removePiece(move.capturedPiece, board);
+    }
+    move.piece.position = move.to;
+    this.addPiece(move.promotedPiece ? move.promotedPiece : move.piece, board);
+  }
+
+  private static executeKingCastle(move: Move, board: Board): Board {
+    const copiedBoard = CopyUtils.deepCopyElement(board);
+    BoardUtils.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false }, copiedBoard)
+
+    // kingside castle
+    if (move.isShortCastle) {
+      return this.executeShortCastle(move, copiedBoard);
+    }
+
+    // queenside castle
+    if (move.isLongCastle) {
+      return this.executeLongCastle(move, copiedBoard);
+    }
+
+    return copiedBoard;
+  }
+
+  private static executeShortCastle(move: Move, board: Board): Board {
+    console.log("executeShortCastle: " + JSON.stringify(move));
+    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    let pieceOnSide = PositionUtils.getPieceOnPos(copiedBoard, { column: 8, row: move.piece.position.row });
+
+    if (pieceOnSide !== undefined) {
+      this.movePiece(move, copiedBoard);
+      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } }, copiedBoard);
+    }
+
+    return copiedBoard;
+  }
+
+  private static executeLongCastle(move: Move, board: Board): Board {
+    console.log("executeLongCastle: " + JSON.stringify(move));
+    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    let pieceOnSide = PositionUtils.getPieceOnPos(board, { column: 1, row: move.piece.position.row });
+
+    if (pieceOnSide !== undefined) {
+      this.movePiece(move, copiedBoard);
+      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } }, copiedBoard);
+    }
+
+    return copiedBoard;
+  }
+
+  private static movePiece(move: Move, board: Board): void {
+    console.log("movePiece: " + JSON.stringify(move));
+    this.removePiece(move.piece, board);
+    move.piece.position = move.to;
+    this.addPiece(move.promotedPiece ? move.promotedPiece : move.piece, board);
+  }
+
+  public static addPiece(piece: Piece, board: Board): void {
+    board.pieces.push(piece);
+  }
+
+  public static removePiece(draggedPiece: Piece, board: Board): void {
+    let index = -1;
+    let currentPieces = board.pieces;
+
+    for (let i = 0; i < currentPieces.length; i++) {
+      const piece = currentPieces[i];
+
+      if (PieceUtils.pieceEquals(piece, draggedPiece)) {
+        index = i;
+      }
+    }
+
+    console.log("removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
+
+    if (index > -1) {
+      currentPieces.splice(index, 1);
+      board.pieces = currentPieces;
+    }
+  }
+
+  private static setCastleRights(castleRights: CastleRights, board: Board): void {
+    if (castleRights.player === Color.WHITE) {
+      board.whiteCastleRights = castleRights;
+    }
+    else {
+      board.blackCastleRights = castleRights;
+    }
+  }
+
+  private static finishMove(move: Move, board: Board, generationService: MoveGenerationService): void {
+    if (!this.hasPawnGoneLongStep(move)) {
+      this.clearEnPassantSquares(board);
+    }
+
+    if (!(this.isCastle(move))) {
+      this.movePiece(move, board);
+    }
+
+    this.togglePlayerToMove(board);
+
+
+    move.isCheck = this.isCheck(generationService, board);
+
+    if (move.isCheck) {
+      move.isMate = this.isMate(generationService, board);
+
+      if (move.isMate) {
+        board.result = move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN;
+      }
+    }
+  }
+
+  private static togglePlayerToMove(board: Board): void {
+    let currentPlayerToMove: Color = board.playerToMove;
+    board.playerToMove = currentPlayerToMove === Color.WHITE ? Color.BLACK : Color.WHITE
+  }
+
+  private static hasPawnGoneLongStep(move: Move): boolean {
+    return move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2;
+  }
+
+  public static clearEnPassantSquares(board: Board): void {
+    board.enPassantSquare = undefined;
+  }
+
+  private static isCastle(move: Move): boolean | undefined {
+    return move.isShortCastle || move.isLongCastle;
   }
 }

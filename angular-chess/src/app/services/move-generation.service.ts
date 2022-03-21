@@ -76,7 +76,7 @@ export class MoveGenerationService {
   private isInCheck(board: Board, m: Move): boolean {
     const copiedBoard = CopyUtils.deepCopyElement(board);
 
-    return false;
+    return BoardUtils.isCheck(this, copiedBoard);
   }
 
   public getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
