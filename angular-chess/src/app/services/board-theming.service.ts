@@ -12,13 +12,13 @@ export interface BoardThemeConfig {
 export class BoardThemingService {
 
   private readonly woodTheme: BoardThemeConfig = {
-    darkField: 'url(/board_field_dark.png)',
-    lightField: 'url(/board_field_light.png)'
+    darkField: 'url(/assets/board_field_dark.png)',
+    lightField: 'url(/assets/board_field_light.png)'
   };
 
   private readonly brownTheme: BoardThemeConfig = {
-    darkField: '#b58863',
-    lightField: '#f0d9b5',
+    darkField: '#882d17',
+    lightField: '#c19a6b',
   };
 
   private readonly selectedTheme$$: BehaviorSubject<BoardThemeConfig> = new BehaviorSubject(this.woodTheme);
