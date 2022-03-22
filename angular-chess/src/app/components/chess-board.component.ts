@@ -20,7 +20,7 @@ import PositionUtils from '../utils/position.utils';
   providers: [MessageService]
 })
 export class ChessBoardComponent implements OnInit {
-  public readonly numbersOneToEight: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+  public readonly numbersOneToEight: number[] = [...Array(8)].map((_, i) => i + 1);
   public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
 
   public playerPerspectiveRows$: Observable<number[]> | undefined;
@@ -59,7 +59,6 @@ export class ChessBoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.playerPerspectiveRows$ = this.positioningService.perspective$.pipe(
-      tap(perspective => console.log("ngOnInit perspective: ", perspective)),
       map(perspective =>
         perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
       ),
@@ -98,7 +97,6 @@ export class ChessBoardComponent implements OnInit {
     this.dragPos = this.positioningService.getMousePosition(event);
     const currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
-    console.log('dragStart - grabbedPiece: ', this.grabbedPiece);
     this.updateHighlightingSquares(currentBoard);
   }
 

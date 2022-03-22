@@ -39,17 +39,11 @@ export class ChessFieldComponent {
   public readonly dragEnd: EventEmitter<DragEvent> = new EventEmitter();
 
   public isFieldDark(): boolean {
-    if ((this.columnIndex % 2 === 0 && this.rowIndex % 2 === 1) ||
-      (this.columnIndex % 2 === 1 && this.rowIndex % 2 === 0)
-    ) return true;
-    return false;
+    return (this.columnIndex + this.rowIndex) % 2 === 0;
   }
 
   public getPieceChar(): string | undefined {
-    if (this.piece) {
-      return PieceUtils.getPieceChar(this.piece.type, Color.BLACK);
-    }
-    return undefined;
+    return this.piece ? PieceUtils.getPieceChar(this.piece.type, Color.BLACK) : undefined;
   }
 
 }

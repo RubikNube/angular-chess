@@ -110,11 +110,7 @@ export class MoveGenerationService {
 
   private isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
     const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
-
-    if (pieceOnPos !== undefined) {
-      return pieceOnPos.color !== color;
-    }
-    return false;
+    return pieceOnPos?.color !== color || false;
   }
 
 

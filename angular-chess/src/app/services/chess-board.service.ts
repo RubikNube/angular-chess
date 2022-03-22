@@ -21,6 +21,9 @@ export class ChessBoardService {
   private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   private board$: Observable<Board> = this.board$$.asObservable();
 
+  public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
+  public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
+
   private attackedSquaresFromBlack$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   private attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlack$$.asObservable();
   private attackedSquaresFromWhite$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
@@ -134,8 +137,6 @@ export class ChessBoardService {
     }));
   }
 
-  public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
-
   public getPlayerToMove(): Color {
     return this.board$$.getValue().playerToMove;
   }
@@ -181,8 +182,6 @@ export class ChessBoardService {
   public getPieces(): Piece[] {
     return this.board$$.getValue().pieces;
   }
-
-  public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
 
   public getPiece$(columnIndex: number, rowIndex: number): Observable<Piece | undefined> {
     return this.board$$.pipe(map(board => board.pieces.find(piece => piece.position.column === columnIndex && piece.position.row === rowIndex)));
