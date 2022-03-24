@@ -1,7 +1,0 @@
-$base-index: 0;
-$above: 1;
-
-$board-index: $base-index;
-$field-index: $above + $board-index;
-$piece-index: $above + $field-index;
-$menu-index: $above + $piece-index;

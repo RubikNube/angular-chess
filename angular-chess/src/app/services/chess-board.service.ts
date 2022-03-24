@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
@@ -20,6 +20,9 @@ export class ChessBoardService {
   };
   private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   private board$: Observable<Board> = this.board$$.asObservable();
+
+  public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
+  public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
 
   private attackedSquaresFromBlack$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
   private attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlack$$.asObservable();
@@ -119,6 +122,7 @@ export class ChessBoardService {
   }
 
   public togglePlayerToMove(): void {
+    console.log("togglePlayerToMove:");
     let currentBoard: Board = this.board$$.getValue();
     let currentPlayerToMove: Color = currentBoard.playerToMove;
 
@@ -177,6 +181,10 @@ export class ChessBoardService {
 
   public getPieces(): Piece[] {
     return this.board$$.getValue().pieces;
+  }
+
+  public getPiece$(columnIndex: number, rowIndex: number): Observable<Piece | undefined> {
+    return this.board$$.pipe(map(board => board.pieces.find(piece => piece.position.column === columnIndex && piece.position.row === rowIndex)));
   }
 
   public importFen(newFen: string): void {

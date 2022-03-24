@@ -1,24 +1,22 @@
 <div class="board">
-  <div
-    *ngFor="let piece of this.boardService.getPieces()"
-    class="piece piece-{{piece.color}}"
-    [style.top.%]="getTopPosition(piece.position)"
-    [style.left.%]="getLeftPosition(piece.position)"
-    [style.cursor]="getCursor(piece, this.boardService.getBoard())"
-    pDraggable="piece"
-    [pDraggableDisabled]="piece.color !== this.boardService.getBoard().playerToMove"
-    (onDragStart)="dragStart($event,piece)"
-    (onDragEnd)="dragEnd($event)"
-  >
-    {{getBlackPieceChar(piece)}}
-  </div>
-
-  <div
-    *ngFor="let square of this.highlightingService.getSquares$()|async"
-    class="field color-{{square.highlight}}"
-    [style.top.%]="getTopPosition(square.position)"
-    [style.left.%]="getLeftPosition(square.position)"
-  ></div>
+  <ng-container *ngFor="let rowIndex of playerPerspectiveRows$ | async">
+    <ng-container *ngFor="let columnIndex of playerPerspectiveColumns$ | async">
+      <app-chess-field
+        [rowIndex]="rowIndex"
+        [columnIndex]="columnIndex"
+        [piece]="boardService.getPiece$(columnIndex, rowIndex) | async"
+        [activePlayer]="boardService.activePlayer$ | async"
+        [boardTheme]="themingService.selectedTheme$ | async"
+        [square]="
+          highlightingService.getSquare$({ row: rowIndex, column: columnIndex })
+            | async
+        "
+        (dragStart)="dragStart($event)"
+        (dragEnd)="dragEnd($event)"
+        #chessField
+      ></app-chess-field>
+    </ng-container>
+  </ng-container>
 </div>
 
 <p-overlayPanel #op>
@@ -30,6 +28,10 @@
   </ng-template>
 </p-overlayPanel>
 
-<div class="{{this.boardService.getPlayerToMove$()|async}}-playerToMove"></div>
+<div
+  class="playerToMove playerToMove-color--{{
+    boardService.activePlayer$ | async
+  }}"
+></div>
 
 <p-toast position="top-center"></p-toast>

@@ -4,6 +4,7 @@ import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { PositioningService } from 'src/app/services/positioning.service';
+import { BoardThemingService } from 'src/app/services/board-theming.service';
 import BoardUtils from 'src/app/utils/board.utils';
 import { ImportFenComponent } from './import-fen/import-fen.component';
 
@@ -20,9 +21,11 @@ export class MainMenuComponent {
   constructor(
     private boardService: ChessBoardService,
     private positioningService: PositioningService,
+    private themingService: BoardThemingService,
     public dialogService: DialogService,
     public messageService: MessageService,
-    private clipboard: Clipboard) {
+    private clipboard: Clipboard
+  ) {
     this.menuItems = [
       {
         label: 'Edit',
@@ -40,6 +43,10 @@ export class MainMenuComponent {
           label: 'Switch Board',
           icon: PrimeIcons.SYNC,
           command: () => this.positioningService.switchPerspective()
+        }, {
+          label: 'Toggle board theme',
+          icon: PrimeIcons.MICROSOFT,
+          command: () => this.themingService.toggleTheme()
         }]
       }
     ];

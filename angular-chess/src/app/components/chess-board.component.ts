@@ -1,13 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
-import { distinctUntilChanged, tap } from 'rxjs';
+import { distinctUntilChanged, map, Observable, tap } from 'rxjs';
+import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position, Result } from '../types/board.t';
+import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -18,7 +19,12 @@ import PositionUtils from '../utils/position.utils';
   styleUrls: ['./chess-board.component.scss'],
   providers: [MessageService]
 })
-export class ChessBoardComponent {
+export class ChessBoardComponent implements OnInit {
+  public readonly numbersOneToEight: number[] = [...Array(8)].map((_, i) => i + 1);
+  public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
+
+  public playerPerspectiveRows$: Observable<number[]> | undefined;
+  public playerPerspectiveColumns$: Observable<number[]> | undefined;
   private dragPos: Position = { row: 0, column: 0 };
   private grabbedPiece: Piece | undefined = undefined;
   public selectedPromotionPiece: PieceType | undefined;
@@ -33,19 +39,34 @@ export class ChessBoardComponent {
   @ViewChild("op")
   public overlayPanel: OverlayPanel | undefined;
 
-  constructor(public boardService: ChessBoardService,
+  constructor(
+    public boardService: ChessBoardService,
+    public readonly themingService: BoardThemingService,
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
     private moveGenerationService: MoveGenerationService,
     private moveExecutionService: MoveExecutionService,
-    private messageService: MessageService) {
-    boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+    private messageService: MessageService
+  ) {
+    this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
-    boardService.getResult$()
+    this.boardService.getResult$()
       .pipe(
         tap(r => console.log("getResult: " + r)),
         distinctUntilChanged())
       .subscribe(r => this.showResultToast(r));
+  }
+
+  ngOnInit(): void {
+    this.playerPerspectiveRows$ = this.positioningService.perspective$.pipe(
+      map(perspective =>
+        perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
+      ),
+      tap(data => console.log("ngOnInit result: ", data)),
+    );
+    this.playerPerspectiveColumns$ = this.positioningService.perspective$.pipe(map(perspective =>
+      perspective === Color.WHITE ? this.numbersOneToEight : this.numbersOneToEightDesc
+    ));
   }
 
   private showResultToast(result: Result) {
@@ -72,35 +93,23 @@ export class ChessBoardComponent {
     }
   }
 
-  public getBlackPieceChar(piece: Piece): string {
-    return PieceUtils.getPieceChar(piece.type, Color.BLACK);
-  }
-
-  public getTopPosition(position: Position): number {
-    let uiRow = this.positioningService.getUiPosition(position).row;
-
-    return (8 - uiRow) * 12.5;
-  }
-
-  public getLeftPosition(position: Position): number {
-    let uiCol = this.positioningService.getUiPosition(position).column;
-
-    return (uiCol - 1) * 12.5
-  }
-
-  public dragStart(e: MouseEvent, c: any) {
-    this.dragPos = this.positioningService.getMousePosition(e);
-    let currentBoard: Board = this.boardService.getBoard();
+  public dragStart(event: DragEvent) {
+    this.dragPos = this.positioningService.getMousePosition(event);
+    const currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
+    this.updateHighlightingSquares(currentBoard);
+  }
+
+  private updateHighlightingSquares(currentBoard: Board): void {
     if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
-      let validSquares = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(m => {
+      const validSquares: Square[] = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
         return {
-          position: m.to,
+          position: move.to,
           highlight: HighlightColor.GREEN
         }
       });
 
-      let getValidCaptures = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
+      const getValidCaptures: Square[] = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED
@@ -111,7 +120,8 @@ export class ChessBoardComponent {
     }
   }
 
-  public dragEnd(e: MouseEvent) {
+  public dragEnd(e: DragEvent) {
+    console.log('dragEnd: ', e);
     this.highlightingService.clearSquares();
     if (this.grabbedPiece === undefined) {
       return;
@@ -145,6 +155,7 @@ export class ChessBoardComponent {
 
   }
 
+  // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any) {
     console.log("selectedPromotionPiece event: " + JSON.stringify(event));
 
@@ -157,6 +168,7 @@ export class ChessBoardComponent {
     this.overlayPanel?.hide();
   }
 
+  // TODO: Move this function to PieceUtils
   private getPieceType(pieceName: string) {
     switch (pieceName) {
       case "QUEEN":
@@ -170,9 +182,5 @@ export class ChessBoardComponent {
       default:
         return PieceType.QUEEN;
     }
-  }
-
-  public getCursor(piece: Piece, board: Board) {
-    return piece.color === board.playerToMove ? "grab" : "default";
   }
 }

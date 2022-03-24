@@ -18,22 +18,23 @@ export class PositioningService {
     return PositionUtils.getRelativePosition(position, this.perspectiveSource.getValue());
   }
 
-  getMousePosition(e: MouseEvent): Position {
-    let boardElem = document.querySelector('div.board');
-    let rect = boardElem?.getBoundingClientRect();
+  getMousePosition(event: DragEvent): Position {
+    console.log('getMousePosition event: ', event);
+    const boardElem = document.querySelector('div.board');
+    const rect = boardElem?.getBoundingClientRect();
 
-    let d_x = e.clientX - (rect?.x === undefined ? 0 : rect.x);
-    let d_y = e.clientY - (rect?.y === undefined ? 0 : rect.y);
+    const d_x = event.clientX - (rect?.x === undefined ? 0 : rect.x);
+    const d_y = event.clientY - (rect?.y === undefined ? 0 : rect.y);
 
     // get corresponding square
-    let ev_height = boardElem?.scrollHeight === undefined ? 1 : boardElem?.scrollHeight;
-    let squareLength = ev_height / 8;
+    const ev_height = boardElem?.scrollHeight === undefined ? 1 : boardElem?.scrollHeight;
+    const squareLength = ev_height / 8;
 
     // get row
-    let row = Math.ceil(d_y / squareLength);
+    const row = Math.ceil(d_y / squareLength);
 
     // get column
-    let column = Math.ceil(d_x / squareLength);
+    const column = Math.ceil(d_x / squareLength);
 
     let position: Position;
 
