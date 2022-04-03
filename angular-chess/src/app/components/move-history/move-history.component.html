@@ -6,7 +6,8 @@
   [resizableColumns]="true"
   styleClass="p-datatable-lg"
   selectionMode="single"
-  [(contextMenuSelection)]="selectedMove"
+  [(selection)]="this.selectedMove$"
+  dataKey="count"
   [contextMenu]="resetBoardContextMenu"
 >
   <ng-template pTemplate="header">
@@ -23,6 +24,7 @@
     <tr
       [pSelectableRow]="fullMove"
       [pContextMenuRow]="fullMove"
+      #move
     >
 
       <td>{{this.boardService.getMoveCount() + fullMove?.count}}</td>
