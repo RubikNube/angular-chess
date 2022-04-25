@@ -12,8 +12,8 @@ export interface BoardThemeConfig {
 export class BoardThemingService {
 
   private readonly woodTheme: BoardThemeConfig = {
-    darkField: 'url(/assets/board_field_dark.png)',
-    lightField: 'url(/assets/board_field_light.png)'
+    darkField: 'url(./assets/board_field_dark.png)',
+    lightField: 'url(./assets/board_field_light.png)'
   };
 
   private readonly brownTheme: BoardThemeConfig = {
