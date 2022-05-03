@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Color, Result } from '../types/board.t';
+import { Color, HighlightColor, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import CopyUtils from '../utils/copy.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
+import { HighlightingService } from './highlighting.service';
 import { MoveGenerationService } from './move-generation.service';
 import { MoveHistoryService } from './move-history.service';
 
@@ -14,6 +15,7 @@ import { MoveHistoryService } from './move-history.service';
 export class MoveExecutionService {
   constructor(private boardService: ChessBoardService,
     private moveGenerationService: MoveGenerationService,
+    private highlightingService: HighlightingService,
     private moveHistoryService: MoveHistoryService) {
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
@@ -104,6 +106,9 @@ export class MoveExecutionService {
     }
 
     this.moveHistoryService.addMoveToHistory(move);
+    const squareFrom = { highlight: HighlightColor.BLUE, position: move.from };
+    const squareTo = { highlight: HighlightColor.BLUE, position: move.to };
+    this.highlightingService.addSquares(squareFrom, squareTo);
   }
 
   private hasPawnGoneLongStep(move: Move): boolean {
