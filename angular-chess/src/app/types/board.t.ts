@@ -1,4 +1,4 @@
-import { Piece } from "./pieces.t"
+import { Piece } from "./pieces.t";
 
 export type Board = {
   pieces: Piece[];
@@ -30,7 +30,8 @@ export enum HighlightColor {
   NONE = "NONE",
   YELLOW = "YELLOW",
   GREEN = "GREEN",
-  RED = "RED"
+  RED = "RED",
+  BLUE = "BLUE"
 }
 
 export type CastleRights = {
