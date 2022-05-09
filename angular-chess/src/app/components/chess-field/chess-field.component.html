@@ -8,7 +8,7 @@
 >
   <div
     *ngIf="piece"
-    class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
+    class="square piece piece-{{ piece.color }} color-{{ square?.highlight }}"
     [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
     pDraggable="piece"
     [pDraggableDisabled]="piece.color !== activePlayer"
@@ -18,11 +18,7 @@
     {{ getPieceChar() }}
   </div>
   <div
-    *ngIf="square?.highlight === HighlightColor.GREEN"
-    class="piece color-GREEN"
-  ></div>
-  <div
-    *ngIf="square?.highlight === HighlightColor.BLUE"
-    class="piece color-BLUE"
+    *ngIf="!piece && !!square?.highlight"
+    class="square color-{{ square?.highlight }}"
   ></div>
 </div>
