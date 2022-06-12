@@ -61,8 +61,7 @@ export default class PositionUtils {
   }
 
   public static isFree(board: Board, position: Position): boolean {
-    const result = PositionUtils.getPieceOnPos(board, position) === undefined;
-    return result;
+    return PositionUtils.getPieceOnPos(board, position) === undefined;
   }
 
   public static getSurroundingSquares(piece: Piece): Position[] {

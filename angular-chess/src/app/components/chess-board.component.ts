@@ -10,7 +10,6 @@ import { MoveGenerationService } from '../services/move-generation.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
-import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -122,7 +121,6 @@ export class ChessBoardComponent implements OnInit {
 
   public dragEnd(e: DragEvent) {
     console.log('dragEnd: ', e);
-    this.highlightingService.clearSquares();
     if (this.grabbedPiece === undefined) {
       return;
     }
@@ -150,9 +148,20 @@ export class ChessBoardComponent implements OnInit {
     }
 
     if (executableMove !== undefined) {
+      this.clearAllSquares();
       this.moveExecutionService.executeMove(executableMove);
     }
+    else {
+      this.clearAllButLastMoveSquare();
+    }
+  }
 
+  private clearAllSquares() {
+    this.highlightingService.clearSquares();
+  }
+
+  private clearAllButLastMoveSquare() {
+    this.highlightingService.clearSquares(HighlightColor.BLUE);
   }
 
   // TODO: event type has to change to specific type
