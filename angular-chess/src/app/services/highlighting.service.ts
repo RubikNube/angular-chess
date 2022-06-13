@@ -19,7 +19,8 @@ export class HighlightingService {
 
   public clearSquares(...colors: HighlightColor[]): void {
     const filteredSquares: Square[] = this.squares$$.getValue()
-      .filter(s => colors.includes(s.highlight));
+      .filter(s => colors.length > 0 && colors.includes(s.highlight));
+
     this.squares$$.next(filteredSquares);
   }
 

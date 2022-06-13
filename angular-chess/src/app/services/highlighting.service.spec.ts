@@ -25,11 +25,11 @@ describe('HighlightingService', () => {
   };
   const greenSquare1: Square = {
     position: { column: 3, row: 1 },
-    highlight: HighlightColor.BLUE
+    highlight: HighlightColor.GREEN
   };
   const greenSquare2: Square = {
     position: { column: 3, row: 2 },
-    highlight: HighlightColor.BLUE
+    highlight: HighlightColor.GREEN
   };
 
   beforeEach(() => {
@@ -37,9 +37,7 @@ describe('HighlightingService', () => {
     service = TestBed.inject(HighlightingService);
 
     testScheduler = new TestScheduler((actual, expected) => {
-      // TODO: see how https://rxjs.dev/guide/testing/marble-testing are working
-      console.error(`actual ${JSON.stringify(actual)} expected: ${JSON.stringify(expected)}`)
-      expect(actual.value).toEqual(expected.value);
+      expect(actual).toEqual(expected);
     })
 
     service.addSquares(redSquare1, redSquare2, blueSquare1, blueSquare2, greenSquare1, greenSquare2);
@@ -49,12 +47,24 @@ describe('HighlightingService', () => {
     it('should clear all squares if no color is given', () => {
       testScheduler.run((runHelper) => {
         service.clearSquares();
-        service.getSquares$().subscribe(s => true);
-        const expected = "a";
+
+        const expected = "a--";
         const values = {
           a: []
         }
-        runHelper.expectObservable(service.getSquares$()).toBe(expected, [redSquare1]);
+        runHelper.expectObservable(service.getSquares$()).toBe(expected, values);
+      });
+    });
+
+    it('should not remove passed colors', () => {
+      testScheduler.run((runHelper) => {
+        service.clearSquares(HighlightColor.RED, HighlightColor.GREEN);
+
+        const expected = "a--";
+        const values = {
+          a: [redSquare1, redSquare2, greenSquare1, greenSquare2]
+        }
+        runHelper.expectObservable(service.getSquares$()).toBe(expected, values);
       });
     });
   });
