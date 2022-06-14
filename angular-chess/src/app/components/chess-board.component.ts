@@ -7,6 +7,7 @@ import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveGenerationService } from '../services/move-generation.service';
+import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
@@ -45,7 +46,8 @@ export class ChessBoardComponent implements OnInit {
     public positioningService: PositioningService,
     private moveGenerationService: MoveGenerationService,
     private moveExecutionService: MoveExecutionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private moveHistoryService: MoveHistoryService
   ) {
     this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
@@ -115,6 +117,7 @@ export class ChessBoardComponent implements OnInit {
         }
       });
 
+      this.highlightingService.clearSquaresByPosition(...getValidCaptures.map(e => e.position))
       this.highlightingService.addSquares(...validSquares, ...getValidCaptures);
     }
   }
@@ -153,15 +156,19 @@ export class ChessBoardComponent implements OnInit {
     }
     else {
       this.clearAllButLastMoveSquare();
+      const lastMove: Move = this.moveHistoryService.getLastMove();
+      const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
+      const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
+      this.highlightingService.addSquares(fromSquare, toSquare);
     }
   }
 
   private clearAllSquares() {
-    this.highlightingService.clearSquares();
+    this.highlightingService.clearSquaresByColor();
   }
 
   private clearAllButLastMoveSquare() {
-    this.highlightingService.clearSquares(HighlightColor.BLUE);
+    this.highlightingService.clearSquaresByColor(HighlightColor.BLUE);
   }
 
   // TODO: event type has to change to specific type

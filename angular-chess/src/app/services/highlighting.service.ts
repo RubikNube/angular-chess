@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { HighlightColor, Position, Square } from '../types/board.t';
+import PositionUtils from '../utils/position.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,14 @@ export class HighlightingService {
     return this.squares$$.pipe(map((squares: Square[]) => squares.find(data => data.position.column === position.column && data.position.row === position.row)))
   }
 
-  public clearSquares(...colors: HighlightColor[]): void {
+  public clearSquaresByPosition(...positions: Position[]): void {
+    const filteredSquares: Square[] = this.squares$$.getValue()
+      .filter(s => !PositionUtils.includes(positions, s.position));
+
+    this.squares$$.next(filteredSquares);
+  }
+
+  public clearSquaresByColor(...colors: HighlightColor[]): void {
     const filteredSquares: Square[] = this.squares$$.getValue()
       .filter(s => colors.length > 0 && colors.includes(s.highlight));
 

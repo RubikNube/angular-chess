@@ -43,10 +43,10 @@ describe('HighlightingService', () => {
     service.addSquares(redSquare1, redSquare2, blueSquare1, blueSquare2, greenSquare1, greenSquare2);
   });
 
-  describe('clearSquares', () => {
+  describe('clearSquaresByColor', () => {
     it('should clear all squares if no color is given', () => {
       testScheduler.run((runHelper) => {
-        service.clearSquares();
+        service.clearSquaresByColor();
 
         const expected = "a--";
         const values = {
@@ -58,11 +58,27 @@ describe('HighlightingService', () => {
 
     it('should not remove passed colors', () => {
       testScheduler.run((runHelper) => {
-        service.clearSquares(HighlightColor.RED, HighlightColor.GREEN);
+        service.clearSquaresByColor(HighlightColor.RED, HighlightColor.GREEN);
 
         const expected = "a--";
         const values = {
           a: [redSquare1, redSquare2, greenSquare1, greenSquare2]
+        }
+        runHelper.expectObservable(service.getSquares$()).toBe(expected, values);
+      });
+    });
+  });
+
+  describe('clearSquaresByColor', () => {
+    it('should remove squares with given position', () => {
+      testScheduler.run((runHelper) => {
+        const redPos1 = { column: 1, row: 1 };
+        const bluePos1 = { column: 2, row: 1 };
+        service.clearSquaresByPosition(redPos1, bluePos1);
+
+        const expected = "a--";
+        const values = {
+          a: [redSquare2, blueSquare2, greenSquare1, greenSquare2]
         }
         runHelper.expectObservable(service.getSquares$()).toBe(expected, values);
       });
