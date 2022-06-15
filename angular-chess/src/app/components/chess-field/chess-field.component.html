@@ -18,15 +18,7 @@
     {{ getPieceChar() }}
   </div>
   <div
-    *ngIf="piece===undefined && square?.highlight === HighlightColor.GREEN"
-    class="piece color-GREEN"
-  ></div>
-  <div
-    *ngIf="piece===undefined && square?.highlight === HighlightColor.BLUE"
-    class="piece color-BLUE"
-  ></div>
-  <div
-    *ngIf="piece===undefined && square?.highlight === HighlightColor.RED"
-    class="piece color-RED"
+    *ngIf="piece===undefined"
+    class="square color-{{ square?.highlight }}"
   ></div>
 </div>
