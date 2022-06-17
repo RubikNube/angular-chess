@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
@@ -13,7 +13,7 @@ import PositionUtils from 'src/app/utils/position.utils';
   templateUrl: './move-history.component.html',
   styleUrls: ['./move-history.component.scss']
 })
-export class MoveHistoryComponent {
+export class MoveHistoryComponent implements AfterViewInit {
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
   public menuItems: MenuItem[] = [
@@ -23,11 +23,29 @@ export class MoveHistoryComponent {
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
+  }
+
+  ngAfterViewInit(): void {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
       p => {
         this.fullMoveHistory = p;
+
+        window.setTimeout(() => {
+          const idOfElement = "fullMove_" + p[p.length - 1].count;
+          this.setFocusToNewMove(idOfElement);
+        }, 50);
       }
     );
+  }
+
+  private setFocusToNewMove(idOfElement: string) {
+    const elementToFocus: HTMLElement | null = document.getElementById(idOfElement);
+    if (elementToFocus) {
+      elementToFocus.focus();
+    }
+    else {
+      console.error("Couldn't set focus for id " + idOfElement);
+    }
   }
 
   public resetBoard(board: Board | undefined): void {
