@@ -19,6 +19,11 @@ export class MoveHistoryService {
     this.moveHistory$$.next(moveHistory);
   }
 
+  public getLastMove(): Move {
+    const moveHistory: Move[] = this.moveHistory$$.getValue();
+    return moveHistory[moveHistory.length - 1];
+  }
+
   public resetMoveHistory(): void {
     return this.moveHistory$$.next([]);
   }
