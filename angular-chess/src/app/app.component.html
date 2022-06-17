@@ -1,8 +1,23 @@
 <app-main-menu></app-main-menu>
 
-<p-splitter class="background">
+<p-splitter
+  class="background {{ showHistory?'show':'hide' }}"
+  layout="horizonal"
+>
   <ng-template pTemplate>
-    <app-chess-board></app-chess-board>
+    <app-chess-board class="splittedChessBoard"></app-chess-board>
+  </ng-template>
+  <ng-template pTemplate>
+    <app-move-history></app-move-history>
+  </ng-template>
+</p-splitter>
+
+<p-splitter
+  class="background {{ showHistory?'hide':'show' }}"
+  layout="vertical"
+>
+  <ng-template pTemplate>
+    <app-chess-board class="singleChessBoard"></app-chess-board>
   </ng-template>
   <ng-template pTemplate>
     <app-move-history></app-move-history>

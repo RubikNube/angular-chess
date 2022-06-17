@@ -24,8 +24,21 @@ button {
   font-family: Cambria, Georgia, serif;
 }
 
+// app-chess-board{
+//   width: 80vw;
+//   height: 80vw;
+// }
+
 app-move-history {
   width: 30vw;
+}
+
+.hide{
+  display: none;
+}
+
+.show{
+  display: "";
 }
 
 /* everywhere else */
