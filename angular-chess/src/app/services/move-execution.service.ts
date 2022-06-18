@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color, HighlightColor, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
-import BoardUtils from '../utils/board.utils';
 import CopyUtils from '../utils/copy.utils';
 import PositionUtils from '../utils/position.utils';
 import { ChessBoardService } from './chess-board.service';
@@ -17,12 +16,6 @@ export class MoveExecutionService {
     private moveGenerationService: MoveGenerationService,
     private highlightingService: HighlightingService,
     private moveHistoryService: MoveHistoryService) {
-    this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
-      console.log("getMoveHistory: " + moveHistory.length);
-      let board = boardService.getBoard();
-      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK));
-      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE));
-    })
   }
 
   public executeMove(move: Move): void {

@@ -11,6 +11,7 @@ import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
+import BoardUtils from '../utils/board.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -56,6 +57,13 @@ export class ChessBoardComponent implements OnInit {
         tap(r => console.log("getResult: " + r)),
         distinctUntilChanged())
       .subscribe(r => this.showResultToast(r));
+
+    this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
+      console.log("getMoveHistory: " + moveHistory.length);
+      let board = boardService.getBoard();
+      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK));
+      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE));
+    })
   }
 
   ngOnInit(): void {
