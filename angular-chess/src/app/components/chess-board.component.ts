@@ -160,10 +160,7 @@ export class ChessBoardComponent implements OnInit {
 
     if (executableMove !== undefined) {
       this.clearAllSquares();
-      const newBoard: Board | undefined = this.moveExecutionService.executeMove(executableMove, currentBoard);
-      if (newBoard) {
-        this.boardService.updateBoard(newBoard);
-      }
+      this.executeMove(executableMove, currentBoard);
     }
     else {
       this.clearAllButLastMoveSquare();
@@ -171,6 +168,17 @@ export class ChessBoardComponent implements OnInit {
       const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
       const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
       this.highlightingService.addSquares(fromSquare, toSquare);
+    }
+  }
+
+  private executeMove(executableMove: Move, currentBoard: Board) {
+    const executedMove: Move | undefined = this.moveExecutionService.executeMove(executableMove, currentBoard);
+    if (executedMove && executedMove.board) {
+      this.boardService.updateBoard(executedMove.board);
+      this.moveHistoryService.addMoveToHistory(executedMove);
+      const squareFrom = { highlight: HighlightColor.BLUE, position: executedMove.from };
+      const squareTo = { highlight: HighlightColor.BLUE, position: executedMove.to };
+      this.highlightingService.addSquares(squareFrom, squareTo);
     }
   }
 
@@ -189,7 +197,8 @@ export class ChessBoardComponent implements OnInit {
     let selectedPiece = this.getPieceType(event.value);
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
-      this.moveExecutionService.executeMove(this.lastMove, this.boardService.getBoard());
+
+      this.executeMove(this.lastMove, this.boardService.getBoard());
     }
 
     this.overlayPanel?.hide();

@@ -1,23 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BoardBuilder } from '../builders/board.builder';
-import { Board, Color, HighlightColor, Result } from '../types/board.t';
+import { Board, Color, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from '../utils/position.utils';
-import { HighlightingService } from './highlighting.service';
 import { MoveGenerationService } from './move-generation.service';
-import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoveExecutionService {
   constructor(
-    private moveGenerationService: MoveGenerationService,
-    private highlightingService: HighlightingService,
-    private moveHistoryService: MoveHistoryService) {
+    private moveGenerationService: MoveGenerationService) {
   }
 
-  public executeMove(move: Move, board: Board): Board | undefined {
+  public executeMove(move: Move, board: Board): Move | undefined {
     console.log("executeMove: " + JSON.stringify(move));
 
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
@@ -27,7 +23,7 @@ export class MoveExecutionService {
     }
 
     if (move.piece.type === PieceType.KING && this.executeKingCastle(move, boardBuilder)) {
-      return boardBuilder.build();
+      return move;
     }
 
     if (move.capturedPiece === undefined) { // move
@@ -53,7 +49,7 @@ export class MoveExecutionService {
     return this.finishMove(move, boardBuilder);
   }
 
-  private executeKingCastle(move: Move, boardBuilder: BoardBuilder): Board | undefined {
+  private executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
 
     boardBuilder.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
@@ -72,7 +68,7 @@ export class MoveExecutionService {
     return undefined;
   }
 
-  private finishMove(move: Move, boardBuilder: BoardBuilder): Board | undefined {
+  private finishMove(move: Move, boardBuilder: BoardBuilder): Move | undefined {
     if (!this.hasPawnGoneLongStep(move)) {
       boardBuilder.clearEnPassantSquares();
     }
@@ -93,12 +89,9 @@ export class MoveExecutionService {
       }
     }
 
-    this.moveHistoryService.addMoveToHistory(move);
-    const squareFrom = { highlight: HighlightColor.BLUE, position: move.from };
-    const squareTo = { highlight: HighlightColor.BLUE, position: move.to };
-    this.highlightingService.addSquares(squareFrom, squareTo);
+    move.board = boardBuilder.build();
 
-    return boardBuilder.build();
+    return move;
   }
 
   private hasPawnGoneLongStep(move: Move): boolean {
