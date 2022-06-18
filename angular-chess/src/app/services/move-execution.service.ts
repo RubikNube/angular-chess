@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Color, HighlightColor, Result } from '../types/board.t';
+import { BoardBuilder } from '../builders/board.builder';
+import { Board, Color, HighlightColor, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
-import CopyUtils from '../utils/copy.utils';
 import PositionUtils from '../utils/position.utils';
-import { ChessBoardService } from './chess-board.service';
 import { HighlightingService } from './highlighting.service';
 import { MoveGenerationService } from './move-generation.service';
 import { MoveHistoryService } from './move-history.service';
@@ -12,89 +11,85 @@ import { MoveHistoryService } from './move-history.service';
   providedIn: 'root'
 })
 export class MoveExecutionService {
-  constructor(private boardService: ChessBoardService,
+  constructor(
     private moveGenerationService: MoveGenerationService,
     private highlightingService: HighlightingService,
     private moveHistoryService: MoveHistoryService) {
   }
 
-  public executeMove(move: Move): void {
+  public executeMove(move: Move, board: Board): Board | undefined {
     console.log("executeMove: " + JSON.stringify(move));
 
-    move.board = CopyUtils.deepCopyElement(this.boardService.getBoard());
-    if (move.piece.color !== this.boardService.getPlayerToMove()) {
+    const boardBuilder: BoardBuilder = new BoardBuilder(board);
+    if (move.piece.color !== board.playerToMove) {
       console.warn("Not the right player to move. Ignore move.")
-      return;
+      return undefined;
     }
 
-    if (move.piece.type === PieceType.KING && this.executeKingCastle(move)) {
-      return;
+    if (move.piece.type === PieceType.KING && this.executeKingCastle(move, boardBuilder)) {
+      return boardBuilder.build();
     }
 
     if (move.capturedPiece === undefined) { // move
       if (move.piece.type === PieceType.PAWN) {
         if (move.piece.color === Color.WHITE && move.to.row === 4) {
-          this.boardService.setEnPassantSquares({ row: 3, column: move.from.column });
+          boardBuilder.enPassantSquare({ row: 3, column: move.from.column });
 
-          this.finishMove(move);
-          return;
+          return this.finishMove(move, boardBuilder);
         }
         else if (move.piece.color === Color.BLACK && move.to.row === 5) {
-          this.boardService.setEnPassantSquares({ row: 6, column: move.from.column });
+          boardBuilder.enPassantSquare({ row: 6, column: move.from.column });
 
-          this.finishMove(move);
-          return;
+          return this.finishMove(move, boardBuilder);
         }
       }
 
-      this.movePiece(move);
+      boardBuilder.movePiece(move);
     }
     else { // capture
-      this.capturePiece(move);
+      boardBuilder.capturePiece(move);
     }
 
-    this.finishMove(move);
+    return this.finishMove(move, boardBuilder);
   }
 
-  private executeKingCastle(move: Move): boolean {
-    this.boardService.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
+  private executeKingCastle(move: Move, boardBuilder: BoardBuilder): Board | undefined {
+
+    boardBuilder.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
     // kingside castle
     if (move.isShortCastle) {
-      this.executeShortCastle(move);
-      this.finishMove(move);
-      return true;
+      this.executeShortCastle(move, boardBuilder);
+      return this.finishMove(move, boardBuilder);
     }
 
     // queenside castle
     if (move.isLongCastle) {
-      this.executeLongCastle(move);
-      this.finishMove(move);
-      return true;
+      this.executeLongCastle(move, boardBuilder);
+      return this.finishMove(move, boardBuilder);
     }
 
-    return false;
+    return undefined;
   }
 
-  private finishMove(move: Move): void {
+  private finishMove(move: Move, boardBuilder: BoardBuilder): Board | undefined {
     if (!this.hasPawnGoneLongStep(move)) {
-      this.boardService.clearEnPassantSquares();
+      boardBuilder.clearEnPassantSquares();
     }
 
     if (!(this.isCastle(move))) {
-      this.movePiece(move);
+      boardBuilder.movePiece(move);
     }
 
-    this.boardService.togglePlayerToMove();
+    boardBuilder.togglePlayerToMove();
 
-
-    move.isCheck = this.moveGenerationService.isCheck(this.boardService.getBoard(), move);
+    move.isCheck = this.moveGenerationService.isCheck(boardBuilder.build(), move);
 
     if (move.isCheck) {
-      move.isMate = this.moveGenerationService.isMate(this.boardService.getBoard());
+      move.isMate = this.moveGenerationService.isMate(boardBuilder.build());
 
       if (move.isMate) {
-        this.boardService.updateResult(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
+        boardBuilder.result(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
     }
 
@@ -102,6 +97,8 @@ export class MoveExecutionService {
     const squareFrom = { highlight: HighlightColor.BLUE, position: move.from };
     const squareTo = { highlight: HighlightColor.BLUE, position: move.to };
     this.highlightingService.addSquares(squareFrom, squareTo);
+
+    return boardBuilder.build();
   }
 
   private hasPawnGoneLongStep(move: Move): boolean {
@@ -112,43 +109,23 @@ export class MoveExecutionService {
     return move.isShortCastle || move.isLongCastle;
   }
 
-  private capturePiece(move: Move): void {
-    console.log("capturePiece: " + JSON.stringify(move));
-    this.boardService.removePiece(move.piece);
-
-    if (move.capturedPiece !== undefined) {
-      this.boardService.removePiece(move.capturedPiece);
-    }
-    move.piece.position = move.to;
-    this.boardService.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
-  }
-
-  private movePiece(move: Move): void {
-    console.log("movePiece: " + JSON.stringify(move));
-    this.boardService.removePiece(move.piece);
-    move.piece.position = move.to;
-    this.boardService.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
-  }
-
-  private executeLongCastle(move: Move): void {
+  private executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeLongCastle: " + JSON.stringify(move));
-    let currentBoard = this.boardService.getBoard();
-    let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 1, row: move.piece.position.row });
+
+    let pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
-      this.movePiece(move);
-      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });
+      boardBuilder.movePiece(move)
+        .movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });
     }
   }
 
-  private executeShortCastle(move: Move): void {
+  private executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeShortCastle: " + JSON.stringify(move));
-    let currentBoard = this.boardService.getBoard();
-    let pieceOnSide = PositionUtils.getPieceOnPos(currentBoard, { column: 8, row: move.piece.position.row });
+    let pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
-      this.movePiece(move);
-      this.movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
+      boardBuilder.movePiece(move).movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
     }
   }
 }

@@ -160,7 +160,10 @@ export class ChessBoardComponent implements OnInit {
 
     if (executableMove !== undefined) {
       this.clearAllSquares();
-      this.moveExecutionService.executeMove(executableMove);
+      const newBoard: Board | undefined = this.moveExecutionService.executeMove(executableMove, currentBoard);
+      if (newBoard) {
+        this.boardService.updateBoard(newBoard);
+      }
     }
     else {
       this.clearAllButLastMoveSquare();
@@ -186,7 +189,7 @@ export class ChessBoardComponent implements OnInit {
     let selectedPiece = this.getPieceType(event.value);
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
-      this.moveExecutionService.executeMove(this.lastMove);
+      this.moveExecutionService.executeMove(this.lastMove, this.boardService.getBoard());
     }
 
     this.overlayPanel?.hide();

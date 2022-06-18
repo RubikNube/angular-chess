@@ -56,6 +56,10 @@ export class ChessBoardService {
     return this.board$$.getValue();
   }
 
+  public updateBoard(board: Board): void {
+    this.board$$.next(board);
+  }
+
   public clearEnPassantSquares(): void {
     let currentBoard: Board = this.board$$.getValue();
     currentBoard.enPassantSquare = undefined;
