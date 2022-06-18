@@ -12,6 +12,7 @@ import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Component({
@@ -78,7 +79,7 @@ export class ChessBoardComponent implements OnInit {
     ));
   }
 
-  private showResultToast(result: Result) {
+  private showResultToast(result: Result): void {
     console.log("showResultToast: " + result);
     if (result !== Result.UNKNOWN) {
       this.messageService.add({ severity: 'info', summary: 'Info', detail: this.getResultRepresentation(result) });
@@ -102,7 +103,7 @@ export class ChessBoardComponent implements OnInit {
     }
   }
 
-  public dragStart(event: DragEvent) {
+  public dragStart(event: DragEvent): void {
     this.dragPos = this.positioningService.getMousePosition(event);
     const currentBoard: Board = this.boardService.getBoard();
     this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
@@ -130,7 +131,7 @@ export class ChessBoardComponent implements OnInit {
     }
   }
 
-  public dragEnd(e: DragEvent) {
+  public dragEnd(e: DragEvent): void {
     console.log('dragEnd: ', e);
     if (this.grabbedPiece === undefined) {
       return;
@@ -171,7 +172,7 @@ export class ChessBoardComponent implements OnInit {
     }
   }
 
-  private executeMove(executableMove: Move, currentBoard: Board) {
+  private executeMove(executableMove: Move, currentBoard: Board): void {
     const executedMove: Move | undefined = this.moveExecutionService.executeMove(executableMove, currentBoard);
     if (executedMove && executedMove.board) {
       this.boardService.updateBoard(executedMove.board);
@@ -182,19 +183,19 @@ export class ChessBoardComponent implements OnInit {
     }
   }
 
-  private clearAllSquares() {
+  private clearAllSquares(): void {
     this.highlightingService.clearSquaresByColor();
   }
 
-  private clearAllButLastMoveSquare() {
+  private clearAllButLastMoveSquare(): void {
     this.highlightingService.clearSquaresByColor(HighlightColor.BLUE);
   }
 
   // TODO: event type has to change to specific type
-  public selectPromotionPiece(event: any) {
+  public selectPromotionPiece(event: any): void {
     console.log("selectedPromotionPiece event: " + JSON.stringify(event));
 
-    let selectedPiece = this.getPieceType(event.value);
+    let selectedPiece = PieceUtils.getPieceType(event.value);
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
 
@@ -202,21 +203,5 @@ export class ChessBoardComponent implements OnInit {
     }
 
     this.overlayPanel?.hide();
-  }
-
-  // TODO: Move this function to PieceUtils
-  private getPieceType(pieceName: string) {
-    switch (pieceName) {
-      case "QUEEN":
-        return PieceType.QUEEN;
-      case "ROOK":
-        return PieceType.ROOK;
-      case "BISHOP":
-        return PieceType.BISHOP;
-      case "KNIGHT":
-        return PieceType.KNIGHT;
-      default:
-        return PieceType.QUEEN;
-    }
   }
 }
