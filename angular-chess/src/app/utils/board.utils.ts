@@ -1,5 +1,6 @@
+import { BoardBuilder } from "../builders/board.builder";
 import { MoveGenerationService } from "../services/move-generation.service";
-import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
+import { Board, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
@@ -7,27 +8,18 @@ import PositionUtils from "./position.utils";
 export default class BoardUtils {
   private static readonly PIECES_MATCHER_CHARS = "[R|B|Q|K|N|P]";
 
-  private static initialBoard: Board = {
-    pieces: [],
-    whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
-    blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
-    playerToMove: Color.WHITE,
-    result: Result.UNKNOWN,
-    moveCount: 0
-  };
-
   public static loadBoardFromFen(newFen: string): Board {
-    const currentBoard: Board = this.initialBoard;
+    const board: BoardBuilder = new BoardBuilder();
 
     const fenSections = newFen.split(' ');
     const fenRows: string[] = fenSections[0].split("/");
 
-    currentBoard.pieces = this.readPieces(fenRows);
+    board.pieces(this.readPieces(fenRows));
 
     if (fenSections.length > 1) {
       let playerChar = fenSections[1];
 
-      currentBoard.playerToMove = this.readPlayerToMove(playerChar);
+      board.playerToMove(this.readPlayerToMove(playerChar));
     }
 
 
@@ -36,37 +28,37 @@ export default class BoardUtils {
 
       const { whiteCastleRights, blackCastleRights }: { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } = this.readCastleRights(castleFen);
 
-      currentBoard.whiteCastleRights = whiteCastleRights;
-      currentBoard.blackCastleRights = blackCastleRights;
+      board.whiteCastleRights(whiteCastleRights);
+      board.blackCastleRights(blackCastleRights);
     }
     else {
       const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
       const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
 
-      currentBoard.whiteCastleRights = whiteCastleRights;
-      currentBoard.blackCastleRights = blackCastleRights;
+      board.whiteCastleRights(whiteCastleRights);
+      board.blackCastleRights(blackCastleRights);
     }
 
     if (fenSections.length > 3) {
       const enPassantFen = fenSections[3];
 
       const enPassantPosition = PositionUtils.getPositionFromCoordinate(enPassantFen);
-      currentBoard.enPassantSquare = enPassantPosition;
+      board.enPassantSquare(enPassantPosition);
     }
 
     if (fenSections.length > 4) {
       const plyCount = fenSections[4];
 
-      currentBoard.plyCount = +plyCount;
+      board.plyCount(+plyCount);
     }
 
     if (fenSections.length > 5) {
       const moveCount = fenSections[5];
 
-      currentBoard.moveCount = +moveCount;
+      board.moveCount(+moveCount);
     }
 
-    return currentBoard;
+    return board.build();
   }
 
   private static readPieces(fenRows: string[]): Piece[] {
