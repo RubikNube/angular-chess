@@ -20,6 +20,22 @@ describe('BoardUtils', () => {
       expect(attackedSquares).toContain({ column: 5, row: 1 });
       expect(attackedSquares).toContain({ column: 8, row: 2 });
     });
+
+    it('should generate attacked squares for black pawn', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/4p3/8/8/2P5/8/8 w - - 0 1");
+      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK);
+
+      expect(attackedSquares).toContain({ column: 4, row: 5 });
+      expect(attackedSquares).toContain({ column: 6, row: 5 });
+    });
+
+    it('should generate attacked squares for white pawn', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/4p3/8/8/2P5/8/8 w - - 0 1");
+      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE);
+
+      expect(attackedSquares).toContain({ column: 2, row: 4 });
+      expect(attackedSquares).toContain({ column: 4, row: 4 });
+    });
   });
 
   describe('isProtected', () => {

@@ -41,39 +41,8 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
   public getCaptures(piece: Piece, board: Board): Move[] {
     console.log("getValidPawnMoves: " + JSON.stringify(piece));
-    let fieldsToCapture: Position[] = [];
 
-    if (piece.color === Color.WHITE) {
-      // left upper field
-      let leftUpperField: Position = {
-        row: piece.position.row + 1,
-        column: piece.position.column - 1
-      };
-
-      // right upper field
-      let rightUpperField: Position = {
-        row: piece.position.row + 1,
-        column: piece.position.column + 1
-      };
-      fieldsToCapture.push(leftUpperField, rightUpperField);
-    }
-    else {
-      // left lower field
-      let leftUpperField: Position = {
-        row: piece.position.row - 1,
-        column: piece.position.column - 1
-      };
-
-      // right lower field
-      let rightUpperField: Position = {
-        row: piece.position.row - 1,
-        column: piece.position.column + 1
-      };
-      fieldsToCapture.push(leftUpperField, rightUpperField);
-    }
-
-
-    return fieldsToCapture
+    return MoveGenerationPawnHandler.getCaptureCanditates(piece)
       .map(p => {
         let isEnPassant = BoardUtils.isEnPassantSquare(board, p);
 
@@ -85,5 +54,36 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
           capturedPiece: isEnPassant ? PositionUtils.getPieceOnPos(board, { row: p.row - 1, column: p.column }) : PositionUtils.getPieceOnPos(board, p)
         }
       });
+  }
+
+  public static getCaptureCanditates(piece: Piece): Position[] {
+    if (piece.color === Color.WHITE) {
+      // left upper field
+      const leftUpperField: Position = {
+        row: piece.position.row + 1,
+        column: piece.position.column - 1
+      };
+
+      // right upper field
+      const rightUpperField: Position = {
+        row: piece.position.row + 1,
+        column: piece.position.column + 1
+      };
+      return [leftUpperField, rightUpperField];
+    }
+    else {
+      // left lower field
+      const leftUpperField: Position = {
+        row: piece.position.row - 1,
+        column: piece.position.column - 1
+      };
+
+      // right lower field
+      const rightUpperField: Position = {
+        row: piece.position.row - 1,
+        column: piece.position.column + 1
+      };
+      return [leftUpperField, rightUpperField];
+    }
   }
 }

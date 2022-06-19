@@ -2,7 +2,6 @@ import { Board, Color, Position } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 
 export default class PositionUtils {
-
   public static positionEquals(a: Position, b: Position) {
     return a.row === b.row && a.column === b.column;
   }
@@ -91,5 +90,11 @@ export default class PositionUtils {
         to: p
       };
     };
+  }
+
+  public static filterOutAttackedSquares(moves: Move[], attackedSquares: Position[]): Move[] {
+    return moves.filter(move => {
+      return !PositionUtils.includes(attackedSquares, move.to);
+    });
   }
 }
