@@ -11,7 +11,7 @@
     class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
     [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
     pDraggable="piece"
-    [pDraggableDisabled]="piece.color !== activePlayer"
+    [pDraggableDisabled]="disabled || piece.color !== activePlayer"
     (onDragStart)="dragStart.emit($event)"
     (onDragEnd)="dragEnd.emit($event)"
   >
