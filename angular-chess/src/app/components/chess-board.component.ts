@@ -184,11 +184,11 @@ export class ChessBoardComponent implements OnInit {
   }
 
   private clearAllSquares(): void {
-    this.highlightingService.clearSquaresByColor();
+    this.highlightingService.clearNotListedColoredSquares();
   }
 
   private clearAllButLastMoveSquare(): void {
-    this.highlightingService.clearSquaresByColor(HighlightColor.BLUE);
+    this.highlightingService.clearNotListedColoredSquares(HighlightColor.BLUE);
   }
 
   // TODO: event type has to change to specific type

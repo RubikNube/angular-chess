@@ -151,10 +151,7 @@ describe('MoveGenerationService', () => {
       let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
       let validMoves = service.getValidMoves(board, king, true);
 
-      // expect(validMoves.length).toEqual(1);
-      // expect(validMoves.length).toEqual(1);
       expect(validMoves).toEqual([{ piece: king, from: { column: 5, row: 1 }, to: { column: 4, row: 1 }, isCheck: false }]);
-      // expect(validMoves).toEqual([]);
     });
   });
 

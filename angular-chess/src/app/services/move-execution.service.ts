@@ -50,7 +50,6 @@ export class MoveExecutionService {
   }
 
   private executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
-
     boardBuilder.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
     // kingside castle
@@ -105,7 +104,7 @@ export class MoveExecutionService {
   private executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeLongCastle: " + JSON.stringify(move));
 
-    let pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
+    const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
       boardBuilder.movePiece(move)
@@ -115,7 +114,7 @@ export class MoveExecutionService {
 
   private executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeShortCastle: " + JSON.stringify(move));
-    let pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
+    const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {
       boardBuilder.movePiece(move).movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });

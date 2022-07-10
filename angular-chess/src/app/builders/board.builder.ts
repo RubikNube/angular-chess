@@ -3,6 +3,7 @@ import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import PieceUtils from "../utils/piece.utils";
 
+/** A builder that is responsible for creating the board.*/
 export class BoardBuilder {
   private readonly _board: Board;
 
