@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
-import { distinctUntilChanged, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable, tap } from 'rxjs';
 import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
@@ -25,6 +25,8 @@ export class ChessBoardComponent implements OnInit {
   public readonly numbersOneToEight: number[] = [...Array(8)].map((_, i) => i + 1);
   public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
 
+  private isDragDisabled$$: BehaviorSubject<boolean>;
+  public isDragDisabled$: Observable<boolean>;
   public playerPerspectiveRows$: Observable<number[]> | undefined;
   public playerPerspectiveColumns$: Observable<number[]> | undefined;
   private dragPos: Position = { row: 0, column: 0 };
@@ -53,18 +55,24 @@ export class ChessBoardComponent implements OnInit {
   ) {
     this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
+    this.isDragDisabled$$ = new BehaviorSubject<boolean>(false);
+    this.isDragDisabled$ = this.isDragDisabled$$.asObservable();
+
     this.boardService.getResult$()
       .pipe(
         tap(r => console.log("getResult: " + r)),
         distinctUntilChanged())
-      .subscribe(r => this.showResultToast(r));
+      .subscribe(r => {
+        this.showResultToast(r);
+        this.isDragDisabled$$.next(Result.UNKNOWN !== r);
+      });
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
       let board = boardService.getBoard();
       boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK));
       boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE));
-    })
+    });
   }
 
   ngOnInit(): void {

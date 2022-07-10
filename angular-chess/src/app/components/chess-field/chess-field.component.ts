@@ -27,6 +27,9 @@ export class ChessFieldComponent {
   public activePlayer: Color | null = Color.WHITE;
 
   @Input()
+  public disabled: boolean | null = false;
+
+  @Input()
   public square: Square | undefined | null = undefined;
 
   @Input()

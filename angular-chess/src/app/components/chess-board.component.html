@@ -11,6 +11,7 @@
           highlightingService.getSquare$({ row: rowIndex, column: columnIndex })
             | async
         "
+        [disabled]="isDragDisabled$ | async"
         (dragStart)="dragStart($event)"
         (dragEnd)="dragEnd($event)"
         #chessField
