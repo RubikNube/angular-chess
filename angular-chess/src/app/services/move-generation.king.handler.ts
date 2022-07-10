@@ -37,17 +37,25 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(this.generationService, board, PieceUtils.getOpposedColor(piece.color));
     // kingside castle
     if (castleRights.canShortCastle) {
-      let squareBeforeCastle = {
+      const squareBeforeCastle = {
         row: piece.position.row,
         column: piece.position.column + 1
       }
 
-      let castleSquare = {
+      const castleSquare = {
         row: piece.position.row,
         column: piece.position.column + 2
       }
 
-      if (PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+      const rookSquare = {
+        row: piece.position.row,
+        column: 8
+      }
+
+      const pieceOnRookPos: Piece | undefined = PositionUtils.getPieceOnPos(board, rookSquare);
+
+      if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
+        && PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
         && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
         moves.push({
           piece: piece,
@@ -60,17 +68,25 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
     // queenside castle
     if (castleRights.canLongCastle) {
-      let squareBeforeCastle = {
+      const squareBeforeCastle = {
         row: piece.position.row,
         column: piece.position.column - 1
       }
 
-      let castleSquare = {
+      const castleSquare = {
         row: piece.position.row,
         column: piece.position.column - 2
       }
 
-      if (PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
+      const rookSquare = {
+        row: piece.position.row,
+        column: 1
+      }
+
+      const pieceOnRookPos: Piece | undefined = PositionUtils.getPieceOnPos(board, rookSquare);
+
+      if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
+        && PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
         && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
         moves.push({
           piece: piece,
@@ -81,17 +97,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       }
     }
 
-    return this.filterOutAttackedSquares(piece, moves, attackedSquares);
-  }
-
-  private filterOutAttackedSquares(piece: Piece, moves: Move[], attackedSquares: Position[]): Move[] {
-    let filteredMoves: Move[] = moves.filter(move => {
-      return !PositionUtils.includes(attackedSquares, move.to);
-    });
-
-    console.log("filterOutAttackedSquares " + JSON.stringify({ piece: piece, fieldsToMove: moves, filteredSquares: filteredMoves, squaresThatOpponentAttacks: attackedSquares }));
-
-    return filteredMoves;
+    return PositionUtils.filterOutAttackedSquares(moves, attackedSquares);
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {

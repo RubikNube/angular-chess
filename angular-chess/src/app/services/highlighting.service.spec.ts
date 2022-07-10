@@ -43,10 +43,10 @@ describe('HighlightingService', () => {
     service.addSquares(redSquare1, redSquare2, blueSquare1, blueSquare2, greenSquare1, greenSquare2);
   });
 
-  describe('clearSquaresByColor', () => {
+  describe('clearNotListedColoredSquares', () => {
     it('should clear all squares if no color is given', () => {
       testScheduler.run((runHelper) => {
-        service.clearSquaresByColor();
+        service.clearNotListedColoredSquares();
 
         const expected = "a--";
         const values = {
@@ -58,7 +58,7 @@ describe('HighlightingService', () => {
 
     it('should not remove passed colors', () => {
       testScheduler.run((runHelper) => {
-        service.clearSquaresByColor(HighlightColor.RED, HighlightColor.GREEN);
+        service.clearNotListedColoredSquares(HighlightColor.RED, HighlightColor.GREEN);
 
         const expected = "a--";
         const values = {

@@ -25,9 +25,9 @@ export class HighlightingService {
     this.squares$$.next(filteredSquares);
   }
 
-  public clearSquaresByColor(...colors: HighlightColor[]): void {
+  public clearNotListedColoredSquares(...colorsToKeep: HighlightColor[]): void {
     const filteredSquares: Square[] = this.squares$$.getValue()
-      .filter(s => colors.length > 0 && colors.includes(s.highlight));
+      .filter(s => colorsToKeep.length > 0 && colorsToKeep.includes(s.highlight));
 
     this.squares$$.next(filteredSquares);
   }

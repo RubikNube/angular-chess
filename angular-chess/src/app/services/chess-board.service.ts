@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
@@ -54,6 +54,10 @@ export class ChessBoardService {
 
   public getBoard(): Board {
     return this.board$$.getValue();
+  }
+
+  public updateBoard(board: Board): void {
+    this.board$$.next(board);
   }
 
   public clearEnPassantSquares(): void {

@@ -1,4 +1,5 @@
-import { Position } from '../types/board.t';
+import { Color, Position } from '../types/board.t';
+import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from './position.utils';
 
 describe('PositionUtils', () => {
@@ -36,6 +37,42 @@ describe('PositionUtils', () => {
 
     it('should return undefined for "h9"', () => {
       expect(PositionUtils.getPositionFromCoordinate("h9")).toBeUndefined();
+    });
+  });
+
+  describe('filterOutAttackedSquares', () => {
+    it('should filter out attacked squares around the king', () => {
+      const leftMove: Move = {
+        from: { column: 5, row: 1 },
+        to: { column: 4, row: 1 },
+        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+      };
+
+      const leftUpMove: Move = {
+        from: { column: 5, row: 1 },
+        to: { column: 4, row: 2 },
+        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+      };
+
+      const rightMove: Move = {
+        from: { column: 5, row: 1 },
+        to: { column: 6, row: 1 },
+        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+      };
+
+      const rightUpMove: Move = {
+        from: { column: 5, row: 1 },
+        to: { column: 6, row: 2 },
+        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+      };
+
+      const upMove: Move = {
+        from: { column: 5, row: 1 },
+        to: { column: 5, row: 2 },
+        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+      };
+
+      expect(PositionUtils.filterOutAttackedSquares([leftMove, leftUpMove, rightMove, rightUpMove, upMove], [{ column: 4, row: 2 }, { column: 6, row: 2 }])).toEqual([leftMove, rightMove, upMove]);
     });
   });
 });
