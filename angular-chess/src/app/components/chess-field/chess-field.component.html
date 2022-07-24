@@ -21,4 +21,13 @@
     *ngIf="piece===undefined"
     class="square color-{{ square?.highlight }}"
   ></div>
-</div>
+
+  <div
+    [style.grid-column]="columnIndex"
+    [style.grid-row]="rowIndex"
+    class="field"
+  >
+    <div class="square field-number {{getFieldClass()}}">
+      {{getSquareRepresentation(columnIndex,rowIndex)}}
+    </div>
+  </div>

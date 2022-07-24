@@ -10,6 +10,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  position: absolute;
 }
 
 .piece {
@@ -48,4 +49,17 @@
 
 .color-BLUE {
   background-color: rgba(#3b82f6, 0.4);
+}
+
+.field-number{
+  font-size: 1.4vh;
+  font-weight: bold;
+}
+
+.dark-field{
+  color: #c19a6b;
+}
+
+.light-field{
+  color: #300e05;
 }

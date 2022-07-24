@@ -97,4 +97,8 @@ export default class PositionUtils {
       return !PositionUtils.includes(attackedSquares, move.to);
     });
   }
+
+  public static getSquareRepresentation(column: number, row: number): string {
+    return String.fromCharCode('a'.charCodeAt(0) + (column - 1)) + row;
+  }
 }
