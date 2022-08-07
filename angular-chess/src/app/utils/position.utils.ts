@@ -2,7 +2,6 @@ import { Board, Color, Position } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 
 export default class PositionUtils {
-
   public static positionEquals(a: Position, b: Position) {
     return a.row === b.row && a.column === b.column;
   }
@@ -61,8 +60,7 @@ export default class PositionUtils {
   }
 
   public static isFree(board: Board, position: Position): boolean {
-    const result = PositionUtils.getPieceOnPos(board, position) === undefined;
-    return result;
+    return PositionUtils.getPieceOnPos(board, position) === undefined;
   }
 
   public static getSurroundingSquares(piece: Piece): Position[] {
@@ -92,5 +90,22 @@ export default class PositionUtils {
         to: p
       };
     };
+  }
+
+  public static filterOutAttackedSquares(moves: Move[], attackedSquares: Position[]): Move[] {
+    return moves.filter(move => {
+      return !PositionUtils.includes(attackedSquares, move.to);
+    });
+  }
+
+  public static getSquareRepresentation(column: number, row: number): string {
+    if (column < 1 || column > 8) {
+      throw new RangeError(`Column value ${column} out of range`);
+    }
+    if (row < 1 || row > 8) {
+      throw new RangeError(`Column value ${row} out of range`);
+    }
+
+    return String.fromCharCode('a'.charCodeAt(0) + (column - 1)) + row;
   }
 }

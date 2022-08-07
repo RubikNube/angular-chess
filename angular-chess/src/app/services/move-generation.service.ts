@@ -50,8 +50,6 @@ export class MoveGenerationService {
   }
 
   public getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
-    console.log("getValidMoves: ", JSON.stringify(piece));
-
     let moves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
@@ -72,7 +70,6 @@ export class MoveGenerationService {
   }
 
   public getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
-    console.log("getValidCaptures: " + JSON.stringify(piece));
     let captureMoves: Move[] = [];
 
     const matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));

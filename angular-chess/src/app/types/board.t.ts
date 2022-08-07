@@ -1,6 +1,6 @@
 import { Piece } from "./pieces.t";
 
-export type Board = {
+export interface Board {
   pieces: Piece[];
   whiteCastleRights: CastleRights;
   blackCastleRights: CastleRights;

@@ -3,6 +3,7 @@ import { BoardThemeConfig } from 'src/app/services/board-theming.service';
 import { Color, HighlightColor, Square } from 'src/app/types/board.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
+import PositionUtils from 'src/app/utils/position.utils';
 
 @Component({
   selector: 'app-chess-field',
@@ -27,6 +28,9 @@ export class ChessFieldComponent {
   public activePlayer: Color | null = Color.WHITE;
 
   @Input()
+  public disabled: boolean | null = false;
+
+  @Input()
   public square: Square | undefined | null = undefined;
 
   @Input()
@@ -46,4 +50,7 @@ export class ChessFieldComponent {
     return this.piece ? PieceUtils.getPieceChar(this.piece.type, Color.BLACK) : undefined;
   }
 
+  public getSquareRepresentation(columnIndex: number, rowIndex: number): string {
+    return PositionUtils.getSquareRepresentation(columnIndex, rowIndex);
+  }
 }

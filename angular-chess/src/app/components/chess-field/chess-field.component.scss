@@ -2,8 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  width: 100%;
+  height: 10vh;
+  width: 10vh;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: absolute;
 }
 
 .piece {
@@ -23,18 +30,38 @@
   color: black;
 }
 
+.square {
+  height: 100%;
+  width: 100%;
+}
+
 .color-RED {
-  background: rgba(red, 0.4);
+  background-color: rgba(red, 0.4);
 }
 
 .color-GREEN {
-  background: rgba(green, 0.4);
+  background-color: rgba(green, 0.4);
 }
 
 .color-YELLOW {
-  background: rgba(yellow, 0.4);
+  background-color: rgba(yellow, 0.4);
 }
 
 .color-BLUE {
-  background: rgba($color: #3b82f6, $alpha: 0.4);
+  background-color: rgba(#3b82f6, 0.4);
+}
+
+.field-number{
+  font-size: 1.4vh;
+  font-weight: bold;
+  height: 100%;
+  width: 100%;
+}
+
+.dark-field-number{
+  color: #c19a6b;
+}
+
+.light-field-number{
+  color: #300e05;
 }

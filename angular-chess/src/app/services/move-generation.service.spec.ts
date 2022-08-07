@@ -145,6 +145,14 @@ describe('MoveGenerationService', () => {
         isLongCastle: true
       });
     });
+
+    it('should not generate squares for the king that are attacked by pawn or blocked by an own piece', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("2b1kbnr/6pp/P7/3q1p2/R1pP1P2/2P1p3/1BQ1P1PP/4KBNR w - - 0 0");
+      let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
+      let validMoves = service.getValidMoves(board, king, true);
+
+      expect(validMoves).toEqual([{ piece: king, from: { column: 5, row: 1 }, to: { column: 4, row: 1 }, isCheck: false }]);
+    });
   });
 
   describe('getValidCaptures', () => {
