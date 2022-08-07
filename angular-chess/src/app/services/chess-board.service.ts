@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
-import { Piece } from '../types/pieces.t';
+import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { MoveHistoryService } from './move-history.service';
 
@@ -229,5 +230,9 @@ export class ChessBoardService {
       currentBoard.pieces = currentPieces;
       this.board$$.next(currentBoard);
     }
+  }
+
+  public importPgn(newPgn: string): void {
+    const moves: Move[] = PgnUtils.extractMovesFromPgn(newPgn);
   }
 }
