@@ -6,7 +6,11 @@
     isFieldDark() ? boardTheme?.darkField : boardTheme?.lightField
   "
 >
-  <div class="field-number {{getFieldClass()}}">
+  <div
+    class="field-number"
+    [class.dark-field-number]="isFieldDark()"
+    [class.light-field-number]="!isFieldDark()"
+  >
     {{getSquareRepresentation(columnIndex,rowIndex)}}
   </div>
 

@@ -53,8 +53,4 @@ export class ChessFieldComponent {
   public getSquareRepresentation(columnIndex: number, rowIndex: number): string {
     return PositionUtils.getSquareRepresentation(columnIndex, rowIndex);
   }
-
-  public getFieldClass(): string {
-    return this.isFieldDark() ? 'dark-field' : 'light-field';
-  }
 }
