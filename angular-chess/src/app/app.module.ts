@@ -19,6 +19,7 @@ import { ImportFenComponent } from './components/main-menu/import-fen/import-fen
 import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
 import { ChessFieldComponent } from './components/chess-field/chess-field.component';
+import { ImportPgnComponent } from './components/main-menu/import-pgn/import-pgn.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ChessFieldComponent } from './components/chess-field/chess-field.compon
     MoveHistoryComponent,
     MainMenuComponent,
     ImportFenComponent,
-    ChessFieldComponent
+    ChessFieldComponent,
+    ImportPgnComponent
   ],
   imports: [
     BrowserModule,

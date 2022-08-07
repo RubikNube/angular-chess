@@ -2,11 +2,12 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { BoardThemingService } from 'src/app/services/board-theming.service';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { PositioningService } from 'src/app/services/positioning.service';
-import { BoardThemingService } from 'src/app/services/board-theming.service';
 import BoardUtils from 'src/app/utils/board.utils';
 import { ImportFenComponent } from './import-fen/import-fen.component';
+import { ImportPgnComponent } from './import-pgn/import-pgn.component';
 
 @Component({
   selector: 'app-main-menu',
@@ -33,6 +34,7 @@ export class MainMenuComponent {
         items: [
           { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportFenDialog() },
           { label: 'Copy FEN To Clipboard', icon: PrimeIcons.UPLOAD, command: () => this.copyCurrentFenToClipboard() },
+          { label: 'Import PGN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportPgnDialog() },
           { label: 'Reset Board', icon: PrimeIcons.REFRESH, command: () => this.resetBoard() }
         ]
       },
@@ -59,6 +61,12 @@ export class MainMenuComponent {
   private showImportFenDialog(): void {
     this.ref = this.dialogService.open(ImportFenComponent, {
       header: 'Import FEN'
+    });
+  }
+
+  private showImportPgnDialog(): void {
+    this.ref = this.dialogService.open(ImportPgnComponent, {
+      header: 'Import PGN'
     });
   }
 
