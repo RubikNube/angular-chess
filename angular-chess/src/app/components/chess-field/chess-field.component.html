@@ -7,18 +7,31 @@
   "
 >
   <div
-    *ngIf="piece"
-    class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
-    [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
-    pDraggable="piece"
-    [pDraggableDisabled]="disabled || piece.color !== activePlayer"
-    (onDragStart)="dragStart.emit($event)"
-    (onDragEnd)="dragEnd.emit($event)"
+    class="field-number"
+    [class.dark-field-number]="isFieldDark()"
+    [class.light-field-number]="!isFieldDark()"
   >
-    {{ getPieceChar() }}
+    {{getSquareRepresentation(columnIndex,rowIndex)}}
   </div>
+
   <div
-    *ngIf="piece===undefined"
-    class="square color-{{ square?.highlight }}"
-  ></div>
-</div>
+    [style.grid-column]="columnIndex"
+    [style.grid-row]="rowIndex"
+    class="field"
+  >
+    <div
+      *ngIf="piece"
+      class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
+      [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
+      pDraggable="piece"
+      [pDraggableDisabled]="disabled || piece.color !== activePlayer"
+      (onDragStart)="dragStart.emit($event)"
+      (onDragEnd)="dragEnd.emit($event)"
+    >
+      {{ getPieceChar() }}
+    </div>
+    <div
+      *ngIf="piece===undefined"
+      class="square color-{{ square?.highlight }}"
+    ></div>
+  </div>

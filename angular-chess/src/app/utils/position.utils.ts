@@ -97,4 +97,15 @@ export default class PositionUtils {
       return !PositionUtils.includes(attackedSquares, move.to);
     });
   }
+
+  public static getSquareRepresentation(column: number, row: number): string {
+    if (column < 1 || column > 8) {
+      throw new RangeError(`Column value ${column} out of range`);
+    }
+    if (row < 1 || row > 8) {
+      throw new RangeError(`Column value ${row} out of range`);
+    }
+
+    return String.fromCharCode('a'.charCodeAt(0) + (column - 1)) + row;
+  }
 }
