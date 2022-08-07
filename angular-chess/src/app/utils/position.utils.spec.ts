@@ -75,4 +75,22 @@ describe('PositionUtils', () => {
       expect(PositionUtils.filterOutAttackedSquares([leftMove, leftUpMove, rightMove, rightUpMove, upMove], [{ column: 4, row: 2 }, { column: 6, row: 2 }])).toEqual([leftMove, rightMove, upMove]);
     });
   });
+
+  describe('getPositionFromCoordinate', () => {
+    it('should return a1 for for (c:1,r:1)', () => {
+      expect(PositionUtils.getSquareRepresentation(1, 1)).toEqual('a1');
+    });
+
+    it('should return c5 for for (c:3,r:5)', () => {
+      expect(PositionUtils.getSquareRepresentation(3, 5)).toEqual('c5');
+    });
+
+    it('should return a8 for for (c:1,r:8)', () => {
+      expect(PositionUtils.getSquareRepresentation(1, 8)).toEqual('a8');
+    });
+
+    it('should return h8 for for (c:8,r:8)', () => {
+      expect(PositionUtils.getSquareRepresentation(8, 8)).toEqual('h8');
+    });
+  });
 });
