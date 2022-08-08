@@ -18,7 +18,7 @@ export default class PgnUtils {
     const moveGroupRegEx = `(\\d+\.${moveOrCaptureRegEx.source} ${moveOrCaptureRegEx.source}|\\d+\.${moveOrCaptureRegEx.source})`;
     const moveStrings = [...rawMoveString.matchAll(new RegExp(moveGroupRegEx, 'gm'))];
 
-    for (const i = 0; i < moveStrings.length; i++) {
+    for (let i = 0; i < moveStrings.length; i++) {
       const element = moveStrings[i][0];
       console.log(`group ${i + 1}: ${element}`);
     }
