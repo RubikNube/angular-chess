@@ -7,8 +7,6 @@ export default class PgnUtils {
     const beginOfMovesIndex = newPgn.search(/\n\d../);
     const rawMoveString = newPgn.substring(beginOfMovesIndex);
 
-    console.error(`index: ${beginOfMovesIndex} move string: ${rawMoveString} lenght: ${rawMoveString.length}`)
-
     const kingSideCastleRegEx = /O-O/;
     const queenSideCastleRegEx = /O-O-O/;
     const coordinateRegEx = /[a-h][1-8]/;
@@ -18,17 +16,12 @@ export default class PgnUtils {
     const captureRegEx = new RegExp(`(${pieceCharRegEx.source}|[a-h])x${coordinateRegEx.source}`);
     const moveOrCaptureRegEx = new RegExp(`(${moveRegEx.source}|${captureRegEx.source})\\+?`);
     const moveGroupRegEx = `(\\d+\.${moveOrCaptureRegEx.source} ${moveOrCaptureRegEx.source}|\\d+\.${moveOrCaptureRegEx.source})`;
-    console.error(`moveGroupRegEx: ${moveGroupRegEx}`)
     const moveStrings = [...rawMoveString.matchAll(new RegExp(moveGroupRegEx, 'gm'))];
-    console.error(`moveStrings: ${moveStrings} moveStrings.lenght: ${moveStrings.length}`)
 
-
-    for (const moveString in moveStrings) {
-      console.error(`moveString: ${moveString}`)
+    for (const i = 0; i < moveStrings.length; i++) {
+      const element = moveStrings[i][0];
+      console.log(`group ${i + 1}: ${element}`);
     }
-
-
-
 
     return moves;
   }
