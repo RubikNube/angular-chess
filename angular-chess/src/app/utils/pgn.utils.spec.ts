@@ -1,6 +1,6 @@
 import { Color } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
-import PgnUtils from "./pgn.utils";
+import PgnUtils, { MoveGroup } from "./pgn.utils";
 
 describe('PgnUtils', () => {
   const pgnToImport: string = `[Event "IBM Kasparov vs. Deep Blue Rematch"]\n
@@ -45,16 +45,48 @@ describe('PgnUtils', () => {
   const positionE2 = { column: 5, row: 2 };
   const positionE4 = { column: 5, row: 4 };
 
-  const expextedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
+  const expectedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
   { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionC7 }, from: positionE2, to: positionC8 },
   { piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionD2 }, from: positionD2, to: positionD4 },
   { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionD7 }, from: positionD7, to: positionD5 },
   { piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: positionB1 }, from: positionB1, to: positionC3 }];
 
 
-  describe('extractMovesFromPgn', () => {
-    it('should be able to extract pawn moves', () => {
-      expect(PgnUtils.extractMovesFromPgn(pgnToImport)).toEqual(expextedMoves);
+  // describe('extractMovesFromPgn', () => {
+  //   it('should be able to extract pawn moves', () => {
+  //     const expectedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
+  //     { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionC7 }, from: positionE2, to: positionC8 },
+  //     { piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionD2 }, from: positionD2, to: positionD4 },
+  //     { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionD7 }, from: positionD7, to: positionD5 }
+  //     ];
+
+  //     expect(PgnUtils.extractMovesFromPgn(`1.e4 c6 2.d4 d5`)).toEqual(expectedMoves);
+  //   });
+  // });
+  describe('getMoveGroups', () => {
+    it('get single move group"', () => {
+      const expectedGroup: MoveGroup = {
+        moveCount: 1,
+        whiteMoveString: 'e4',
+        blackMoveString: 'c6'
+      };
+      expect(PgnUtils.getMoveGroups('1.e4 c6')).toEqual([expectedGroup]);
+    });
+
+    it('get two move groups"', () => {
+      const expectedGroup1: MoveGroup = {
+        moveCount: 1,
+        whiteMoveString: 'e4',
+        blackMoveString: 'c6'
+      };
+
+      const expectedGroup2: MoveGroup = {
+        moveCount: 2,
+        whiteMoveString: 'd4',
+        blackMoveString: 'd5'
+      };
+
+      expect(PgnUtils.getMoveGroups('1.e4 c6 2.d4 d5')).toEqual([expectedGroup1, expectedGroup2]);
     });
   });
 

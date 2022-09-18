@@ -3,7 +3,7 @@ import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 
 
-type MoveGroup = {
+export type MoveGroup = {
   whiteMoveString?: string;
   blackMoveString?: string;
   moveCount?: number;
@@ -54,35 +54,28 @@ export default class PgnUtils {
    * @param pgn the PNG from which the move groups should be extraced
    * @returns the move groups for the given input
    */
-  private static getMoveGroups(pgn: string): MoveGroup[] {
+  public static getMoveGroups(pgn: string): MoveGroup[] {
     const searchResults = [...pgn.matchAll(new RegExp(this.moveGroupRegEx, 'gm'))];
     let moveGroups: MoveGroup[] = [];
 
     for (let i = 0; i < searchResults.length; i++) {
       const searchResult = searchResults[i][0];
-      console.log(`group42 ${i + 1}: ${searchResult}`);
       const moveStrings = [...searchResult.matchAll(new RegExp(this.moveOrCaptureRegEx, 'gm'))];
 
-      // if (moveStrings.length == 0) {
-      //   console.log(`moveStrings empty: ${moveStrings}`);
-      // }
-
       const moveGroup: MoveGroup = {
-        moveCount: 1
+        moveCount: i + 1
       }
 
       if (moveStrings.length >= 1) {
         const whiteMove = moveStrings[0][0];
-        console.log(`whiteMove: ${whiteMove}`);
+        moveGroup.whiteMoveString = whiteMove;
       }
       if (moveStrings.length >= 2) {
         const blackMove = moveStrings[1][0];
-        console.log(`blackMove: ${blackMove}`);
+        moveGroup.blackMoveString = blackMove;
       }
 
-      // for (let j = 0; j < moveStrings.length; j++) {
-      //   console.log(`moveGroups[${j}] ${moveStrings[j]}`);
-      // }
+      moveGroups.push(moveGroup);
     }
 
     return moveGroups;
