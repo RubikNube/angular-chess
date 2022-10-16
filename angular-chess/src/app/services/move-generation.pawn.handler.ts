@@ -3,13 +3,8 @@ import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "../utils/board.utils";
 import PositionUtils from "../utils/position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
-import { MoveGenerationService } from "./move-generation.service";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
-
-  constructor(public generationService: MoveGenerationService) {
-
-  }
 
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.PAWN;

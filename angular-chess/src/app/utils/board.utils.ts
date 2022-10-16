@@ -1,8 +1,8 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { MoveGenerationPawnHandler } from "../services/move-generation.pawn.handler";
-import { MoveGenerationService } from "../services/move-generation.service";
 import { Board, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
+import MoveGenerationUtils from "./move.generation.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
@@ -147,7 +147,7 @@ export default class BoardUtils {
     return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
   }
 
-  public static calculateAttackedSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
+  public static calculateAttackedSquares(board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
     const attackedSquares: Set<Position> = new Set<Position>();
 
     board.pieces
@@ -173,12 +173,12 @@ export default class BoardUtils {
               });
           }
           else {
-            moveGenerationService.getValidMoves(board, p, true)
+            MoveGenerationUtils.getValidMoves(board, p, true)
               .map(m => m.to).forEach(m => {
                 attackedSquares.add(m);
               });
 
-            moveGenerationService.getValidCaptures(board, p, true)
+            MoveGenerationUtils.getValidCaptures(board, p, true)
               .map(m => m.to).forEach(m => {
                 attackedSquares.add(m);
               });
@@ -189,25 +189,25 @@ export default class BoardUtils {
     return Array.from(attackedSquares.values());
   }
 
-  public static calculateBlockingSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color): Position[] {
+  public static calculateBlockingSquares(board: Board, colorOfPieces: Color): Position[] {
     const blockingSquares: Set<Position> = new Set<Position>();
 
     board.pieces
       .filter(p => p.color === colorOfPieces && p.type !== PieceType.KING)
       .forEach(p => {
         if (p.type === PieceType.PAWN) {
-          moveGenerationService.getValidMoves(board, p, true)
+          MoveGenerationUtils.getValidMoves(board, p, true)
             .map(m => m.to).forEach(m => {
               blockingSquares.add(m);
             });
         }
         else {
-          moveGenerationService.getValidMoves(board, p, true)
+          MoveGenerationUtils.getValidMoves(board, p, true)
             .map(m => m.to).forEach(m => {
               blockingSquares.add(m);
             });
 
-          moveGenerationService.getValidCaptures(board, p, true)
+          MoveGenerationUtils.getValidCaptures(board, p, true)
             .map(m => m.to).forEach(m => {
               blockingSquares.add(m);
             });
@@ -221,7 +221,7 @@ export default class BoardUtils {
     return p => PositionUtils.isOnBoard(p);
   }
 
-  public static calculateMoveSquares(moveGenerationService: MoveGenerationService, board: Board, colorOfPieces: Color, includeKingOrPawn?: boolean): Position[] {
+  public static calculateMoveSquares(board: Board, colorOfPieces: Color, includeKingOrPawn?: boolean): Position[] {
     const attackedSquares: Set<Position> = new Set<Position>();
 
     board.pieces
@@ -239,12 +239,12 @@ export default class BoardUtils {
         }
         else {
           if (p.type === PieceType.PAWN && includeKingOrPawn) {
-            moveGenerationService.getValidMoves(board, p, true)
+            MoveGenerationUtils.getValidMoves(board, p, true)
               .map(m => m.to)
               .forEach(m => attackedSquares.add(m))
           }
 
-          moveGenerationService.getValidCaptures(board, p)
+          MoveGenerationUtils.getValidCaptures(board, p)
             .map(m => m.to)
             .forEach(m => attackedSquares.add(m))
         }
@@ -253,15 +253,15 @@ export default class BoardUtils {
     return Array.from(attackedSquares.values());
   }
 
-  public static isMate(moveGenerationService: MoveGenerationService, board: Board): boolean {
+  public static isMate(board: Board): boolean {
     const king: Piece = this.getKing(board, board.playerToMove);
-    const attackedSquares: Position[] = this.calculateAttackedSquares(moveGenerationService, board, PieceUtils.getOpposedColor(board.playerToMove));
-    const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(moveGenerationService, board, king);
+    const attackedSquares: Position[] = this.calculateAttackedSquares(board, PieceUtils.getOpposedColor(board.playerToMove));
+    const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(board, king);
 
     const isCheck = this.isCheck(attackedSquares, king.position);
     const hasNoEscapeSquares = !this.hasEscapeSquares(board, attackedSquares, king);
-    const cannotBlockChecks = !this.canBlockChecks(moveGenerationService, board, king, attackingMoves);
-    const cannotCaptureAttackingPiece = !this.canCaptureAttackingPiece(moveGenerationService, board, attackingMoves);
+    const cannotBlockChecks = !this.canBlockChecks(board, king, attackingMoves);
+    const cannotCaptureAttackingPiece = !this.canCaptureAttackingPiece(board, attackingMoves);
 
     return isCheck
       && hasNoEscapeSquares
@@ -281,11 +281,11 @@ export default class BoardUtils {
       !== undefined;
   }
 
-  private static canBlockChecks(moveGenerationService: MoveGenerationService, board: Board, king: Piece, attackingMoves: Move[]): boolean {
-    return attackingMoves.find(m => !this.canBeBlocked(moveGenerationService, board, m, king)) === undefined;
+  private static canBlockChecks(board: Board, king: Piece, attackingMoves: Move[]): boolean {
+    return attackingMoves.find(m => !this.canBeBlocked(board, m, king)) === undefined;
   }
 
-  private static canCaptureAttackingPiece(moveGenerationService: MoveGenerationService, board: Board, attackingMoves: Move[]): boolean {
+  private static canCaptureAttackingPiece(board: Board, attackingMoves: Move[]): boolean {
     const attackingPieces: Piece[] = attackingMoves.map(m => m.piece);
 
     if (attackingPieces.length === 0) {
@@ -293,7 +293,7 @@ export default class BoardUtils {
     } else if (attackingPieces.length === 1) {
       const attackingPiece = attackingPieces[0];
 
-      const moveThatCaptureAttackingPiece = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingPiece);
+      const moveThatCaptureAttackingPiece = BoardUtils.calculateMovesThatCapturePiece(board, attackingPiece);
 
       return moveThatCaptureAttackingPiece.length > 0;
     }
@@ -302,32 +302,32 @@ export default class BoardUtils {
     }
   }
 
-  public static canBeBlocked(moveGenerationService: MoveGenerationService, board: Board, move: Move, king: Piece) {
+  public static canBeBlocked(board: Board, move: Move, king: Piece) {
     if (move.piece.type === PieceType.PAWN || move.piece.type === PieceType.KNIGHT) {
       return false;
     }
     else {
 
       if (king.position.column === move.from.column) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
       } else if (king.position.row === move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
       } else if (king.position.column < move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column > move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column < move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
       else if (king.position.column > move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(moveGenerationService, board, board.playerToMove);
+        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
 
@@ -452,7 +452,7 @@ export default class BoardUtils {
   }
 
 
-  public static isProtected(moveGenerationService: MoveGenerationService, board: Board, piece: Piece | undefined) {
+  public static isProtected(board: Board, piece: Piece | undefined) {
     if (piece === undefined) {
       return false;
     }
@@ -469,19 +469,19 @@ export default class BoardUtils {
 
     const foundPos: Position | undefined = copiedBoard.pieces
       .filter(p => p.color === piece.color)
-      .flatMap(p => moveGenerationService.getValidMoves(copiedBoard, p, false).map(m => m.to))
+      .flatMap(p => MoveGenerationUtils.getValidMoves(copiedBoard, p, false).map(m => m.to))
       .find(p => PositionUtils.positionEquals(p, piece.position));
 
     return foundPos !== undefined;
   }
 
-  public static calculateMovesThatCapturePiece(moveGenerationService: MoveGenerationService, board: Board, piece: Piece): Move[] {
+  public static calculateMovesThatCapturePiece(board: Board, piece: Piece): Move[] {
     const attackingMoves: Set<Move> = new Set<Move>();
 
     board.pieces
       .filter(p => p.color !== piece.color)
       .forEach(p => {
-        moveGenerationService.getValidCaptures(board, p)
+        MoveGenerationUtils.getValidCaptures(board, p)
           .filter(m => m.capturedPiece !== undefined && PieceUtils.pieceEquals(piece, m.capturedPiece))
           .forEach(m => {
             attackingMoves.add(m);
@@ -909,6 +909,15 @@ export default class BoardUtils {
     }
     else {
       return a.column - b.column;
+    }
+  }
+
+  public static getCastleRights(player: Color, board: Board): CastleRights {
+    if (player === Color.WHITE) {
+      return board.whiteCastleRights;
+    }
+    else {
+      return board.blackCastleRights;
     }
   }
 }
