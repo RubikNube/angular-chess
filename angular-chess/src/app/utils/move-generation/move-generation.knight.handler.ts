@@ -1,5 +1,5 @@
-import { Position } from "../types/board.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
+import { Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationKnightHandler implements MoveGenerationHandler {

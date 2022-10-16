@@ -1,8 +1,8 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { MoveGenerationPawnHandler } from "../services/move-generation.pawn.handler";
 import { Board, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
-import MoveGenerationUtils from "./move.generation.utils";
+import { MoveGenerationPawnHandler } from "./move-generation/move-generation.pawn.handler";
+import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 

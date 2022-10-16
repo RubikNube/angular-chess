@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BoardBuilder } from '../builders/board.builder';
 import { Board, Color, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
-import MoveGenerationUtils from '../utils/move.generation.utils';
+import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Injectable({

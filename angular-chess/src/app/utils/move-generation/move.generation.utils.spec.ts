@@ -1,6 +1,6 @@
-import { Board, Color } from '../types/board.t';
-import { Piece, PieceType } from '../types/pieces.t';
-import BoardUtils from '../utils/board.utils';
+import { Board, Color } from 'src/app/types/board.t';
+import { Piece, PieceType } from 'src/app/types/pieces.t';
+import BoardUtils from '../board.utils';
 import MoveGenerationUtils from './move.generation.utils';
 
 

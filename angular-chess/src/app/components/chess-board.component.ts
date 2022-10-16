@@ -11,7 +11,7 @@ import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
-import MoveGenerationUtils from '../utils/move.generation.utils';
+import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 

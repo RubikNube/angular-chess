@@ -1,14 +1,14 @@
-import { MoveGenerationBishopHandler } from "../services/move-generation.bishop.handler";
-import { MoveGenerationHandler } from "../services/move-generation.handler";
-import { MoveGenerationKingHandler } from "../services/move-generation.king.handler";
-import { MoveGenerationKnightHandler } from "../services/move-generation.knight.handler";
-import { MoveGenerationPawnHandler } from "../services/move-generation.pawn.handler";
-import { MoveGenerationQueenHandler } from "../services/move-generation.queen.handler";
-import { MoveGenerationRookHandler } from "../services/move-generation.rook.handler";
-import { Board, Color, Position } from "../types/board.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
-import BoardUtils from "./board.utils";
-import PositionUtils from "./position.utils";
+import { Board, Color, Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import BoardUtils from "../board.utils";
+import PositionUtils from "../position.utils";
+import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
+import { MoveGenerationHandler } from "./move-generation.handler";
+import { MoveGenerationKingHandler } from "./move-generation.king.handler";
+import { MoveGenerationKnightHandler } from "./move-generation.knight.handler";
+import { MoveGenerationPawnHandler } from "./move-generation.pawn.handler";
+import { MoveGenerationQueenHandler } from "./move-generation.queen.handler";
+import { MoveGenerationRookHandler } from "./move-generation.rook.handler";
 
 export default class MoveGenerationUtils {
   static generationHandlers: MoveGenerationHandler[] = [

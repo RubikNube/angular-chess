@@ -1,7 +1,7 @@
-import { Board, Color, Position } from "../types/board.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
-import BoardUtils from "../utils/board.utils";
-import PositionUtils from "../utils/position.utils";
+import { Board, Color, Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import BoardUtils from "../board.utils";
+import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
