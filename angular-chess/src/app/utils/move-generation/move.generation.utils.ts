@@ -1,35 +1,26 @@
-import { Injectable } from '@angular/core';
-import { Board, Color, Position } from '../types/board.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
-import BoardUtils from '../utils/board.utils';
-import PositionUtils from '../utils/position.utils';
-import { ChessBoardService } from './chess-board.service';
-import { MoveGenerationBishopHandler } from './move-generation.bishop.handler';
-import { MoveGenerationHandler } from './move-generation.handler';
-import { MoveGenerationKingHandler } from './move-generation.king.handler';
-import { MoveGenerationKnightHandler } from './move-generation.knight.handler';
-import { MoveGenerationPawnHandler } from './move-generation.pawn.handler';
-import { MoveGenerationQueenHandler } from './move-generation.queen.handler';
-import { MoveGenerationRookHandler } from './move-generation.rook.handler';
+import { Board, Color, Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import BoardUtils from "../board.utils";
+import PositionUtils from "../position.utils";
+import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
+import { MoveGenerationHandler } from "./move-generation.handler";
+import { MoveGenerationKingHandler } from "./move-generation.king.handler";
+import { MoveGenerationKnightHandler } from "./move-generation.knight.handler";
+import { MoveGenerationPawnHandler } from "./move-generation.pawn.handler";
+import { MoveGenerationQueenHandler } from "./move-generation.queen.handler";
+import { MoveGenerationRookHandler } from "./move-generation.rook.handler";
 
-@Injectable({
-  providedIn: 'root'
-})
-export class MoveGenerationService {
-  generationHandlers: MoveGenerationHandler[];
+export default class MoveGenerationUtils {
+  static generationHandlers: MoveGenerationHandler[] = [
+    new MoveGenerationRookHandler(),
+    new MoveGenerationKnightHandler(),
+    new MoveGenerationPawnHandler(),
+    new MoveGenerationBishopHandler(),
+    new MoveGenerationQueenHandler(),
+    new MoveGenerationKingHandler()
+  ]
 
-  constructor(boardService: ChessBoardService) {
-    this.generationHandlers = [
-      new MoveGenerationRookHandler(this),
-      new MoveGenerationKnightHandler(this),
-      new MoveGenerationPawnHandler(this),
-      new MoveGenerationBishopHandler(this),
-      new MoveGenerationQueenHandler(this),
-      new MoveGenerationKingHandler(this, boardService)
-    ]
-  }
-
-  public isCheck(board: Board, move: Move): boolean {
+  public static isCheck(board: Board, move: Move): boolean {
     let validCaptures = this.getValidCaptures(board, {
       type: move.promotedPiece ? move.promotedPiece.type : move.piece.type,
       color: move.piece.color,
@@ -39,7 +30,7 @@ export class MoveGenerationService {
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
 
-  public getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
+  public static getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
     let move = this.getValidMoves(board, piece, true).find(m => PositionUtils.positionEquals(m.to, dropPos));
     if (move !== undefined) {
       return move;
@@ -49,7 +40,7 @@ export class MoveGenerationService {
     }
   }
 
-  public getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
+  public static getValidMoves(board: Board, piece: Piece, shouldCalculateCheck: boolean): Move[] {
     let moves: Move[] = [];
 
     let matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
@@ -69,7 +60,7 @@ export class MoveGenerationService {
       });
   }
 
-  public getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
+  public static getValidCaptures(board: Board, piece: Piece, dontSearchForCheck?: boolean): Move[] {
     let captureMoves: Move[] = [];
 
     const matchingHandler = this.generationHandlers.find(h => h.canHandle(piece));
@@ -105,13 +96,13 @@ export class MoveGenerationService {
       });
   }
 
-  private isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
+  private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
     const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
     return pieceOnPos ? pieceOnPos.color !== color : false;
   }
 
 
-  public isMate(board: Board): boolean {
-    return BoardUtils.isMate(this, board);
+  public static isMate(board: Board): boolean {
+    return BoardUtils.isMate(board);
   }
 }

@@ -6,12 +6,12 @@ import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveExecutionService } from '../services/move-execution.service';
-import { MoveGenerationService } from '../services/move-generation.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
 
@@ -48,7 +48,6 @@ export class ChessBoardComponent implements OnInit {
     public readonly themingService: BoardThemingService,
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
-    private moveGenerationService: MoveGenerationService,
     private moveExecutionService: MoveExecutionService,
     private messageService: MessageService,
     private moveHistoryService: MoveHistoryService
@@ -70,8 +69,8 @@ export class ChessBoardComponent implements OnInit {
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
       let board = boardService.getBoard();
-      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK));
-      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE));
+      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(board, Color.BLACK));
+      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(board, Color.WHITE));
     });
   }
 
@@ -120,14 +119,14 @@ export class ChessBoardComponent implements OnInit {
 
   private updateHighlightingSquares(currentBoard: Board): void {
     if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
-      const validSquares: Square[] = this.moveGenerationService.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
+      const validSquares: Square[] = MoveGenerationUtils.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
         return {
           position: move.to,
           highlight: HighlightColor.GREEN
         }
       });
 
-      const getValidCaptures: Square[] = this.moveGenerationService.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
+      const getValidCaptures: Square[] = MoveGenerationUtils.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED
@@ -147,7 +146,7 @@ export class ChessBoardComponent implements OnInit {
 
     let dropPos: Position = this.positioningService.getMousePosition(e);
     let currentBoard: Board = this.boardService.getBoard();
-    let executableMove: Move | undefined = this.moveGenerationService.getExecutableMove(currentBoard, this.grabbedPiece, dropPos);
+    let executableMove: Move | undefined = MoveGenerationUtils.getExecutableMove(currentBoard, this.grabbedPiece, dropPos);
     this.lastMove = executableMove;
 
     if (executableMove?.piece.type === PieceType.PAWN) {

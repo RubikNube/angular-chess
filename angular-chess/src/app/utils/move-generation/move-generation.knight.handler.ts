@@ -1,13 +1,8 @@
-import { Position } from "../types/board.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
+import { Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import { MoveGenerationHandler } from "./move-generation.handler";
-import { MoveGenerationService } from "./move-generation.service";
 
 export class MoveGenerationKnightHandler implements MoveGenerationHandler {
-
-  constructor(public generationService: MoveGenerationService) {
-
-  }
 
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.KNIGHT;

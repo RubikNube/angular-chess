@@ -2,17 +2,13 @@ import { Injectable } from '@angular/core';
 import { BoardBuilder } from '../builders/board.builder';
 import { Board, Color, Result } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
+import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PositionUtils from '../utils/position.utils';
-import { MoveGenerationService } from './move-generation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoveExecutionService {
-  constructor(
-    private moveGenerationService: MoveGenerationService) {
-  }
-
   public executeMove(move: Move, board: Board): Move | undefined {
     console.log("executeMove: " + JSON.stringify(move));
 
@@ -78,10 +74,10 @@ export class MoveExecutionService {
 
     boardBuilder.togglePlayerToMove();
 
-    move.isCheck = this.moveGenerationService.isCheck(boardBuilder.build(), move);
+    move.isCheck = MoveGenerationUtils.isCheck(boardBuilder.build(), move);
 
     if (move.isCheck) {
-      move.isMate = this.moveGenerationService.isMate(boardBuilder.build());
+      move.isMate = MoveGenerationUtils.isMate(boardBuilder.build());
 
       if (move.isMate) {
         boardBuilder.result(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);

@@ -1,21 +1,18 @@
 import { TestBed } from "@angular/core/testing";
-import { MoveGenerationService } from "../services/move-generation.service";
 import { Board, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 
 describe('BoardUtils', () => {
-  let moveGenerationService: MoveGenerationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    moveGenerationService = TestBed.inject(MoveGenerationService);
   });
 
   describe('calculateAttackedSquares', () => {
     it('should generate attacked squares for queen', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/7q/8/7P/4K3 w - - 0 1");
-      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK);
+      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(board, Color.BLACK);
 
       expect(attackedSquares).toContain({ column: 5, row: 1 });
       expect(attackedSquares).toContain({ column: 8, row: 2 });
@@ -23,7 +20,7 @@ describe('BoardUtils', () => {
 
     it('should generate attacked squares for black pawn', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/8/4p3/8/8/2P5/8/8 w - - 0 1");
-      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.BLACK);
+      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(board, Color.BLACK);
 
       expect(attackedSquares).toContain({ column: 4, row: 5 });
       expect(attackedSquares).toContain({ column: 6, row: 5 });
@@ -31,7 +28,7 @@ describe('BoardUtils', () => {
 
     it('should generate attacked squares for white pawn', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/8/4p3/8/8/2P5/8/8 w - - 0 1");
-      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(moveGenerationService, board, Color.WHITE);
+      let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(board, Color.WHITE);
 
       expect(attackedSquares).toContain({ column: 2, row: 4 });
       expect(attackedSquares).toContain({ column: 4, row: 4 });
@@ -43,14 +40,14 @@ describe('BoardUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/1b6/8/8/8/8/6q1/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
 
-      expect(BoardUtils.isProtected(moveGenerationService, board, queen)).toBeTrue();
+      expect(BoardUtils.isProtected(board, queen)).toBeTrue();
     });
 
     it('should return false if piece is not protected by own piece', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/6q1/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
 
-      expect(BoardUtils.isProtected(moveGenerationService, board, queen)).toBeFalse();
+      expect(BoardUtils.isProtected(board, queen)).toBeFalse();
     });
   });
 
@@ -237,7 +234,7 @@ describe('BoardUtils', () => {
         type: PieceType.QUEEN,
         position: { row: 2, column: 4 }
       }
-      const moveThatCanCapturePiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(moveGenerationService, board, attackingQueen);
+      const moveThatCanCapturePiece: Move[] = BoardUtils.calculateMovesThatCapturePiece(board, attackingQueen);
 
       expect(moveThatCanCapturePiece.length).toEqual(5);
     });
