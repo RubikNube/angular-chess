@@ -52,8 +52,6 @@ export class ChessBoardComponent implements OnInit {
     private messageService: MessageService,
     private moveHistoryService: MoveHistoryService
   ) {
-    this.boardService.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
-
     this.isDragDisabled$$ = new BehaviorSubject<boolean>(false);
     this.isDragDisabled$ = this.isDragDisabled$$.asObservable();
 
