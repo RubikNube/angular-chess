@@ -11,6 +11,9 @@ export class MoveHistoryService {
   private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
   private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable();
 
+  private showMoveHistory$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public showMoveHistory$: Observable<boolean> = this.showMoveHistory$$.asObservable();
+
   private fullMoveHistory$: Observable<FullMove[]> = this.createFullMoveHistory$();
 
   public addMoveToHistory(move: Move): void {
@@ -76,5 +79,13 @@ export class MoveHistoryService {
 
   public getMoveHistory$(): Observable<Move[]> {
     return this.moveHistory$;
+  }
+
+  public showMoveHistory() {
+    this.showMoveHistory$$.next(true);
+  }
+
+  public hideMoveHistory() {
+    this.showMoveHistory$$.next(false);
   }
 }
