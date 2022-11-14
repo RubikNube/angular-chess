@@ -2,9 +2,10 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ChessBoardService } from 'src/app/services/chess-board.service';
-import { PositioningService } from 'src/app/services/positioning.service';
 import { BoardThemingService } from 'src/app/services/board-theming.service';
+import { ChessBoardService } from 'src/app/services/chess-board.service';
+import { MoveHistoryService } from 'src/app/services/move-history.service';
+import { PositioningService } from 'src/app/services/positioning.service';
 import BoardUtils from 'src/app/utils/board.utils';
 import { ImportFenComponent } from './import-fen/import-fen.component';
 
@@ -18,10 +19,37 @@ export class MainMenuComponent {
   public menuItems: MenuItem[];
   private ref: DynamicDialogRef | undefined;
 
+  private showHistoryItem: MenuItem = {
+    id: 'show-history',
+    label: 'Show move history',
+    icon: PrimeIcons.LIST,
+    command: () => this.moveHistoryService.showMoveHistory()
+  };
+
+  private hideHistoryItem: MenuItem = {
+    id: 'hide-history',
+    label: 'Hide move history',
+    icon: PrimeIcons.LIST,
+    command: () => this.moveHistoryService.hideMoveHistory()
+  };
+
+  private viewItems: MenuItem[] = [{
+    label: 'Switch Board',
+    icon: PrimeIcons.SYNC,
+    command: () => this.positioningService.switchPerspective()
+  }, {
+    label: 'Toggle board theme',
+    icon: PrimeIcons.MICROSOFT,
+    command: () => this.themingService.toggleTheme()
+  },
+  this.showHistoryItem,
+  this.hideHistoryItem];
+
   constructor(
     private boardService: ChessBoardService,
     private positioningService: PositioningService,
     private themingService: BoardThemingService,
+    private moveHistoryService: MoveHistoryService,
     public dialogService: DialogService,
     public messageService: MessageService,
     private clipboard: Clipboard
@@ -39,17 +67,20 @@ export class MainMenuComponent {
       {
         label: 'View',
         icon: PrimeIcons.EYE,
-        items: [{
-          label: 'Switch Board',
-          icon: PrimeIcons.SYNC,
-          command: () => this.positioningService.switchPerspective()
-        }, {
-          label: 'Toggle board theme',
-          icon: PrimeIcons.MICROSOFT,
-          command: () => this.themingService.toggleTheme()
-        }]
+        items: this.viewItems
       }
-    ];
+    ];;
+
+    this.moveHistoryService.showMoveHistory$.subscribe(showHistory => {
+      if (showHistory) {
+        this.hideHistoryItem.visible = true;
+        this.showHistoryItem.visible = false;
+      }
+      else {
+        this.showHistoryItem.visible = true;
+        this.hideHistoryItem.visible = false;
+      }
+    });
   }
 
   private resetBoard(): void {

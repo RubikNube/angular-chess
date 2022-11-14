@@ -1,10 +1,16 @@
 <app-main-menu></app-main-menu>
 
-<p-splitter class="background">
-  <ng-template pTemplate>
-    <app-chess-board></app-chess-board>
-  </ng-template>
-  <ng-template pTemplate>
-    <app-move-history></app-move-history>
-  </ng-template>
-</p-splitter>
+<ng-template [ngIf]="this.moveHistoryService.showMoveHistory$|async">
+  <p-splitter class="background">
+    <ng-template pTemplate>
+      <app-chess-board></app-chess-board>
+    </ng-template>
+    <ng-template pTemplate>
+      <app-move-history></app-move-history>
+    </ng-template>
+  </p-splitter>
+</ng-template>
+
+<ng-template [ngIf]="!(this.moveHistoryService.showMoveHistory$|async)">
+  <app-chess-board></app-chess-board>
+</ng-template>

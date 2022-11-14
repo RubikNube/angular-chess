@@ -32,6 +32,7 @@ export class ChessBoardService {
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
 
   constructor(private moveHistoryService: MoveHistoryService) {
+    this.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
   }
 
   public updateResult(result: Result) {
