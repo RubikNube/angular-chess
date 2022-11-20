@@ -25,18 +25,27 @@ export default class PgnUtils {
   public static extractMovesFromPgn(newPgn: string): Move[] {
     const moves: Move[] = [];
 
-    const board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    let board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
     // const beginOfMovesIndex = newPgn.search(/\n\d../);
     const moveGroups = this.getMoveGroups(newPgn);
 
-    moveGroups.forEach(moveGroup => {
-      // if (moveGroup.whiteMove) {
-      //   moves.push(moveGroup.whiteMove);
-      // }
-      // if (moveGroup.blackMove) {
-      //   moves.push(moveGroup.blackMove);
-      // }
-    });
+    // moveGroups.forEach(moveGroup => {
+    //   if (moveGroup.whiteMoveString) {
+    //     let move = PgnUtils.getMoveFromString(board, moveGroup.whiteMoveString, Color.WHITE);
+    //     if (move) {
+    //       moves.push(move);
+    //       // generate updated board after this move is executed
+    //       // TODO: make a util method for this (move logic from MoveExecutionService into a util class)
+    //     }
+    //   }
+    //   if (moveGroup.blackMoveString) {
+    //     let move = PgnUtils.getMoveFromString(board, moveGroup.blackMoveString, Color.BLACK);
+    //     if (move) {
+    //       moves.push(move);
+    //       // generate updated board after this move is executed
+    //     }
+    //   };
+    // });
 
     return moves;
   }
