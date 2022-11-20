@@ -1,7 +1,9 @@
-import { Board, Color } from "../types/board.t";
+import { Board, Color, Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
-
+import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import PieceUtils from "./piece.utils";
+import PositionUtils from "./position.utils";
 
 export type MoveGroup = {
   whiteMoveString?: string;
@@ -97,10 +99,28 @@ export default class PgnUtils {
   }
 
   public static getMoveFromString(board: Board, moveString: string, color: Color): Move | undefined {
-    const move: Move = {
-      from: { column: 1, row: 1 },
-      to: { column: 1, row: 1 },
-      piece: { color, position: { column: 1, row: 1 }, type: PieceType.PAWN }
+    const dropPosition: Position | undefined = PgnUtils.extractPositionFromMoveString(moveString);
+    const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
+
+    if (pieceType && dropPosition) {
+      const moves: Move[] = MoveGenerationUtils.getExecutableMoves(board, dropPosition, color)
+        .filter(move => move.piece.type === pieceType);
+
+      if (moves.length === 1) {
+        return moves[0];
+      }
+      else {
+        console.error(`getMoveFromString can't find a unique move for '${moveString}'. Moves found: ${moves}`);
+      }
+    }
+
+    return undefined;
+  }
+
+  public static extractPositionFromMoveString(moveString: string): Position | undefined {
+    let coordinate = moveString.match(new RegExp(this.coordinateRegEx, 'gm'));
+    if (coordinate) {
+      return PositionUtils.getPositionFromCoordinate(coordinate[0]);;
     }
 
     return undefined;

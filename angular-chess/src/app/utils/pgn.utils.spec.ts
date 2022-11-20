@@ -1,5 +1,7 @@
 import { Color } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
+import { Board } from "./../types/board.t";
+import BoardUtils from "./board.utils";
 import PgnUtils, { MoveGroup } from "./pgn.utils";
 
 describe('PgnUtils', () => {
@@ -43,7 +45,12 @@ describe('PgnUtils', () => {
   const positionD5 = { column: 4, row: 5 };
 
   const positionE2 = { column: 5, row: 2 };
+  const positionE3 = { column: 5, row: 3 };
   const positionE4 = { column: 5, row: 4 };
+
+  const positionF3 = { column: 6, row: 3 };
+
+  const positionG1 = { column: 7, row: 1 };
 
   const expectedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
   { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionC7 }, from: positionE2, to: positionC8 },
@@ -101,6 +108,70 @@ describe('PgnUtils', () => {
 
     it('should return undefined for "e4 c6"', () => {
       expect(PgnUtils.getMoveCountFromString('e4 c6')).toEqual(undefined);
+    });
+  });
+
+  describe('getMoveFromString', () => {
+    it('should return pawn e2-e4 for "e4" in initial position', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+      const expectedMove: Move = {
+        from: positionE2,
+        to: positionE4,
+        piece: {
+          color: Color.WHITE,
+          position: positionE2,
+          type: PieceType.PAWN
+        },
+        isCheck: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'e4', Color.WHITE)).toEqual(expectedMove);
+    });
+
+    it('should return pawn e2-e3 for "e3" in initial position', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+      const expectedMove: Move = {
+        from: positionE2,
+        to: positionE3,
+        piece: {
+          color: Color.WHITE,
+          position: positionE2,
+          type: PieceType.PAWN
+        },
+        isCheck: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'e3', Color.WHITE)).toEqual(expectedMove);
+    });
+
+    it('should return pawn Ng1-f3 for "Nf3" in initial position', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+      const expectedMove: Move = {
+        from: positionG1,
+        to: positionF3,
+        piece: {
+          color: Color.WHITE,
+          position: positionG1,
+          type: PieceType.KNIGHT
+        },
+        isCheck: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'Nf3', Color.WHITE)).toEqual(expectedMove);
+    });
+  });
+
+  describe('extractPositionFromMoveString', () => {
+    it('should return [column:5, row:4] for "e4"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('e4')).toEqual({ column: 5, row: 4 });
+    });
+
+    it('should return [column:5, row:2] for "e2"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('e2')).toEqual({ column: 5, row: 2 });
+    });
+
+    it('should return [column:5, row:4] for "Ne4"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('Ne4')).toEqual({ column: 5, row: 4 });
     });
   });
 });
