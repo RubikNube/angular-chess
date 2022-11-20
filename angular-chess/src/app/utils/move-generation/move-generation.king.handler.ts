@@ -1,18 +1,11 @@
-import { Board, Position } from "../types/board.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
-import BoardUtils from "../utils/board.utils";
-import PieceUtils from "../utils/piece.utils";
-import PositionUtils from "../utils/position.utils";
-import { ChessBoardService } from "./chess-board.service";
+import { Board, Position } from "src/app/types/board.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import BoardUtils from "../board.utils";
+import PieceUtils from "../piece.utils";
+import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
-import { MoveGenerationService } from "./move-generation.service";
 
 export class MoveGenerationKingHandler implements MoveGenerationHandler {
-
-  constructor(private generationService: MoveGenerationService,
-    private boardService: ChessBoardService) {
-
-  }
 
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.KING;
@@ -32,9 +25,9 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       });
 
     // castle
-    let castleRights = this.boardService.getCastleRights(piece.color);
+    let castleRights = BoardUtils.getCastleRights(piece.color, board);
 
-    let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(this.generationService, board, PieceUtils.getOpposedColor(piece.color));
+    let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(board, PieceUtils.getOpposedColor(piece.color));
     // kingside castle
     if (castleRights.canShortCastle) {
       const squareBeforeCastle = {
@@ -103,6 +96,6 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
   public getCaptures(piece: Piece, board: Board): Move[] {
     return PositionUtils.getSurroundingSquares(piece)
       .map(PositionUtils.positionToMoveFunction(piece))
-      .filter(m => !BoardUtils.isProtected(this.generationService, board, PositionUtils.getPieceOnPos(board, m.to)))
+      .filter(m => !BoardUtils.isProtected(board, PositionUtils.getPieceOnPos(board, m.to)))
   }
 }

@@ -1,5 +1,5 @@
-import { Board } from "../types/board.t";
-import { Move, Piece } from "../types/pieces.t";
+import { Board } from "src/app/types/board.t";
+import { Move, Piece } from "src/app/types/pieces.t";
 
 export interface MoveGenerationHandler {
   canHandle(piece: Piece): boolean;
