@@ -30,6 +30,21 @@ export default class MoveGenerationUtils {
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
   }
 
+  public static getExecutableMoves(board: Board, dropPos: Position, color: Color): Move[] {
+    const pieces: Piece[] = board.pieces.filter(p => p.color === color);
+
+    const moves: Move[] = [];
+
+    for (let piece of pieces) {
+      let movesOfPiece = this.getExecutableMove(board, piece, dropPos);
+      if (movesOfPiece) {
+        moves.push(movesOfPiece);
+      }
+    }
+
+    return moves;
+  }
+
   public static getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
     let move = this.getValidMoves(board, piece, true).find(m => PositionUtils.positionEquals(m.to, dropPos));
     if (move !== undefined) {
