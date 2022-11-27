@@ -107,12 +107,13 @@ export default class PgnUtils {
     }
   }
 
-  public static getMoveFromString(board: Board, moveString: string, color: Color): Move | undefined {
-    const dropPosition: Position | undefined = PgnUtils.extractPositionFromMoveString(moveString, color);
+  public static getMoveFromString(board: Board, moveString: string): Move | undefined {
+    const playerToMove: Color = board.playerToMove;
+    const dropPosition: Position | undefined = PgnUtils.extractPositionFromMoveString(moveString, playerToMove);
     const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
 
     if (pieceType && dropPosition) {
-      const moves: Move[] = MoveGenerationUtils.getExecutableMoves(board, dropPosition, color)
+      const moves: Move[] = MoveGenerationUtils.getExecutableMoves(board, dropPosition, playerToMove)
         .filter(move => move.piece.type === pieceType);
 
       if (moves.length === 1) {
@@ -126,17 +127,17 @@ export default class PgnUtils {
     return undefined;
   }
 
-  public static extractPositionFromMoveString(moveString: string, color?: Color): Position | undefined {
+  public static extractPositionFromMoveString(moveString: string, playerToMove?: Color): Position | undefined {
     if (moveString === 'O-O') {
       return {
         column: 7,
-        row: color === Color.WHITE ? 1 : 8
+        row: playerToMove === Color.WHITE ? 1 : 8
       }
     }
     else if (moveString === 'O-O-O') {
       return {
         column: 3,
-        row: color === Color.WHITE ? 1 : 8
+        row: playerToMove === Color.WHITE ? 1 : 8
       }
     }
 

@@ -125,7 +125,7 @@ describe('PgnUtils', () => {
         isCheck: false
       }
 
-      expect(PgnUtils.getMoveFromString(board, 'e4', Color.WHITE)).toEqual(expectedMove);
+      expect(PgnUtils.getMoveFromString(board, 'e4')).toEqual(expectedMove);
     });
 
     it('should return pawn e2-e3 for "e3" in initial position', () => {
@@ -141,7 +141,7 @@ describe('PgnUtils', () => {
         isCheck: false
       }
 
-      expect(PgnUtils.getMoveFromString(board, 'e3', Color.WHITE)).toEqual(expectedMove);
+      expect(PgnUtils.getMoveFromString(board, 'e3')).toEqual(expectedMove);
     });
 
     it('should return pawn Ng1-f3 for "Nf3" in initial position', () => {
@@ -157,7 +157,7 @@ describe('PgnUtils', () => {
         isCheck: false
       }
 
-      expect(PgnUtils.getMoveFromString(board, 'Nf3', Color.WHITE)).toEqual(expectedMove);
+      expect(PgnUtils.getMoveFromString(board, 'Nf3')).toEqual(expectedMove);
     });
   });
 
