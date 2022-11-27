@@ -63,5 +63,13 @@ describe('PieceUtils', () => {
     it('should return "undefined" for empty string', () => {
       expect(PieceUtils.getPieceTypeFromMoveString('')).toBe(undefined);
     });
+
+    it('should return "King" for "O-O"', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('O-O')).toBe(PieceType.KING);
+    });
+
+    it('should return "King" for "O-O-O"', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('O-O-O')).toBe(PieceType.KING);
+    });
   });
 });

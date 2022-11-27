@@ -89,12 +89,16 @@ export default class PieceUtils {
     }
   }
 
-  public static getPieceTypeFromMoveString(moveSting: string): PieceType | undefined {
-    if (!moveSting || moveSting.length === 0) {
+  public static getPieceTypeFromMoveString(moveString: string): PieceType | undefined {
+    if (!moveString || moveString.length === 0) {
       return undefined;
     }
 
-    const firstChar = moveSting[0];
+    if (moveString === 'O-O' || moveString === 'O-O-O') {
+      return PieceType.KING;
+    }
+
+    const firstChar = moveString[0];
 
     switch (firstChar) {
       case "Q":
