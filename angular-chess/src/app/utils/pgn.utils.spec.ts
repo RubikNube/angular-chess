@@ -34,6 +34,8 @@ describe('PgnUtils', () => {
 
   const positionB1 = { column: 2, row: 1 };
 
+  const positionC1 = { column: 3, row: 1 };
+
   const positionC3 = { column: 3, row: 3 };
   const positionC7 = { column: 3, row: 7 };
   const positionC8 = { column: 3, row: 6 };
@@ -41,14 +43,18 @@ describe('PgnUtils', () => {
   const positionD2 = { column: 4, row: 2 };
   const positionD4 = { column: 4, row: 4 };
 
-  const positionD7 = { column: 4, row: 7 };
+  const positionD3 = { column: 4, row: 3 };
   const positionD5 = { column: 4, row: 5 };
+  const positionD7 = { column: 4, row: 7 };
 
+  const positionE1 = { column: 5, row: 1 };
   const positionE2 = { column: 5, row: 2 };
   const positionE3 = { column: 5, row: 3 };
   const positionE4 = { column: 5, row: 4 };
+  const positionE5 = { column: 5, row: 5 };
 
-  const positionF3 = { column: 6, row: 3 };
+  const positionF5 = { column: 6, row: 5 };
+  const positionF6 = { column: 6, row: 6 };
 
   const positionG1 = { column: 7, row: 1 };
 
@@ -144,20 +150,124 @@ describe('PgnUtils', () => {
       expect(PgnUtils.getMoveFromString(board, 'e3')).toEqual(expectedMove);
     });
 
-    it('should return pawn Ng1-f3 for "Nf3" in initial position', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+    it('should return white short castle move for "O-O" in "4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1');
       const expectedMove: Move = {
-        from: positionG1,
-        to: positionF3,
+        from: positionE1,
+        to: positionG1,
         piece: {
           color: Color.WHITE,
-          position: positionG1,
-          type: PieceType.KNIGHT
+          position: positionE1,
+          type: PieceType.KING
+        },
+        isCheck: false,
+        isShortCastle: true
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'O-O')).toEqual(expectedMove);
+    });
+
+    it('should return white long castle move for "O-O-O" in "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');
+      const expectedMove: Move = {
+        from: positionE1,
+        to: positionC1,
+        piece: {
+          color: Color.WHITE,
+          position: positionE1,
+          type: PieceType.KING
+        },
+        isCheck: false,
+        isLongCastle: true
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'O-O-O')).toEqual(expectedMove);
+    });
+
+    it('should return white queen capture move for "Qxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+      const expectedMove: Move = {
+        from: positionD3,
+        to: positionD5,
+        piece: {
+          color: Color.WHITE,
+          position: positionD3,
+          type: PieceType.QUEEN
+        },
+        capturedPiece: {
+          color: Color.BLACK,
+          type: PieceType.PAWN,
+          position: positionD5
         },
         isCheck: false
       }
 
-      expect(PgnUtils.getMoveFromString(board, 'Nf3')).toEqual(expectedMove);
+      expect(PgnUtils.getMoveFromString(board, 'Qxd5')).toEqual(expectedMove);
+    });
+
+    it('should return white knight capture move for "Nxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+      const expectedMove: Move = {
+        from: positionC3,
+        to: positionD5,
+        piece: {
+          color: Color.WHITE,
+          position: positionC3,
+          type: PieceType.KNIGHT
+        },
+        capturedPiece: {
+          color: Color.BLACK,
+          type: PieceType.PAWN,
+          position: positionD5
+        },
+        isCheck: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'Nxd5')).toEqual(expectedMove);
+    });
+
+    it('should return white pawn capture move for "exd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+      const expectedMove: Move = {
+        from: positionE4,
+        to: positionD5,
+        piece: {
+          color: Color.WHITE,
+          position: positionE4,
+          type: PieceType.PAWN
+        },
+        capturedPiece: {
+          color: Color.BLACK,
+          type: PieceType.PAWN,
+          position: positionD5
+        },
+        isCheck: false,
+        isEnPassant: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'exd5')).toEqual(expectedMove);
+    });
+
+    it('should return white en passant pawn capture move for "exf6" in "rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3');
+      const expectedMove: Move = {
+        from: positionE5,
+        to: positionF6,
+        piece: {
+          color: Color.WHITE,
+          position: positionE5,
+          type: PieceType.PAWN
+        },
+        capturedPiece: {
+          color: Color.BLACK,
+          type: PieceType.PAWN,
+          position: positionF5
+        },
+        isCheck: false,
+        isEnPassant: true
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'exf6')).toEqual(expectedMove);
     });
   });
 
