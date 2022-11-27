@@ -5,12 +5,12 @@ import { BehaviorSubject, distinctUntilChanged, map, Observable, tap } from 'rxj
 import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
-import { MoveExecutionService } from '../services/move-execution.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import MoveExecutionUtils from '../utils/move-execution.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -48,7 +48,6 @@ export class ChessBoardComponent implements OnInit {
     public readonly themingService: BoardThemingService,
     public highlightingService: HighlightingService,
     public positioningService: PositioningService,
-    private moveExecutionService: MoveExecutionService,
     private messageService: MessageService,
     private moveHistoryService: MoveHistoryService
   ) {
@@ -178,7 +177,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   private executeMove(executableMove: Move, currentBoard: Board): void {
-    const executedMove: Move | undefined = this.moveExecutionService.executeMove(executableMove, currentBoard);
+    const executedMove: Move | undefined = MoveExecutionUtils.executeMove(executableMove, currentBoard);
     if (executedMove && executedMove.board) {
       this.boardService.updateBoard(executedMove.board);
       this.moveHistoryService.addMoveToHistory(executedMove);
