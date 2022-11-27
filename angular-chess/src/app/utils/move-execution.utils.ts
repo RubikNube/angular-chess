@@ -1,15 +1,11 @@
-import { Injectable } from '@angular/core';
-import { BoardBuilder } from '../builders/board.builder';
-import { Board, Color, Result } from '../types/board.t';
-import { Move, PieceType } from '../types/pieces.t';
-import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
-import PositionUtils from '../utils/position.utils';
+import { BoardBuilder } from "../builders/board.builder";
+import { Board, Color, Result } from "../types/board.t";
+import { Move, PieceType } from "../types/pieces.t";
+import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import PositionUtils from "./position.utils";
 
-@Injectable({
-  providedIn: 'root'
-})
-export class MoveExecutionService {
-  public executeMove(move: Move, board: Board): Move | undefined {
+export default class MoveExecutionUtils {
+  public static executeMove(move: Move, board: Board): Move | undefined {
     console.log("executeMove: " + JSON.stringify(move));
 
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
@@ -45,7 +41,7 @@ export class MoveExecutionService {
     return this.finishMove(move, boardBuilder);
   }
 
-  private executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
+  private static executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
     boardBuilder.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
 
     // kingside castle
@@ -63,7 +59,7 @@ export class MoveExecutionService {
     return undefined;
   }
 
-  private finishMove(move: Move, boardBuilder: BoardBuilder): Move | undefined {
+  private static finishMove(move: Move, boardBuilder: BoardBuilder): Move | undefined {
     if (!this.hasPawnGoneLongStep(move)) {
       boardBuilder.clearEnPassantSquares();
     }
@@ -89,15 +85,15 @@ export class MoveExecutionService {
     return move;
   }
 
-  private hasPawnGoneLongStep(move: Move): boolean {
+  private static hasPawnGoneLongStep(move: Move): boolean {
     return move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2;
   }
 
-  private isCastle(move: Move): boolean | undefined {
+  private static isCastle(move: Move): boolean | undefined {
     return move.isShortCastle || move.isLongCastle;
   }
 
-  private executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
+  private static executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeLongCastle: " + JSON.stringify(move));
 
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
@@ -108,7 +104,7 @@ export class MoveExecutionService {
     }
   }
 
-  private executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
+  private static executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
     console.log("executeShortCastle: " + JSON.stringify(move));
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
