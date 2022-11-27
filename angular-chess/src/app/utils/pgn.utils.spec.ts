@@ -173,5 +173,41 @@ describe('PgnUtils', () => {
     it('should return [column:5, row:4] for "Ne4"', () => {
       expect(PgnUtils.extractPositionFromMoveString('Ne4')).toEqual({ column: 5, row: 4 });
     });
+
+    it('should return [column:5, row:4] for "Nxe4"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('Ne4')).toEqual({ column: 5, row: 4 });
+    });
+
+    it('should return [column:6, row:3] for "N1f3"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('N1f3')).toEqual({ column: 6, row: 3 });
+    });
+
+    it('should return [column:7, row:6] for "Bg6+"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('Bg6+')).toEqual({ column: 7, row: 6 });
+    });
+
+    it('should return [column:2, row:5] for "axb5"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('axb5')).toEqual({ column: 2, row: 5 });
+    });
+
+    it('should return undefined for "axa"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('axa')).toEqual(undefined);
+    });
+
+    it('should return [column:7, row:1] for white "O-O"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
+    });
+
+    it('should return [column:3, row:1] for white "O-O-O"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
+    });
+
+    it('should return [column:7, row:8] for black "O-O"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
+    });
+
+    it('should return [column:3, row:8] for black "O-O-O"', () => {
+      expect(PgnUtils.extractPositionFromMoveString('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
+    });
   });
 });

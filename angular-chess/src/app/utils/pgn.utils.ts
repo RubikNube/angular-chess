@@ -108,7 +108,7 @@ export default class PgnUtils {
   }
 
   public static getMoveFromString(board: Board, moveString: string, color: Color): Move | undefined {
-    const dropPosition: Position | undefined = PgnUtils.extractPositionFromMoveString(moveString);
+    const dropPosition: Position | undefined = PgnUtils.extractPositionFromMoveString(moveString, color);
     const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
 
     if (pieceType && dropPosition) {
@@ -126,7 +126,20 @@ export default class PgnUtils {
     return undefined;
   }
 
-  public static extractPositionFromMoveString(moveString: string): Position | undefined {
+  public static extractPositionFromMoveString(moveString: string, color?: Color): Position | undefined {
+    if (moveString === 'O-O') {
+      return {
+        column: 7,
+        row: color === Color.WHITE ? 1 : 8
+      }
+    }
+    else if (moveString === 'O-O-O') {
+      return {
+        column: 3,
+        row: color === Color.WHITE ? 1 : 8
+      }
+    }
+
     let coordinate = moveString.match(new RegExp(this.coordinateRegEx, 'gm'));
     if (coordinate) {
       return PositionUtils.getPositionFromCoordinate(coordinate[0]);;
