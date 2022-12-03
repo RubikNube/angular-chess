@@ -7,7 +7,7 @@ export interface Board {
   moveCount: number;
   enPassantSquare?: Position;
   playerToMove: Color;
-  result: Result;
+  result?: Result;
   plyCount?: number;
 }
 

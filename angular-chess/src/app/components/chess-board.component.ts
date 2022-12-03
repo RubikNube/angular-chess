@@ -58,9 +58,11 @@ export class ChessBoardComponent implements OnInit {
       .pipe(
         tap(r => console.log("getResult: " + r)),
         distinctUntilChanged())
-      .subscribe(r => {
-        this.showResultToast(r);
-        this.isDragDisabled$$.next(Result.UNKNOWN !== r);
+      .subscribe(result => {
+        if (result) {
+          this.showResultToast(result);
+        }
+        this.isDragDisabled$$.next(Result.UNKNOWN !== result);
       });
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {

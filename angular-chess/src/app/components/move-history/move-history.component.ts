@@ -71,7 +71,6 @@ export class MoveHistoryComponent implements AfterViewInit {
     }
   }
 
-
   public getPromotionRepresentation(move: Move | undefined): string {
     if (move === undefined) {
       return "";

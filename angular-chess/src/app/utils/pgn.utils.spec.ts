@@ -5,18 +5,6 @@ import BoardUtils from "./board.utils";
 import PgnUtils, { MoveGroup } from "./pgn.utils";
 
 describe('PgnUtils', () => {
-  const pgnToImport: string = `[Event "IBM Kasparov vs. Deep Blue Rematch"]\n
-[Site "New York, NY USA"]\n
-[Date "1997.05.11"]\n
-[Round "6"]\n
-[White "Deep Blue"]\n
-[Black "Kasparov, Garry"]\n
-[Opening "Caro-Kann: 4...Nd7"]\n
-[ECO "B17"]\n
-[Result "1-0"]\n
- 
-1.e4 c6 2.d4 d5 3.Nc3\n`;
-
   const wholeGameImport: string = `[Event "IBM Kasparov vs. Deep Blue Rematch"]
 [Site "New York, NY USA"]
 [Date "1997.05.11"]
@@ -37,15 +25,9 @@ describe('PgnUtils', () => {
   const positionC1 = { column: 3, row: 1 };
 
   const positionC3 = { column: 3, row: 3 };
-  const positionC7 = { column: 3, row: 7 };
-  const positionC8 = { column: 3, row: 6 };
-
-  const positionD2 = { column: 4, row: 2 };
-  const positionD4 = { column: 4, row: 4 };
 
   const positionD3 = { column: 4, row: 3 };
   const positionD5 = { column: 4, row: 5 };
-  const positionD7 = { column: 4, row: 7 };
 
   const positionE1 = { column: 5, row: 1 };
   const positionE2 = { column: 5, row: 2 };
@@ -58,24 +40,16 @@ describe('PgnUtils', () => {
 
   const positionG1 = { column: 7, row: 1 };
 
-  const expectedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
-  { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionC7 }, from: positionE2, to: positionC8 },
-  { piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionD2 }, from: positionD2, to: positionD4 },
-  { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionD7 }, from: positionD7, to: positionD5 },
-  { piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: positionB1 }, from: positionB1, to: positionC3 }];
+  describe('extractMovesFromPgn', () => {
+    it('should be able to extract pawn moves', () => {
+      expect(PgnUtils.extractMovesFromPgn(`1.e4 c6 2.d4 d5`).length).toEqual(4);
+    });
 
+    it('should be able to extract whole game', () => {
+      expect(PgnUtils.extractMovesFromPgn(wholeGameImport).length).toEqual(37);
+    });
+  });
 
-  // describe('extractMovesFromPgn', () => {
-  //   it('should be able to extract pawn moves', () => {
-  //     const expectedMoves: Move[] = [{ piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionE2 }, from: positionE2, to: positionE4 },
-  //     { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionC7 }, from: positionE2, to: positionC8 },
-  //     { piece: { type: PieceType.PAWN, color: Color.WHITE, position: positionD2 }, from: positionD2, to: positionD4 },
-  //     { piece: { type: PieceType.PAWN, color: Color.BLACK, position: positionD7 }, from: positionD7, to: positionD5 }
-  //     ];
-
-  //     expect(PgnUtils.extractMovesFromPgn(`1.e4 c6 2.d4 d5`)).toEqual(expectedMoves);
-  //   });
-  // });
   describe('getMoveGroups', () => {
     it('get single move group"', () => {
       const expectedGroup: MoveGroup = {
@@ -269,55 +243,89 @@ describe('PgnUtils', () => {
 
       expect(PgnUtils.getMoveFromString(board, 'exf6')).toEqual(expectedMove);
     });
+
+    it('should return correct knight move pawn if two knights could move to same square for "Nbc3" in "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3');
+      const expectedMove: Move = {
+        from: positionB1,
+        to: positionC3,
+        piece: {
+          color: Color.WHITE,
+          position: positionB1,
+          type: PieceType.KNIGHT
+        },
+        isCheck: false
+      }
+
+      expect(PgnUtils.getMoveFromString(board, 'Nbc3')).toEqual(expectedMove);
+    });
   });
 
-  describe('extractPositionFromMoveString', () => {
+  describe('extractMoveToPosition', () => {
     it('should return [column:5, row:4] for "e4"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('e4')).toEqual({ column: 5, row: 4 });
+      expect(PgnUtils.extractMoveToPosition('e4')).toEqual({ column: 5, row: 4 });
     });
 
     it('should return [column:5, row:2] for "e2"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('e2')).toEqual({ column: 5, row: 2 });
+      expect(PgnUtils.extractMoveToPosition('e2')).toEqual({ column: 5, row: 2 });
     });
 
     it('should return [column:5, row:4] for "Ne4"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('Ne4')).toEqual({ column: 5, row: 4 });
+      expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
     });
 
     it('should return [column:5, row:4] for "Nxe4"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('Ne4')).toEqual({ column: 5, row: 4 });
+      expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
     });
 
     it('should return [column:6, row:3] for "N1f3"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('N1f3')).toEqual({ column: 6, row: 3 });
+      expect(PgnUtils.extractMoveToPosition('N1f3')).toEqual({ column: 6, row: 3 });
     });
 
     it('should return [column:7, row:6] for "Bg6+"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('Bg6+')).toEqual({ column: 7, row: 6 });
+      expect(PgnUtils.extractMoveToPosition('Bg6+')).toEqual({ column: 7, row: 6 });
     });
 
     it('should return [column:2, row:5] for "axb5"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('axb5')).toEqual({ column: 2, row: 5 });
+      expect(PgnUtils.extractMoveToPosition('axb5')).toEqual({ column: 2, row: 5 });
     });
 
     it('should return undefined for "axa"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('axa')).toEqual(undefined);
+      expect(PgnUtils.extractMoveToPosition('axa')).toEqual(undefined);
     });
 
     it('should return [column:7, row:1] for white "O-O"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
+      expect(PgnUtils.extractMoveToPosition('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
     });
 
     it('should return [column:3, row:1] for white "O-O-O"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
+      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
     });
 
     it('should return [column:7, row:8] for black "O-O"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
+      expect(PgnUtils.extractMoveToPosition('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
     });
 
     it('should return [column:3, row:8] for black "O-O-O"', () => {
-      expect(PgnUtils.extractPositionFromMoveString('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
+      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
+    });
+  });
+
+  describe('extractMoveFromPosition', () => {
+    it('should return [column:2] for "Nbc4"', () => {
+      expect(PgnUtils.extractMoveFromPosition('Nbc4')).toEqual({ column: 2});
+    });
+
+    it('should return [column:2] for "bc4"', () => {
+      expect(PgnUtils.extractMoveFromPosition('bc4')).toEqual({ column: 2});
+    });
+
+    it('should return [] for "c4"', () => {
+      expect(PgnUtils.extractMoveFromPosition('c4')).toEqual({});
+    });
+
+    it('should return [row:1] for "R1c1"', () => {
+      expect(PgnUtils.extractMoveFromPosition('R1c1')).toEqual({row:1});
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
@@ -44,8 +44,9 @@ export class ChessBoardService {
     return this.board$$.next(currentBoard);
   }
 
-  public getResult$(): Observable<Result> {
+  public getResult$(): Observable<Result | undefined> {
     return this.board$.pipe(
+      filter(b => !!b.result),
       map(b => b.result)
     );
   }
@@ -235,5 +236,11 @@ export class ChessBoardService {
 
   public importPgn(newPgn: string): void {
     const moves: Move[] = PgnUtils.extractMovesFromPgn(newPgn);
+
+    this.moveHistoryService.resetMoveHistory();
+
+    for(let move of moves){
+      this.moveHistoryService.addMoveToHistory(move);
+    }
   }
 }
