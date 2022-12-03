@@ -24,7 +24,7 @@ export default class PgnUtils {
   private static moveRegEx = new RegExp(`(${this.coordinateRegEx.source}|${this.pieceRegEx.source}|${this.kingSideCastleRegEx.source}|${this.queenSideCastleRegEx.source})`);
   private static captureRegEx = new RegExp(`(${this.pieceMoveRegEx.source}|[a-h])x${this.coordinateRegEx.source}`);
   private static moveOrCaptureRegEx = new RegExp(`(${this.moveRegEx.source}|${this.captureRegEx.source})\\+?`);
-  private static moveGroupRegEx = `(\\d+\.${this.moveOrCaptureRegEx.source} ${this.moveOrCaptureRegEx.source}|\\d+\.${this.moveOrCaptureRegEx.source})`;
+  private static moveGroupRegEx = `((\\d+\.|\\d+\. )${this.moveOrCaptureRegEx.source} ${this.moveOrCaptureRegEx.source}|(\\d+\.|\\d+\. )${this.moveOrCaptureRegEx.source})`;
 
   /**
    * Extracts the moves from a given PGN input.
