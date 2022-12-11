@@ -36,7 +36,7 @@ export default class MoveGenerationUtils {
     const moves: Move[] = [];
 
     for (let piece of pieces) {
-      let movesOfPiece = this.getExecutableMove(board, piece, dropPos);
+      const movesOfPiece = this.getExecutableMove(board, piece, dropPos);
       if (movesOfPiece) {
         moves.push(movesOfPiece);
       }

@@ -18,7 +18,6 @@ export default class PgnUtils {
   private static coordinateRegEx = /[a-h][1-8]/;
   private static columnCharRegEx = /[a-h]/;
   private static rowCharRegEx = /[1-8]/;
-  private static pieceCharRegEx = /[KQRBN]/;
   private static pieceMoveRegEx = new RegExp(`(K|Q|R|B|N)([a-h]|[1-8])?(${this.coordinateRegEx.source})?`);
   private static pieceRegEx = new RegExp(`${this.pieceMoveRegEx.source}?${this.coordinateRegEx.source}`);
   private static moveRegEx = new RegExp(`(${this.coordinateRegEx.source}|${this.pieceRegEx.source}|${this.kingSideCastleRegEx.source}|${this.queenSideCastleRegEx.source})`);
@@ -56,28 +55,28 @@ export default class PgnUtils {
           if (executedMove) {
             if (executedMove.board) {
               currentBoard = executedMove.board;
-            }
+        }
             else {
               throw Error("Can't load PGN: " + pgn);
-            }
+      }
             moves.push(executedMove);
-          }
+  }
         }
       }
       if (moveGroup.blackMoveString) {
         let move = PgnUtils.getMoveFromString(currentBoard, moveGroup.blackMoveString);
-        if (move) {
-          const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
+      if (move) {
+        const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.board) {
               currentBoard = executedMove.board;
-            }
+        }
             else {
               throw Error("Can't load PGN: " + pgn);
-            }
-            moves.push(executedMove);
-          }
         }
+            moves.push(executedMove);
+      }
+      }
       };
     });
 
@@ -112,12 +111,10 @@ export default class PgnUtils {
       }
 
       if (moveStrings.length >= 1) {
-        const whiteMove = moveStrings[0][0];
-        moveGroup.whiteMoveString = whiteMove;
+        moveGroup.whiteMoveString = moveStrings[0][0];
       }
       if (moveStrings.length >= 2) {
-        const blackMove = moveStrings[1][0];
-        moveGroup.blackMoveString = blackMove;
+        moveGroup.blackMoveString = moveStrings[1][0];
       }
 
       moveGroups.push(moveGroup);
@@ -249,3 +246,5 @@ export default class PgnUtils {
     }
   }
 };
+
+

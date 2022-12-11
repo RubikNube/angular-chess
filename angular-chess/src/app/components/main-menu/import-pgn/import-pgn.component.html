@@ -1,6 +1,5 @@
 <div class="p-inputgroup board-btn-group">
   <input
-    id="pgn"
     #pgn
     name="pgn"
     type="text"
@@ -12,6 +11,6 @@
     pButton
     pRipple
     label="Import PGN"
-    (click)="this.boardService.importPgn(pgn.value)"
+    (click)="boardService.importPgn(pgn.value)"
   ></button>
 </div>

@@ -25,27 +25,29 @@ import { ImportPgnComponent } from './components/main-menu/import-pgn/import-pgn
   declarations: [
     AppComponent,
     ChessBoardComponent,
-    MoveHistoryComponent,
-    MainMenuComponent,
-    ImportFenComponent,
     ChessFieldComponent,
-    ImportPgnComponent
+    ImportFenComponent,
+    ImportPgnComponent,
+    MainMenuComponent,
+    MoveHistoryComponent
+
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     ButtonModule,
-    FormsModule,
+    ClipboardModule,
+    ContextMenuModule,
     DragDropModule,
+    DynamicDialogModule,
+    FormsModule,
+    ListboxModule,
+    MenubarModule,
+    OverlayPanelModule,
     SplitterModule,
     TableModule,
-    ToastModule,
-    BrowserAnimationsModule,
-    OverlayPanelModule,
-    ListboxModule,
-    ContextMenuModule,
-    MenubarModule,
-    DynamicDialogModule,
-    ClipboardModule
+    ToastModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]
