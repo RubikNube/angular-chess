@@ -19,31 +19,35 @@ import { ImportFenComponent } from './components/main-menu/import-fen/import-fen
 import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { MoveHistoryComponent } from './components/move-history/move-history.component';
 import { ChessFieldComponent } from './components/chess-field/chess-field.component';
+import { ImportPgnComponent } from './components/main-menu/import-pgn/import-pgn.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChessBoardComponent,
-    MoveHistoryComponent,
-    MainMenuComponent,
+    ChessFieldComponent,
     ImportFenComponent,
-    ChessFieldComponent
+    ImportPgnComponent,
+    MainMenuComponent,
+    MoveHistoryComponent
+
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     ButtonModule,
-    FormsModule,
+    ClipboardModule,
+    ContextMenuModule,
     DragDropModule,
+    DynamicDialogModule,
+    FormsModule,
+    ListboxModule,
+    MenubarModule,
+    OverlayPanelModule,
     SplitterModule,
     TableModule,
-    ToastModule,
-    BrowserAnimationsModule,
-    OverlayPanelModule,
-    ListboxModule,
-    ContextMenuModule,
-    MenubarModule,
-    DynamicDialogModule,
-    ClipboardModule
+    ToastModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

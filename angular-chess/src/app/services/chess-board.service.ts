@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
-import { Piece } from '../types/pieces.t';
+import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { MoveHistoryService } from './move-history.service';
 
@@ -43,8 +44,9 @@ export class ChessBoardService {
     return this.board$$.next(currentBoard);
   }
 
-  public getResult$(): Observable<Result> {
+  public getResult$(): Observable<Result | undefined> {
     return this.board$.pipe(
+      filter(b => !!b.result),
       map(b => b.result)
     );
   }
@@ -229,6 +231,16 @@ export class ChessBoardService {
       let currentBoard = this.board$$.getValue();
       currentBoard.pieces = currentPieces;
       this.board$$.next(currentBoard);
+    }
+  }
+
+  public importPgn(newPgn: string): void {
+    const moves: Move[] = PgnUtils.extractMovesFromPgn(newPgn);
+
+    this.moveHistoryService.resetMoveHistory();
+
+    for(let move of moves){
+      this.moveHistoryService.addMoveToHistory(move);
     }
   }
 }

@@ -88,4 +88,31 @@ export default class PieceUtils {
         return PieceType.QUEEN;
     }
   }
+
+  public static getPieceTypeFromMoveString(moveString: string): PieceType | undefined {
+    if (!moveString || moveString.length === 0) {
+      return undefined;
+    }
+
+    if (moveString === 'O-O' || moveString === 'O-O-O') {
+      return PieceType.KING;
+    }
+
+    const firstChar = moveString[0];
+
+    switch (firstChar) {
+      case "Q":
+        return PieceType.QUEEN;
+      case "K":
+        return PieceType.KING;
+      case "R":
+        return PieceType.ROOK;
+      case "B":
+        return PieceType.BISHOP;
+      case "N":
+        return PieceType.KNIGHT;
+      default:
+        return PieceType.PAWN;
+    }
+  }
 }

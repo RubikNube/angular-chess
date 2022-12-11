@@ -34,4 +34,42 @@ describe('PieceUtils', () => {
       expect(PieceUtils.pieceEquals(whiteKing55, blackKing55)).toBeFalse();
     });
   });
+
+  describe('getPieceTypeFromMoveString', () => {
+    it('should return "Queen" for "Qe4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('Qe4')).toBe(PieceType.QUEEN);
+    });
+
+    it('should return "King" for "Ke4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('Ke4')).toBe(PieceType.KING);
+    });
+
+    it('should return "Queen" for "Re4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('Re4')).toBe(PieceType.ROOK);
+    });
+
+    it('should return "Bishop" for "Be4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('Be4')).toBe(PieceType.BISHOP);
+    });
+
+    it('should return "Knight" for "Ne4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('Ne4')).toBe(PieceType.KNIGHT);
+    });
+
+    it('should return "Pawn" for "e4".', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('e4')).toBe(PieceType.PAWN);
+    });
+
+    it('should return "undefined" for empty string', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('')).toBe(undefined);
+    });
+
+    it('should return "King" for "O-O"', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('O-O')).toBe(PieceType.KING);
+    });
+
+    it('should return "King" for "O-O-O"', () => {
+      expect(PieceUtils.getPieceTypeFromMoveString('O-O-O')).toBe(PieceType.KING);
+    });
+  });
 });

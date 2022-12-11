@@ -6,6 +6,16 @@ import MoveGenerationUtils from './move.generation.utils';
 
 describe('MoveGenerationUtils', () => {
 
+  describe('getExecutableMove', () => {
+    it('should return valid kingside castle', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("r1b1kb1r/pp1nqpp1/2p1Nn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R w KQkq - 1 9");
+      let king: Piece = { type: PieceType.KING, position: { column: 5, row: 1 }, color: Color.WHITE };
+      let validMoves = MoveGenerationUtils.getExecutableMove(board, king, { column: 7, row: 1 });
+
+      expect(validMoves).toEqual({ piece: king, from: { column: 5, row: 1 }, to: { column: 7, row: 1 }, isCheck: false, isShortCastle: true })
+    });
+  });
+
   describe('getValidMoves', () => {
     it('should generate white pawn moves for one and two squares', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/4p3/8/8/8/8/4P3/4K3 w - - 0 1");

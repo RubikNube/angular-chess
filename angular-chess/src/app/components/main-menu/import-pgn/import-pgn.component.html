@@ -1,0 +1,16 @@
+<div class="p-inputgroup board-btn-group">
+  <input
+    #pgn
+    name="pgn"
+    type="text"
+    pInputText
+    placeholder="PGN"
+  >
+  <button
+    type="button"
+    pButton
+    pRipple
+    label="Import PGN"
+    (click)="boardService.importPgn(pgn.value)"
+  ></button>
+</div>
