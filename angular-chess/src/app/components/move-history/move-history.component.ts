@@ -107,4 +107,24 @@ export class MoveHistoryComponent implements AfterViewInit {
   private getEnPassantRepresentation(move: Move): string {
     return move.isEnPassant ? " e.p" : "";
   }
+
+  public moveToStart():void{
+
+  }
+
+  public moveBack():void{
+
+  }
+
+  public moveForward():void{
+
+  }
+
+  public moveToEnd():void{
+
+  }
+
+  public playPause():void{
+
+  }
 }
