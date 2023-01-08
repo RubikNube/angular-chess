@@ -5,6 +5,7 @@ import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
+import { HighlightingService } from './highlighting.service';
 import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
@@ -32,7 +33,8 @@ export class ChessBoardService {
 
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
 
-  constructor(private moveHistoryService: MoveHistoryService) {
+  constructor(private moveHistoryService: MoveHistoryService,
+    private highlightingService: HighlightingService) {
     this.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
   }
 
@@ -202,8 +204,7 @@ export class ChessBoardService {
 
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
 
-    this.board$$.next(board);
-    this.fen$$.next(newFen);
+    this.loadBoard(board);
   }
 
   public addPiece(piece: Piece): void {
@@ -239,8 +240,20 @@ export class ChessBoardService {
 
     this.moveHistoryService.resetMoveHistory();
 
-    for(let move of moves){
+    for (let move of moves) {
       this.moveHistoryService.addMoveToHistory(move);
+    }
+
+    const boardFromLastMove: Board | undefined = moves[moves.length - 1].board;
+    this.loadBoard(boardFromLastMove);
+  }
+
+  private loadBoard(boardFromLastMove: Board | undefined) {
+    if (boardFromLastMove) {
+      this.highlightingService.clearNotListedColoredSquares();
+      this.board$$.next(boardFromLastMove);
+      const fenFromLastMove: string = BoardUtils.getFen(boardFromLastMove);
+      this.fen$$.next(fenFromLastMove);
     }
   }
 }
