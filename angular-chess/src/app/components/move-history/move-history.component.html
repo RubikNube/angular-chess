@@ -23,9 +23,7 @@
       [pSelectableRow]="fullMove"
       [pContextMenuRow]="fullMove">
 
-      <td>
-        {{this.boardService.getMoveCount() + fullMove?.count}}
-      </td>
+      <td>{{fullMove?.count}}</td>
       <td>
         <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
         {{getMoveRepresentation(fullMove?.whiteMove)}}
