@@ -21,6 +21,7 @@ export class MoveHistoryComponent implements AfterViewInit {
     { label: "black", command: () => this.loadBoard(this.selectedMove.blackMove?.boardBeforeMove) }
   ];
   moveHistory: Move[] = [];
+  private selectedMoveNumber: number = 0;
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
@@ -34,6 +35,7 @@ export class MoveHistoryComponent implements AfterViewInit {
         window.setTimeout(() => {
           const idOfElement = "fullMove_" + p[p.length - 1].count;
           this.setFocusToNewMove(idOfElement);
+          this.selectedMoveNumber = p.length;
         }, 50);
       }
     );
@@ -115,27 +117,31 @@ export class MoveHistoryComponent implements AfterViewInit {
   }
 
   public moveToStart(): void {
-    const firstMove: Move = this.moveHistory[0];
-    const startingPos: Board | undefined = firstMove.boardBeforeMove;
-    if (startingPos) {
-      this.boardService.loadBoard(startingPos);
-      this.setFocusToNewMove("fullMove_1");
-    }
+    this.moveToIndex(0, true);
   }
 
   public moveBack(): void {
-
+    this.moveToIndex(this.selectedMoveNumber - 1 > 0 ? this.selectedMoveNumber - 1 : 0, true);
   }
 
   public moveForward(): void {
-
+    this.moveToIndex(this.selectedMoveNumber + 1 < this.moveHistory.length - 1 ? this.selectedMoveNumber + 1 : this.moveHistory.length - 1, true);
   }
 
   public moveToEnd(): void {
+    this.moveToIndex(this.moveHistory.length - 1, false);
+  }
 
+  private moveToIndex(selectedMoveIndex: number, beforeMove: boolean) {
+    this.selectedMoveNumber = selectedMoveIndex;
+    const firstMove: Move = this.moveHistory[selectedMoveIndex];
+    const finalPos: Board | undefined = beforeMove ? firstMove.boardBeforeMove : firstMove.boardAfterMove;
+    if (finalPos) {
+      this.boardService.loadBoard(finalPos);
+      this.setFocusToNewMove("fullMove_" + (Math.floor(selectedMoveIndex / 2) + 1));
+    }
   }
 
   public playPause(): void {
-
   }
 }
