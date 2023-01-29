@@ -1,5 +1,6 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { Board } from 'src/app/types/board.t';
@@ -22,6 +23,9 @@ export class MoveHistoryComponent implements AfterViewInit {
   ];
   moveHistory: Move[] = [];
   private selectedMoveNumber: number = 0;
+  private isPlaying$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private isPlaying$: Observable<boolean> = this.isPlaying$$.asObservable();
+  private playingInterval: number | undefined = undefined;
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
@@ -43,6 +47,15 @@ export class MoveHistoryComponent implements AfterViewInit {
     this.moveHistoryService.getMoveHistory$().subscribe(
       p => {
         this.moveHistory = p;
+      }
+    );
+
+    this.isPlaying$.subscribe(
+      isPlaying => {
+        if (!isPlaying && this.playingInterval) {
+          window.clearInterval(this.playingInterval);
+          this.playingInterval = undefined;
+        }
       }
     );
   }
@@ -142,6 +155,18 @@ export class MoveHistoryComponent implements AfterViewInit {
     }
   }
 
-  public playPause(): void {
+  public play(): void {
+    this.playingInterval = window.setInterval(() => {
+      this.isPlaying$$.next(true);
+      let selectedMoveIndex: number = this.selectedMoveNumber + 1;
+      if (!this.isPlaying$$.getValue() || selectedMoveIndex >= this.moveHistory.length - 1) {
+        this.isPlaying$$.next(false);
+      }
+      this.moveToIndex(selectedMoveIndex, true);
+    }, 1000);
+  }
+
+  public pause(): void {
+    this.isPlaying$$.next(false);
   }
 }
