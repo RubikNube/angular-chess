@@ -129,6 +129,6 @@ export class BoardBuilder {
   }
 
   public build(): Board {
-    return this._board;
+    return CopyUtils.deepCopyElement(this._board);
   }
 }

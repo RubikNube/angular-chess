@@ -53,8 +53,8 @@ export default class PgnUtils {
         if (move) {
           const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
-            if (executedMove.board) {
-              currentBoard = executedMove.board;
+            if (executedMove.boardAfterMove) {
+              currentBoard = executedMove.boardAfterMove;
         }
             else {
               throw Error("Can't load PGN: " + pgn);
@@ -68,8 +68,8 @@ export default class PgnUtils {
       if (move) {
         const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
-            if (executedMove.board) {
-              currentBoard = executedMove.board;
+            if (executedMove.boardAfterMove) {
+              currentBoard = executedMove.boardAfterMove;
         }
             else {
               throw Error("Can't load PGN: " + pgn);

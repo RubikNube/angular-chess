@@ -180,8 +180,8 @@ export class ChessBoardComponent implements OnInit {
 
   private executeMove(executableMove: Move, currentBoard: Board): void {
     const executedMove: Move | undefined = MoveExecutionUtils.executeMove(executableMove, currentBoard);
-    if (executedMove && executedMove.board) {
-      this.boardService.updateBoard(executedMove.board);
+    if (executedMove && executedMove.boardAfterMove) {
+      this.boardService.updateBoard(executedMove.boardAfterMove);
       this.moveHistoryService.addMoveToHistory(executedMove);
       const squareFrom = { highlight: HighlightColor.BLUE, position: executedMove.from };
       const squareTo = { highlight: HighlightColor.BLUE, position: executedMove.to };

@@ -17,9 +17,10 @@ export class MoveHistoryComponent implements AfterViewInit {
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
   public menuItems: MenuItem[] = [
-    { label: "white", command: () => this.resetBoard(this.selectedMove.whiteMove?.board) },
-    { label: "black", command: () => this.resetBoard(this.selectedMove.blackMove?.board) }
+    { label: "white", command: () => this.loadBoard(this.selectedMove.whiteMove?.boardBeforeMove) },
+    { label: "black", command: () => this.loadBoard(this.selectedMove.blackMove?.boardBeforeMove) }
   ];
+  moveHistory: Move[] = [];
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
@@ -36,6 +37,12 @@ export class MoveHistoryComponent implements AfterViewInit {
         }, 50);
       }
     );
+
+    this.moveHistoryService.getMoveHistory$().subscribe(
+      p => {
+        this.moveHistory = p;
+      }
+    );
   }
 
   private setFocusToNewMove(idOfElement: string) {
@@ -48,13 +55,12 @@ export class MoveHistoryComponent implements AfterViewInit {
     }
   }
 
-  public resetBoard(board: Board | undefined): void {
+  public loadBoard(board: Board | undefined): void {
     console.log("selectedMove: " + JSON.stringify(this.selectedMove));
-    console.log("resetBoard: " + JSON.stringify(board));
+    console.log("loadBoard: " + JSON.stringify(board));
 
     if (board !== undefined) {
-      const fen: string = BoardUtils.getFen(board);
-      this.boardService.importFen(fen);
+      this.boardService.loadBoard(board);
     }
   }
 
@@ -108,23 +114,28 @@ export class MoveHistoryComponent implements AfterViewInit {
     return move.isEnPassant ? " e.p" : "";
   }
 
-  public moveToStart():void{
+  public moveToStart(): void {
+    const firstMove: Move = this.moveHistory[0];
+    const startingPos: Board | undefined = firstMove.boardBeforeMove;
+    if (startingPos) {
+      this.boardService.loadBoard(startingPos);
+      this.setFocusToNewMove("fullMove_1");
+    }
+  }
+
+  public moveBack(): void {
 
   }
 
-  public moveBack():void{
+  public moveForward(): void {
 
   }
 
-  public moveForward():void{
+  public moveToEnd(): void {
 
   }
 
-  public moveToEnd():void{
-
-  }
-
-  public playPause():void{
+  public playPause(): void {
 
   }
 }

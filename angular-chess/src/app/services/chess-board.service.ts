@@ -244,11 +244,11 @@ export class ChessBoardService {
       this.moveHistoryService.addMoveToHistory(move);
     }
 
-    const boardFromLastMove: Board | undefined = moves[moves.length - 1].board;
+    const boardFromLastMove: Board | undefined = moves[moves.length - 1].boardAfterMove;
     this.loadBoard(boardFromLastMove);
   }
 
-  private loadBoard(boardFromLastMove: Board | undefined) {
+  public loadBoard(boardFromLastMove: Board | undefined) {
     if (boardFromLastMove) {
       this.highlightingService.clearNotListedColoredSquares();
       this.board$$.next(boardFromLastMove);
