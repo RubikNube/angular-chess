@@ -33,20 +33,22 @@ export class MoveHistoryComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
-      p => {
-        this.fullMoveHistory = p;
+      fullMoveHistory => {
+        this.fullMoveHistory = fullMoveHistory;
 
         window.setTimeout(() => {
-          const idOfElement = "fullMove_" + p[p.length - 1].count;
-          this.setFocusToNewMove(idOfElement);
-          this.selectedMoveNumber = p.length;
+          if (fullMoveHistory.length > 0) {
+            const idOfElement = "fullMove_" + fullMoveHistory[fullMoveHistory.length - 1].count;
+            this.setFocusToNewMove(idOfElement);
+          }
+          this.selectedMoveNumber = fullMoveHistory.length;
         }, 50);
       }
     );
 
     this.moveHistoryService.getMoveHistory$().subscribe(
-      p => {
-        this.moveHistory = p;
+      moveHistory => {
+        this.moveHistory = moveHistory;
       }
     );
 
@@ -146,11 +148,14 @@ export class MoveHistoryComponent implements AfterViewInit {
   }
 
   private moveToIndex(selectedMoveIndex: number, beforeMove: boolean) {
+    if (beforeMove && this.selectedMoveNumber === selectedMoveIndex && selectedMoveIndex === this.moveHistory.length - 1) {
+      beforeMove = false;
+    }
     this.selectedMoveNumber = selectedMoveIndex;
-    const firstMove: Move = this.moveHistory[selectedMoveIndex];
-    const finalPos: Board | undefined = beforeMove ? firstMove.boardBeforeMove : firstMove.boardAfterMove;
-    if (finalPos) {
-      this.boardService.loadBoard(finalPos);
+    const selectedMove: Move = this.moveHistory[selectedMoveIndex];
+    const selectedPos: Board | undefined = beforeMove ? selectedMove.boardBeforeMove : selectedMove.boardAfterMove;
+    if (selectedPos) {
+      this.boardService.loadBoard(selectedPos);
       this.setFocusToNewMove("fullMove_" + (Math.floor(selectedMoveIndex / 2) + 1));
     }
   }
@@ -161,6 +166,11 @@ export class MoveHistoryComponent implements AfterViewInit {
       let selectedMoveIndex: number = this.selectedMoveNumber + 1;
       if (!this.isPlaying$$.getValue() || selectedMoveIndex >= this.moveHistory.length - 1) {
         this.isPlaying$$.next(false);
+      }
+      if (selectedMoveIndex === this.moveHistory.length - 1) {
+        window.setTimeout(() => {
+          this.moveToIndex(selectedMoveIndex, false);
+        }, 1000);
       }
       this.moveToIndex(selectedMoveIndex, true);
     }, 1000);
