@@ -24,7 +24,8 @@ export class MoveHistoryComponent implements AfterViewInit {
   moveHistory: Move[] = [];
   private selectedMoveNumber: number = 0;
   private isPlaying$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private isPlaying$: Observable<boolean> = this.isPlaying$$.asObservable();
+  public isPlaying$: Observable<boolean> = this.isPlaying$$.asObservable();
+  public isPlaying: boolean = false;
   private playingInterval: number | undefined = undefined;
 
   constructor(private moveHistoryService: MoveHistoryService,
@@ -54,6 +55,8 @@ export class MoveHistoryComponent implements AfterViewInit {
 
     this.isPlaying$.subscribe(
       isPlaying => {
+        this.isPlaying = isPlaying;
+
         if (!isPlaying && this.playingInterval) {
           window.clearInterval(this.playingInterval);
           this.playingInterval = undefined;

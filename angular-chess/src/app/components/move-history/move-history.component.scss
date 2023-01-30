@@ -7,3 +7,11 @@ ul {
   font-family: "Chess Motif";
   display: contents;
 }
+
+.invisible {
+  visibility: hidden;
+  width: 0;
+  padding: 0;
+  border-image-width: 0;
+  border-left-width: 0;
+}
