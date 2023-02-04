@@ -1,6 +1,7 @@
 import { Board, Color, Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
+import CopyUtils from "./copy.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
@@ -54,7 +55,7 @@ export default class PgnUtils {
           const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.boardAfterMove) {
-              currentBoard = executedMove.boardAfterMove;
+              currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
         }
             else {
               throw Error("Can't load PGN: " + pgn);
@@ -69,7 +70,7 @@ export default class PgnUtils {
         const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.boardAfterMove) {
-              currentBoard = executedMove.boardAfterMove;
+              currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
         }
             else {
               throw Error("Can't load PGN: " + pgn);

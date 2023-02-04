@@ -3,10 +3,14 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import CopyUtils from '../utils/copy.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { HighlightingService } from './highlighting.service';
 import { MoveHistoryService } from './move-history.service';
+
+/** The FEN of the normal starting position of a chess game.*/
+const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +27,8 @@ export class ChessBoardService {
   private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   private board$: Observable<Board> = this.board$$.asObservable();
 
+  private startingBoard: Board | undefined;
+
   public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
   public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
 
@@ -35,7 +41,7 @@ export class ChessBoardService {
 
   constructor(private moveHistoryService: MoveHistoryService,
     private highlightingService: HighlightingService) {
-    this.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
+    this.importFen(STARTING_FEN);
   }
 
   public updateResult(result: Result) {
@@ -63,6 +69,14 @@ export class ChessBoardService {
 
   public updateBoard(board: Board): void {
     this.board$$.next(board);
+  }
+
+  public setStartingBoard(board: Board | undefined): void {
+    this.startingBoard = CopyUtils.deepCopyElement(board);
+  }
+
+  public getStartingBoard(): Board | undefined {
+    return this.startingBoard;
   }
 
   public clearEnPassantSquares(): void {
@@ -203,6 +217,7 @@ export class ChessBoardService {
     this.updateResult(Result.UNKNOWN);
 
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
+    this.setStartingBoard(board);
 
     this.loadBoard(board);
   }
@@ -244,6 +259,8 @@ export class ChessBoardService {
       this.moveHistoryService.addMoveToHistory(move);
     }
 
+    let startingBoard: Board = BoardUtils.loadBoardFromFen(STARTING_FEN);
+    this.setStartingBoard(startingBoard);
     const boardFromLastMove: Board | undefined = moves[moves.length - 1].boardAfterMove;
     this.loadBoard(boardFromLastMove);
   }

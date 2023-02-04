@@ -9,7 +9,7 @@ export default class MoveExecutionUtils {
     console.log("executeMove: " + JSON.stringify(move));
 
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
-    move.boardBeforeMove = boardBuilder.build();
+
     if (move.piece.color !== board.playerToMove) {
       console.warn("Not the right player to move. Ignore move.")
       return undefined;

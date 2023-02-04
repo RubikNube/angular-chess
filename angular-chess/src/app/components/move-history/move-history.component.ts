@@ -9,6 +9,7 @@ import BoardUtils from 'src/app/utils/board.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
+const START_INDEX = -1;
 @Component({
   selector: 'app-move-history',
   templateUrl: './move-history.component.html',
@@ -18,8 +19,8 @@ export class MoveHistoryComponent implements AfterViewInit {
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
   public menuItems: MenuItem[] = [
-    { label: "white", command: () => this.loadBoard(this.selectedMove.whiteMove?.boardBeforeMove) },
-    { label: "black", command: () => this.loadBoard(this.selectedMove.blackMove?.boardBeforeMove) }
+    { label: "white", command: () => this.moveToIndex((2 * this.selectedMove.count) - 2) },
+    { label: "black", command: () => this.moveToIndex((2 * this.selectedMove.count) - 1) }
   ];
   moveHistory: Move[] = [];
   private selectedMoveNumber: number = 0;
@@ -135,32 +136,43 @@ export class MoveHistoryComponent implements AfterViewInit {
   }
 
   public moveToStart(): void {
-    this.moveToIndex(0, true);
+    this.moveToStartBoard();
   }
 
   public moveBack(): void {
-    this.moveToIndex(this.selectedMoveNumber - 1 > 0 ? this.selectedMoveNumber - 1 : 0, true);
+    this.moveToIndex(this.selectedMoveNumber - 1 > START_INDEX ? this.selectedMoveNumber - 1 : START_INDEX);
   }
 
   public moveForward(): void {
-    this.moveToIndex(this.selectedMoveNumber + 1 < this.moveHistory.length - 1 ? this.selectedMoveNumber + 1 : this.moveHistory.length - 1, true);
+    this.moveToIndex(this.selectedMoveNumber + 1 < this.moveHistory.length - 1 ? this.selectedMoveNumber + 1 : this.moveHistory.length - 1);
   }
 
   public moveToEnd(): void {
-    this.moveToIndex(this.moveHistory.length - 1, false);
+    this.moveToIndex(this.moveHistory.length - 1);
   }
 
-  private moveToIndex(selectedMoveIndex: number, beforeMove: boolean) {
-    if (beforeMove && this.selectedMoveNumber === selectedMoveIndex && selectedMoveIndex === this.moveHistory.length - 1) {
-      beforeMove = false;
-    }
+  private moveToIndex(selectedMoveIndex: number) {
+    console.error("moveToIndex: " + selectedMoveIndex);
     this.selectedMoveNumber = selectedMoveIndex;
+    if (selectedMoveIndex === START_INDEX) {
+      this.moveToStartBoard();
+    }
+
     const selectedMove: Move = this.moveHistory[selectedMoveIndex];
-    const selectedPos: Board | undefined = beforeMove ? selectedMove.boardBeforeMove : selectedMove.boardAfterMove;
+    const selectedPos: Board | undefined = selectedMove.boardAfterMove;
+
     if (selectedPos) {
       this.boardService.loadBoard(selectedPos);
       this.setFocusToNewMove("fullMove_" + (Math.floor(selectedMoveIndex / 2) + 1));
     }
+  }
+
+  private moveToStartBoard(): void {
+    console.error("moveToStartBoard: ");
+    const startingBoard = this.boardService.getStartingBoard();
+    this.selectedMoveNumber = START_INDEX;
+    this.boardService.loadBoard(startingBoard);
+    this.setFocusToNewMove("fullMove_1");
   }
 
   public play(): void {
@@ -170,12 +182,8 @@ export class MoveHistoryComponent implements AfterViewInit {
       if (!this.isPlaying$$.getValue() || selectedMoveIndex >= this.moveHistory.length - 1) {
         this.isPlaying$$.next(false);
       }
-      if (selectedMoveIndex === this.moveHistory.length - 1) {
-        window.setTimeout(() => {
-          this.moveToIndex(selectedMoveIndex, false);
-        }, 1000);
-      }
-      this.moveToIndex(selectedMoveIndex, true);
+
+      this.moveToIndex(selectedMoveIndex);
     }, 1000);
   }
 

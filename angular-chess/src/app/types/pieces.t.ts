@@ -26,7 +26,6 @@ export type Move = {
   isCheck?: boolean;
   isMate?: boolean;
   promotedPiece?: Piece;
-  boardBeforeMove?: Board
   boardAfterMove?: Board
 }
 
