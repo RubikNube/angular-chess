@@ -43,7 +43,6 @@ export class MoveHistoryComponent implements AfterViewInit {
             const idOfElement = "fullMove_" + fullMoveHistory[fullMoveHistory.length - 1].count;
             this.setFocusToNewMove(idOfElement);
           }
-          this.selectedMoveNumber = fullMoveHistory.length;
         }, 50);
       }
     );
@@ -51,6 +50,7 @@ export class MoveHistoryComponent implements AfterViewInit {
     this.moveHistoryService.getMoveHistory$().subscribe(
       moveHistory => {
         this.moveHistory = moveHistory;
+        this.selectedMoveNumber = moveHistory.length;
       }
     );
 
