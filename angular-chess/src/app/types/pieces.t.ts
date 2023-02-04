@@ -26,7 +26,7 @@ export type Move = {
   isCheck?: boolean;
   isMate?: boolean;
   promotedPiece?: Piece;
-  board?: Board
+  boardAfterMove?: Board
 }
 
 export type FullMove = {
