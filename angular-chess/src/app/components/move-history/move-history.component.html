@@ -62,14 +62,14 @@
     (click)="this.moveBack()">
   </button>
   <button
-    [className]="this.isPlaying?'invisible':'p-element p-button p-component p-button-icon-only'"
+    [class.invisible]="isPlaying"
     pButton
     pRipple
     icon="pi pi-play"
     (click)="this.play()">
   </button>
   <button
-    [className]="this.isPlaying?'p-element p-button p-component p-button-icon-only':'invisible'"
+    [class.invisible]="!isPlaying"
     pButton
     pRipple
     icon="pi pi-pause"

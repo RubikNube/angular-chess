@@ -9,9 +9,5 @@ ul {
 }
 
 .invisible {
-  visibility: hidden;
-  width: 0px;
-  padding: 0px;
-  border-image-width: 0px;
-  border-left-width: 0px;
+  display: none;
 }
