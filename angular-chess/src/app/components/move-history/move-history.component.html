@@ -50,38 +50,44 @@
 
 <span class="p-buttonset">
   <button
+    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
     pButton
     pRipple
     icon="pi pi-fast-backward"
     (click)="this.moveToStart()">
   </button>
   <button
+    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
     pButton
     pRipple
     icon="pi pi-step-backward-alt"
     (click)="this.moveBack()">
   </button>
   <button
-    [class.invisible]="isPlaying"
+    [disabled]="moveHistory.length===0"
+    [class.invisible]="isPlaying$|async"
     pButton
     pRipple
     icon="pi pi-play"
     (click)="this.play()">
   </button>
   <button
-    [class.invisible]="!isPlaying"
+    [disabled]="moveHistory.length===0"
+    [class.invisible]="!(isPlaying$|async)"
     pButton
     pRipple
     icon="pi pi-pause"
     (click)="this.pause()">
   </button>
   <button
+    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
     pButton
     pRipple
     icon="pi pi-step-forward-alt"
     (click)="this.moveForward()">
   </button>
   <button
+    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
     pButton
     pRipple
     icon="pi pi-fast-forward"
