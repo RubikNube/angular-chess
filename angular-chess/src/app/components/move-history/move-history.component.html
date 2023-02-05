@@ -21,7 +21,9 @@
     <tr
       id="fullMove_{{fullMove.count}}"
       [pSelectableRow]="fullMove"
-      [pContextMenuRow]="fullMove">
+      [pContextMenuRow]="fullMove"
+      [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
+                            ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count">
 
       <td>{{fullMove?.count}}</td>
       <td>
