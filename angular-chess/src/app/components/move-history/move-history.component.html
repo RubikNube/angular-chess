@@ -1,101 +1,103 @@
-<p-table
-  [value]="fullMoveHistory"
-  [scrollable]="true"
-  scrollHeight="80vh"
-  responsiveLayout="scroll"
-  [resizableColumns]="true"
-  styleClass="p-datatable-lg"
-  selectionMode="single"
-  [(contextMenuSelection)]="selectedMove"
-  [contextMenu]="resetBoardContextMenu">
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Move</th>
-      <th>White</th>
-      <th>Black</th>
-    </tr>
-  </ng-template>
-  <ng-template
-    pTemplate="body"
-    let-fullMove>
-    <tr
-      id="fullMove_{{fullMove.count}}"
-      [pSelectableRow]="fullMove"
-      [pContextMenuRow]="fullMove"
-      [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
+<div id="fullHistory">
+  <p-table
+    [value]="fullMoveHistory"
+    [scrollable]="true"
+    scrollHeight="80vh"
+    responsiveLayout="scroll"
+    [resizableColumns]="true"
+    styleClass="p-datatable-lg"
+    selectionMode="single"
+    [(contextMenuSelection)]="selectedMove"
+    [contextMenu]="resetBoardContextMenu">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Move</th>
+        <th>White</th>
+        <th>Black</th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-fullMove>
+      <tr
+        id="fullMove_{{fullMove.count}}"
+        [pSelectableRow]="fullMove"
+        [pContextMenuRow]="fullMove"
+        [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
                             ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count">
 
-      <td>{{fullMove?.count}}</td>
-      <td>
-        <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
-        {{getMoveRepresentation(fullMove?.whiteMove)}}
-        <div
-          *ngIf="fullMove?.whiteMove?.promotedPiece"
-          class="chess-motif">
-          {{this.getPromotionRepresentation(fullMove?.whiteMove)}}
-        </div>
-        {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
-      </td>
-      <td>
-        <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
-        {{getMoveRepresentation(fullMove?.blackMove)}}
-        <div
-          *ngIf="fullMove?.blackMove?.promotedPiece"
-          class="chess-motif">
-          {{this.getPromotionRepresentation(fullMove?.blackMove)}}
-        </div>
-        {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+        <td>{{fullMove?.count}}</td>
+        <td>
+          <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
+          {{getMoveRepresentation(fullMove?.whiteMove)}}
+          <div
+            *ngIf="fullMove?.whiteMove?.promotedPiece"
+            class="chess-motif">
+            {{this.getPromotionRepresentation(fullMove?.whiteMove)}}
+          </div>
+          {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
+        </td>
+        <td>
+          <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
+          {{getMoveRepresentation(fullMove?.blackMove)}}
+          <div
+            *ngIf="fullMove?.blackMove?.promotedPiece"
+            class="chess-motif">
+            {{this.getPromotionRepresentation(fullMove?.blackMove)}}
+          </div>
+          {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
-<span class="p-buttonset">
+  <span class="p-buttonset">
   <button
-    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
-    pButton
-    pRipple
-    icon="pi pi-fast-backward"
-    (click)="this.moveToStart()">
-  </button>
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
+      pButton
+      pRipple
+      icon="pi pi-fast-backward"
+      (click)="this.moveToStart()">
+    </button>
   <button
-    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
-    pButton
-    pRipple
-    icon="pi pi-step-backward-alt"
-    (click)="this.moveBack()">
-  </button>
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
+      pButton
+      pRipple
+      icon="pi pi-step-backward-alt"
+      (click)="this.moveBack()">
+    </button>
   <button
-    [disabled]="moveHistory.length===0"
-    [class.invisible]="isPlaying$|async"
-    pButton
-    pRipple
-    icon="pi pi-play"
-    (click)="this.play()">
-  </button>
+      [disabled]="moveHistory.length===0"
+      [class.invisible]="isPlaying$|async"
+      pButton
+      pRipple
+      icon="pi pi-play"
+      (click)="this.play()">
+    </button>
   <button
-    [disabled]="moveHistory.length===0"
-    [class.invisible]="!(isPlaying$|async)"
-    pButton
-    pRipple
-    icon="pi pi-pause"
-    (click)="this.pause()">
-  </button>
+      [disabled]="moveHistory.length===0"
+      [class.invisible]="!(isPlaying$|async)"
+      pButton
+      pRipple
+      icon="pi pi-pause"
+      (click)="this.pause()">
+    </button>
   <button
-    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
-    pButton
-    pRipple
-    icon="pi pi-step-forward-alt"
-    (click)="this.moveForward()">
-  </button>
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
+      pButton
+      pRipple
+      icon="pi pi-step-forward-alt"
+      (click)="this.moveForward()">
+    </button>
   <button
-    [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
-    pButton
-    pRipple
-    icon="pi pi-fast-forward"
-    (click)="this.moveToEnd()">
-  </button>
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
+      pButton
+      pRipple
+      icon="pi pi-fast-forward"
+      (click)="this.moveToEnd()">
+    </button>
   </span>
+</div>
 
 <p-contextMenu
   #resetBoardContextMenu

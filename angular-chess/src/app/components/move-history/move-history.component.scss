@@ -11,3 +11,20 @@ ul {
 .invisible {
   display: none;
 }
+
+#fullHistory {
+  position: relative;
+  height: 100%;
+}
+
+.p-buttonset {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 3em;
+}
+
+.p-button {
+  width: 20%;
+  height: 3em;
+}
