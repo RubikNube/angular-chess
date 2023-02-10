@@ -57,14 +57,16 @@
       pButton
       pRipple
       icon="pi pi-fast-backward"
-      (click)="this.moveToStart()">
+      (click)="this.moveToStart()"
+      pTooltip="Move to start position.">
     </button>
   <button
       [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
       pButton
       pRipple
       icon="pi pi-step-backward-alt"
-      (click)="this.moveBack()">
+      (click)="this.moveBack()"
+      pTooltip="Move back.">
     </button>
   <button
       [disabled]="moveHistory.length===0"
@@ -72,7 +74,8 @@
       pButton
       pRipple
       icon="pi pi-play"
-      (click)="this.play()">
+      (click)="this.play()"
+      pTooltip="Play">
     </button>
   <button
       [disabled]="moveHistory.length===0"
@@ -80,21 +83,24 @@
       pButton
       pRipple
       icon="pi pi-pause"
-      (click)="this.pause()">
+      (click)="this.pause()"
+      pTooltip="Pause">
     </button>
   <button
       [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       pButton
       pRipple
       icon="pi pi-step-forward-alt"
-      (click)="this.moveForward()">
+      (click)="this.moveForward()"
+      pTooltip="Move forward.">
     </button>
   <button
       [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       pButton
       pRipple
       icon="pi pi-fast-forward"
-      (click)="this.moveToEnd()">
+      (click)="this.moveToEnd()"
+      pTooltip="Move to end position.">
     </button>
   </span>
 </div>
