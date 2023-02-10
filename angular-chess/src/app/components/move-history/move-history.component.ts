@@ -5,10 +5,8 @@ import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
-import BoardUtils from 'src/app/utils/board.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
-
 
 @Component({
   selector: 'app-move-history',
@@ -17,6 +15,7 @@ import PositionUtils from 'src/app/utils/position.utils';
 })
 export class MoveHistoryComponent implements AfterViewInit {
   public readonly startIndex = -1;
+  public math = Math;
 
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
