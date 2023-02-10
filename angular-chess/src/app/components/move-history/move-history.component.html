@@ -1,28 +1,29 @@
-<div id="fullHistory">
-  <p-table
-    [value]="fullMoveHistory"
-    [scrollable]="true"
-    scrollHeight="80vh"
-    responsiveLayout="scroll"
-    [resizableColumns]="true"
-    styleClass="p-datatable-lg"
-    selectionMode="single"
-    [(contextMenuSelection)]="selectedMove"
-    [contextMenu]="resetBoardContextMenu">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Move</th>
-        <th>White</th>
-        <th>Black</th>
-      </tr>
-    </ng-template>
-    <ng-template
-      pTemplate="body"
-      let-fullMove>
-      <tr
-        id="fullMove_{{fullMove.count}}"
-        [pSelectableRow]="fullMove"
-        [pContextMenuRow]="fullMove">
+<p-table
+  [value]="fullMoveHistory"
+  [scrollable]="true"
+  scrollHeight="80vh"
+  responsiveLayout="scroll"
+  [resizableColumns]="true"
+  styleClass="p-datatable-lg"
+  selectionMode="single"
+  [(contextMenuSelection)]="selectedMove"
+  [contextMenu]="resetBoardContextMenu">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Move</th>
+      <th>White</th>
+      <th>Black</th>
+    </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-fullMove>
+    <tr
+      id="fullMove_{{fullMove.count}}"
+      [pSelectableRow]="fullMove"
+      [pContextMenuRow]="fullMove"
+      [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
+                            ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count">
 
         <td>{{fullMove?.count}}</td>
         <td>
