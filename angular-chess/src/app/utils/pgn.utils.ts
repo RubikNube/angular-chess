@@ -19,12 +19,12 @@ export default class PgnUtils {
   private static coordinateRegEx = /[a-h][1-8]/;
   private static columnCharRegEx = /[a-h]/;
   private static rowCharRegEx = /[1-8]/;
-  private static pieceMoveRegEx = new RegExp(`(K|Q|R|B|N)([a-h]|[1-8])?(${this.coordinateRegEx.source})?`);
+  private static pieceMoveRegEx = new RegExp(`([KQRBN])(${this.columnCharRegEx.source}|${this.rowCharRegEx.source})?(${this.coordinateRegEx.source})?`);
   private static pieceRegEx = new RegExp(`${this.pieceMoveRegEx.source}?${this.coordinateRegEx.source}`);
   private static moveRegEx = new RegExp(`(${this.coordinateRegEx.source}|${this.pieceRegEx.source}|${this.kingSideCastleRegEx.source}|${this.queenSideCastleRegEx.source})`);
   private static captureRegEx = new RegExp(`(${this.pieceMoveRegEx.source}|[a-h])x${this.coordinateRegEx.source}`);
   private static moveOrCaptureRegEx = new RegExp(`(${this.moveRegEx.source}|${this.captureRegEx.source})\\+?`);
-  private static moveGroupRegEx = `((\\d+\.|\\d+\. )${this.moveOrCaptureRegEx.source} ${this.moveOrCaptureRegEx.source}|(\\d+\.|\\d+\. )${this.moveOrCaptureRegEx.source})`;
+  private static moveGroupRegEx = `((\\d+\. ?)${this.moveOrCaptureRegEx.source} ${this.moveOrCaptureRegEx.source}|(\\d+\. ?)${this.moveOrCaptureRegEx.source})`;
 
   /**
    * Extracts the moves from a given PGN input.
@@ -56,28 +56,28 @@ export default class PgnUtils {
           if (executedMove) {
             if (executedMove.boardAfterMove) {
               currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
-        }
+            }
             else {
               throw Error("Can't load PGN: " + pgn);
-      }
+            }
             moves.push(executedMove);
-  }
+          }
         }
       }
       if (moveGroup.blackMoveString) {
         let move = PgnUtils.getMoveFromString(currentBoard, moveGroup.blackMoveString);
-      if (move) {
-        const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
+        if (move) {
+          const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.boardAfterMove) {
               currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
-        }
+            }
             else {
               throw Error("Can't load PGN: " + pgn);
-        }
+            }
             moves.push(executedMove);
-      }
-      }
+          }
+        }
       };
     });
 

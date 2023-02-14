@@ -8,7 +8,8 @@
     styleClass="p-datatable-lg"
     selectionMode="single"
     [(contextMenuSelection)]="selectedMove"
-    [contextMenu]="resetBoardContextMenu">
+    [contextMenu]="resetBoardContextMenu"
+  >
     <ng-template pTemplate="header">
       <tr>
         <th>Move</th>
@@ -18,13 +19,15 @@
     </ng-template>
     <ng-template
       pTemplate="body"
-      let-fullMove>
+      let-fullMove
+    >
       <tr
         id="fullMove_{{fullMove.count}}"
         [pSelectableRow]="fullMove"
         [pContextMenuRow]="fullMove"
         [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
-                            ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count">
+                            ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count"
+      >
 
         <td>{{fullMove?.count}}</td>
         <td>
@@ -32,7 +35,8 @@
           {{getMoveRepresentation(fullMove?.whiteMove)}}
           <div
             *ngIf="fullMove?.whiteMove?.promotedPiece"
-            class="chess-motif">
+            class="chess-motif"
+          >
             {{this.getPromotionRepresentation(fullMove?.whiteMove)}}
           </div>
           {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
@@ -42,7 +46,8 @@
           {{getMoveRepresentation(fullMove?.blackMove)}}
           <div
             *ngIf="fullMove?.blackMove?.promotedPiece"
-            class="chess-motif">
+            class="chess-motif"
+          >
             {{this.getPromotionRepresentation(fullMove?.blackMove)}}
           </div>
           {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
@@ -52,53 +57,72 @@
   </p-table>
 
   <span class="p-buttonset">
-  <button
+    <button
       [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
-      pButton
-      pRipple
       icon="pi pi-fast-backward"
-      (click)="this.moveToStart()">
-    </button>
-  <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
       pButton
       pRipple
-      icon="pi pi-step-backward-alt"
-      (click)="this.moveBack()">
+      pTooltip="Move to start position."
+      tooltipPosition="top"
+      (click)="this.moveToStart()"
+    >
     </button>
-  <button
+    <button
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
+      icon="pi pi-step-backward-alt"
+      pButton
+      pRipple
+      pTooltip="Move back."
+      tooltipPosition="top"
+      (click)="this.moveBack()"
+    >
+    </button>
+    <button
       [disabled]="moveHistory.length===0"
       [class.invisible]="isPlaying$|async"
+      icon="pi pi-play"
       pButton
       pRipple
-      icon="pi pi-play"
-      (click)="this.play()">
+      pTooltip="Play"
+      tooltipPosition="top"
+      (click)="this.play()"
+    >
     </button>
-  <button
+    <button
       [disabled]="moveHistory.length===0"
       [class.invisible]="!(isPlaying$|async)"
-      pButton
-      pRipple
       icon="pi pi-pause"
-      (click)="this.pause()">
-    </button>
-  <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       pButton
       pRipple
+      pTooltip="Pause"
+      tooltipPosition="top"
+      (click)="this.pause()"
+    >
+    </button>
+    <button
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       icon="pi pi-step-forward-alt"
-      (click)="this.moveForward()">
-    </button>
-  <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       pButton
       pRipple
+      pTooltip="Move forward."
+      tooltipPosition="top"
+      (click)="this.moveForward()"
+    >
+    </button>
+    <button
+      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
       icon="pi pi-fast-forward"
-      (click)="this.moveToEnd()">
+      pButton
+      pRipple
+      pTooltip="Move to end position."
+      tooltipPosition="top"
+      (click)="this.moveToEnd()"
+    >
     </button>
   </span>
 </div>
 
 <p-contextMenu
   #resetBoardContextMenu
-  [model]="menuItems"></p-contextMenu>
+  [model]="menuItems"
+></p-contextMenu>
