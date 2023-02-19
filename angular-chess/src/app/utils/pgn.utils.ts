@@ -19,7 +19,7 @@ export default class PgnUtils {
   private static coordinateRegEx = /[a-h][1-8]/;
   private static columnCharRegEx = /[a-h]/;
   private static rowCharRegEx = /[1-8]/;
-  private static promotionRegEx=/[a-h][18]=[QRBN]/;
+  private static promotionRegEx = /[a-h][18]=[QRBN]/;
   private static pieceMoveRegEx = new RegExp(`([KQRBN])(${this.columnCharRegEx.source}|${this.rowCharRegEx.source})?(${this.coordinateRegEx.source})?`);
   private static pieceRegEx = new RegExp(`${this.pieceMoveRegEx.source}?${this.coordinateRegEx.source}`);
   private static moveRegEx = new RegExp(`(${this.coordinateRegEx.source}|${this.pieceRegEx.source}|${this.kingSideCastleRegEx.source}|${this.queenSideCastleRegEx.source})`);
@@ -151,12 +151,34 @@ export default class PgnUtils {
    * @returns The move that represents the given move string if valid, else undefined.
    */
   public static getMoveFromString(board: Board, moveString: string): Move | undefined {
+    const rawMove = this.getRawMoveFromString(board, moveString);
+    const promotionMatch = moveString.match(this.promotionRegEx);
+
+    if (rawMove && promotionMatch) {
+      const promotionPieceLabel = promotionMatch[0][promotionMatch[0].length - 1];
+      rawMove.promotedPiece = {
+        type: this.getPromotedPiece(promotionPieceLabel),
+        color: rawMove.piece.color,
+        position: rawMove.to
+      }
+    }
+
+    return rawMove;
+  }
+
+  /**
+   * @param board The board for which the move should be extracted.
+   * @param moveString The move string (e.g. 'a5, axb5, O-O' etc.)
+   * @returns The raw move (no promotion included) that represents the given move string if valid, else undefined.
+   */
+  public static getRawMoveFromString(board: Board, moveString: string): Move | undefined {
     const playerToMove: Color = board.playerToMove;
     const dropPosition: Position | undefined = PgnUtils.extractMoveToPosition(moveString, playerToMove);
     const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
 
     if (pieceType && dropPosition) {
-      const moves: Move[] = MoveGenerationUtils.getExecutableMoves(board, dropPosition, playerToMove)
+      const executableMoves = MoveGenerationUtils.getExecutableMoves(board, dropPosition, playerToMove);
+      const moves: Move[] = executableMoves
         .filter(move => move.piece.type === pieceType);
 
       if (moves.length === 1) {
@@ -187,6 +209,21 @@ export default class PgnUtils {
     }
 
     return undefined;
+  }
+
+  private static getPromotedPiece(pieceLabel: string): PieceType {
+    switch (pieceLabel) {
+      case "Q":
+        return PieceType.QUEEN;
+      case "R":
+        return PieceType.ROOK;
+      case "B":
+        return PieceType.BISHOP;
+      case "N":
+        return PieceType.KNIGHT;
+      default:
+        return PieceType.QUEEN;
+    }
   }
 
   /**
