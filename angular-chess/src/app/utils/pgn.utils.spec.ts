@@ -76,284 +76,322 @@ describe('PgnUtils', () => {
 51. Kg4 Kf7 52. h4 Ng8 53. Kf4 Kf6 54. g4 Ne7 55. h5 g5+
 56. Ke4 Kf7 57. Ra5 Ng8 58. Ke5 Kg7 59. Ra7+ Kh8 60. Ke6 1-0`).length).toEqual(119);
     });
+
+  it('should be able to extract whole game with promotion', () => {
+    expect(PgnUtils.extractMovesFromPgn(`[Event "Rated Blitz game"]
+    [Site "https://lichess.org/jwpBRIs6"]
+    [Date "2023.02.05"]
+    [White "RubikNube"]
+    [Black "Dirk_Gently"]
+    [Result "0-1"]
+    [UTCDate "2023.02.05"]
+    [UTCTime "18:12:41"]
+    [WhiteElo "2043"]
+    [BlackElo "2066"]
+    [WhiteRatingDiff "-5"]
+    [BlackRatingDiff "+5"]
+    [Variant "Standard"]
+    [TimeControl "300+3"]
+    [ECO "B11"]
+    [Opening "Caro-Kann Defense: Two Knights Attack, Mindeno Variation, Exchange Line"]
+    [Termination "Normal"]
+    
+    1. e4 c6 2. Nc3 d5 3. Nf3 Bg4 4. h3 Bxf3 5. Qxf3 dxe4 6. Nxe4 Nf6 7. c3 Nbd7 8. d4 e6 
+    9. Bc4 Be7 10. O-O O-O 11. Re1 c5 12. dxc5 Nxc5 13. Nxf6+ Bxf6 14. Be3 b6 
+    15. Red1 Qc7 16. Rd2 Rad8 17. Rad1 Rxd2 18. Rxd2 g6 19. Qxf6 Ne4 
+    20. Qd4 Nxd2 21. Bxd2 Rd8 22. Qf4 e5 23. Qg5 Rxd2 24. Qxd2 Qxc4 25. b3 Qe6 
+    26. c4 a5 27. Kf1 Kg7 28. Ke2 f6 29. a3 Qe7 30. b4 Qb7 31. f3 e4 32. Qd5 exf3+ 
+    33. Kxf3 Qxd5+ 34. cxd5 axb4 35. axb4 Kf7 36. Ke4 Ke7 37. g4 Kd6 38. Kd4 h6 39. Ke4 b5 
+    40. Kd4 f5 41. gxf5 gxf5 42. h4 h5 43. Ke3 Kxd5 44. Kf4 Ke6 45. Kg5 Ke5 46. Kxh5 f4 47. Kg6 f3 
+    48. h5 f2 49. h6 f1=Q 50. h7 Qf8 0-1`).length).toEqual(100);
+  });
+});
+
+describe('getMoveGroups', () => {
+  it('get single move group"', () => {
+    const expectedGroup: MoveGroup = {
+      moveCount: 1,
+      whiteMoveString: 'e4',
+      blackMoveString: 'c6'
+    };
+    expect(PgnUtils.getMoveGroups('1.e4 c6')).toEqual([expectedGroup]);
   });
 
-  describe('getMoveGroups', () => {
-    it('get single move group"', () => {
-      const expectedGroup: MoveGroup = {
-        moveCount: 1,
-        whiteMoveString: 'e4',
-        blackMoveString: 'c6'
-      };
-      expect(PgnUtils.getMoveGroups('1.e4 c6')).toEqual([expectedGroup]);
-    });
-
-    it('get two move groups"', () => {
-      const expectedGroup1: MoveGroup = {
-        moveCount: 1,
-        whiteMoveString: 'e4',
-        blackMoveString: 'c6'
-      };
-
-      const expectedGroup2: MoveGroup = {
-        moveCount: 2,
-        whiteMoveString: 'd4',
-        blackMoveString: 'd5'
-      };
-
-      expect(PgnUtils.getMoveGroups('1.e4 c6 2.d4 d5')).toEqual([expectedGroup1, expectedGroup2]);
-    });
+  it('get single move group with promotion"', () => {
+    const expectedGroup: MoveGroup = {
+      moveCount: 49,
+      whiteMoveString: 'h6',
+      blackMoveString: 'f1=Q'
+    };
+    expect(PgnUtils.getMoveGroups('49. h6 f1=Q')).toEqual([expectedGroup]);
   });
 
-  describe('getMoveCountFromString', () => {
-    it('should return 1 for "1.e4 c6"', () => {
-      expect(PgnUtils.getMoveCountFromString('1.e4 c6')).toEqual(1);
-    });
+  it('get two move groups"', () => {
+    const expectedGroup1: MoveGroup = {
+      moveCount: 1,
+      whiteMoveString: 'e4',
+      blackMoveString: 'c6'
+    };
 
-    it('should return 42 for "42.e4 c6"', () => {
-      expect(PgnUtils.getMoveCountFromString('42.e4 c6')).toEqual(42);
-    });
+    const expectedGroup2: MoveGroup = {
+      moveCount: 2,
+      whiteMoveString: 'd4',
+      blackMoveString: 'd5'
+    };
 
-    it('should return undefined for "e4 c6"', () => {
-      expect(PgnUtils.getMoveCountFromString('e4 c6')).toEqual(undefined);
-    });
+    expect(PgnUtils.getMoveGroups('1.e4 c6 2.d4 d5')).toEqual([expectedGroup1, expectedGroup2]);
+  });
+});
+
+describe('getMoveCountFromString', () => {
+  it('should return 1 for "1.e4 c6"', () => {
+    expect(PgnUtils.getMoveCountFromString('1.e4 c6')).toEqual(1);
   });
 
-  describe('getMoveFromString', () => {
-    it('should return pawn e2-e4 for "e4" in initial position', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
-      const expectedMove: Move = {
-        from: positionE2,
-        to: positionE4,
-        piece: {
-          color: Color.WHITE,
-          position: positionE2,
-          type: PieceType.PAWN
-        },
-        isCheck: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'e4')).toEqual(expectedMove);
-    });
-
-    it('should return pawn e2-e3 for "e3" in initial position', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
-      const expectedMove: Move = {
-        from: positionE2,
-        to: positionE3,
-        piece: {
-          color: Color.WHITE,
-          position: positionE2,
-          type: PieceType.PAWN
-        },
-        isCheck: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'e3')).toEqual(expectedMove);
-    });
-
-    it('should return white short castle move for "O-O" in "4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1');
-      const expectedMove: Move = {
-        from: positionE1,
-        to: positionG1,
-        piece: {
-          color: Color.WHITE,
-          position: positionE1,
-          type: PieceType.KING
-        },
-        isCheck: false,
-        isShortCastle: true
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'O-O')).toEqual(expectedMove);
-    });
-
-    it('should return white long castle move for "O-O-O" in "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');
-      const expectedMove: Move = {
-        from: positionE1,
-        to: positionC1,
-        piece: {
-          color: Color.WHITE,
-          position: positionE1,
-          type: PieceType.KING
-        },
-        isCheck: false,
-        isLongCastle: true
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'O-O-O')).toEqual(expectedMove);
-    });
-
-    it('should return white queen capture move for "Qxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
-      const expectedMove: Move = {
-        from: positionD3,
-        to: positionD5,
-        piece: {
-          color: Color.WHITE,
-          position: positionD3,
-          type: PieceType.QUEEN
-        },
-        capturedPiece: {
-          color: Color.BLACK,
-          type: PieceType.PAWN,
-          position: positionD5
-        },
-        isCheck: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'Qxd5')).toEqual(expectedMove);
-    });
-
-    it('should return white knight capture move for "Nxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
-      const expectedMove: Move = {
-        from: positionC3,
-        to: positionD5,
-        piece: {
-          color: Color.WHITE,
-          position: positionC3,
-          type: PieceType.KNIGHT
-        },
-        capturedPiece: {
-          color: Color.BLACK,
-          type: PieceType.PAWN,
-          position: positionD5
-        },
-        isCheck: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'Nxd5')).toEqual(expectedMove);
-    });
-
-    it('should return white pawn capture move for "exd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
-      const expectedMove: Move = {
-        from: positionE4,
-        to: positionD5,
-        piece: {
-          color: Color.WHITE,
-          position: positionE4,
-          type: PieceType.PAWN
-        },
-        capturedPiece: {
-          color: Color.BLACK,
-          type: PieceType.PAWN,
-          position: positionD5
-        },
-        isCheck: false,
-        isEnPassant: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'exd5')).toEqual(expectedMove);
-    });
-
-    it('should return white en passant pawn capture move for "exf6" in "rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3');
-      const expectedMove: Move = {
-        from: positionE5,
-        to: positionF6,
-        piece: {
-          color: Color.WHITE,
-          position: positionE5,
-          type: PieceType.PAWN
-        },
-        capturedPiece: {
-          color: Color.BLACK,
-          type: PieceType.PAWN,
-          position: positionF5
-        },
-        isCheck: false,
-        isEnPassant: true
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'exf6')).toEqual(expectedMove);
-    });
-
-    it('should return correct knight move pawn if two knights could move to same square for "Nbc3" in "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3"', () => {
-      const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3');
-      const expectedMove: Move = {
-        from: positionB1,
-        to: positionC3,
-        piece: {
-          color: Color.WHITE,
-          position: positionB1,
-          type: PieceType.KNIGHT
-        },
-        isCheck: false
-      }
-
-      expect(PgnUtils.getMoveFromString(board, 'Nbc3')).toEqual(expectedMove);
-    });
+  it('should return 42 for "42.e4 c6"', () => {
+    expect(PgnUtils.getMoveCountFromString('42.e4 c6')).toEqual(42);
   });
 
-  describe('extractMoveToPosition', () => {
-    it('should return [column:5, row:4] for "e4"', () => {
-      expect(PgnUtils.extractMoveToPosition('e4')).toEqual({ column: 5, row: 4 });
-    });
+  it('should return undefined for "e4 c6"', () => {
+    expect(PgnUtils.getMoveCountFromString('e4 c6')).toEqual(undefined);
+  });
+});
 
-    it('should return [column:5, row:2] for "e2"', () => {
-      expect(PgnUtils.extractMoveToPosition('e2')).toEqual({ column: 5, row: 2 });
-    });
+describe('getMoveFromString', () => {
+  it('should return pawn e2-e4 for "e4" in initial position', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+    const expectedMove: Move = {
+      from: positionE2,
+      to: positionE4,
+      piece: {
+        color: Color.WHITE,
+        position: positionE2,
+        type: PieceType.PAWN
+      },
+      isCheck: false
+    }
 
-    it('should return [column:5, row:4] for "Ne4"', () => {
-      expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
-    });
-
-    it('should return [column:5, row:4] for "Nxe4"', () => {
-      expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
-    });
-
-    it('should return [column:6, row:3] for "N1f3"', () => {
-      expect(PgnUtils.extractMoveToPosition('N1f3')).toEqual({ column: 6, row: 3 });
-    });
-
-    it('should return [column:7, row:6] for "Bg6+"', () => {
-      expect(PgnUtils.extractMoveToPosition('Bg6+')).toEqual({ column: 7, row: 6 });
-    });
-
-    it('should return [column:2, row:5] for "axb5"', () => {
-      expect(PgnUtils.extractMoveToPosition('axb5')).toEqual({ column: 2, row: 5 });
-    });
-
-    it('should return undefined for "axa"', () => {
-      expect(PgnUtils.extractMoveToPosition('axa')).toEqual(undefined);
-    });
-
-    it('should return [column:7, row:1] for white "O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
-    });
-
-    it('should return [column:3, row:1] for white "O-O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
-    });
-
-    it('should return [column:7, row:8] for black "O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
-    });
-
-    it('should return [column:3, row:8] for black "O-O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
-    });
+    expect(PgnUtils.getMoveFromString(board, 'e4')).toEqual(expectedMove);
   });
 
-  describe('extractMoveFromPosition', () => {
-    it('should return [column:2] for "Nbc4"', () => {
-      expect(PgnUtils.extractMoveFromPosition('Nbc4')).toEqual({ column: 2 });
-    });
+  it('should return pawn e2-e3 for "e3" in initial position', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq');
+    const expectedMove: Move = {
+      from: positionE2,
+      to: positionE3,
+      piece: {
+        color: Color.WHITE,
+        position: positionE2,
+        type: PieceType.PAWN
+      },
+      isCheck: false
+    }
 
-    it('should return [column:2] for "bc4"', () => {
-      expect(PgnUtils.extractMoveFromPosition('bc4')).toEqual({ column: 2 });
-    });
-
-    it('should return [] for "c4"', () => {
-      expect(PgnUtils.extractMoveFromPosition('c4')).toEqual({});
-    });
-
-    it('should return [row:1] for "R1c1"', () => {
-      expect(PgnUtils.extractMoveFromPosition('R1c1')).toEqual({ row: 1 });
-    });
+    expect(PgnUtils.getMoveFromString(board, 'e3')).toEqual(expectedMove);
   });
+
+  it('should return white short castle move for "O-O" in "4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('4k2r/8/8/8/8/8/8/4K2R w Kk - 0 1');
+    const expectedMove: Move = {
+      from: positionE1,
+      to: positionG1,
+      piece: {
+        color: Color.WHITE,
+        position: positionE1,
+        type: PieceType.KING
+      },
+      isCheck: false,
+      isShortCastle: true
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'O-O')).toEqual(expectedMove);
+  });
+
+  it('should return white long castle move for "O-O-O" in "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');
+    const expectedMove: Move = {
+      from: positionE1,
+      to: positionC1,
+      piece: {
+        color: Color.WHITE,
+        position: positionE1,
+        type: PieceType.KING
+      },
+      isCheck: false,
+      isLongCastle: true
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'O-O-O')).toEqual(expectedMove);
+  });
+
+  it('should return white queen capture move for "Qxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+    const expectedMove: Move = {
+      from: positionD3,
+      to: positionD5,
+      piece: {
+        color: Color.WHITE,
+        position: positionD3,
+        type: PieceType.QUEEN
+      },
+      capturedPiece: {
+        color: Color.BLACK,
+        type: PieceType.PAWN,
+        position: positionD5
+      },
+      isCheck: false
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'Qxd5')).toEqual(expectedMove);
+  });
+
+  it('should return white knight capture move for "Nxd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+    const expectedMove: Move = {
+      from: positionC3,
+      to: positionD5,
+      piece: {
+        color: Color.WHITE,
+        position: positionC3,
+        type: PieceType.KNIGHT
+      },
+      capturedPiece: {
+        color: Color.BLACK,
+        type: PieceType.PAWN,
+        position: positionD5
+      },
+      isCheck: false
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'Nxd5')).toEqual(expectedMove);
+  });
+
+  it('should return white pawn capture move for "exd5" in "rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp1pp2/6p1/3p3p/4P3/2NQ4/PPPP1PPP/R1B1KBNR w KQkq - 0 5');
+    const expectedMove: Move = {
+      from: positionE4,
+      to: positionD5,
+      piece: {
+        color: Color.WHITE,
+        position: positionE4,
+        type: PieceType.PAWN
+      },
+      capturedPiece: {
+        color: Color.BLACK,
+        type: PieceType.PAWN,
+        position: positionD5
+      },
+      isCheck: false,
+      isEnPassant: false
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'exd5')).toEqual(expectedMove);
+  });
+
+  it('should return white en passant pawn capture move for "exf6" in "rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppppp1p1/7p/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3');
+    const expectedMove: Move = {
+      from: positionE5,
+      to: positionF6,
+      piece: {
+        color: Color.WHITE,
+        position: positionE5,
+        type: PieceType.PAWN
+      },
+      capturedPiece: {
+        color: Color.BLACK,
+        type: PieceType.PAWN,
+        position: positionF5
+      },
+      isCheck: false,
+      isEnPassant: true
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'exf6')).toEqual(expectedMove);
+  });
+
+  it('should return correct knight move pawn if two knights could move to same square for "Nbc3" in "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3"', () => {
+    const board: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/ppp2ppp/3p4/4p3/4P3/8/PPPPNPPP/RNBQKB1R w KQkq - 0 3');
+    const expectedMove: Move = {
+      from: positionB1,
+      to: positionC3,
+      piece: {
+        color: Color.WHITE,
+        position: positionB1,
+        type: PieceType.KNIGHT
+      },
+      isCheck: false
+    }
+
+    expect(PgnUtils.getMoveFromString(board, 'Nbc3')).toEqual(expectedMove);
+  });
+});
+
+describe('extractMoveToPosition', () => {
+  it('should return [column:5, row:4] for "e4"', () => {
+    expect(PgnUtils.extractMoveToPosition('e4')).toEqual({ column: 5, row: 4 });
+  });
+
+  it('should return [column:5, row:2] for "e2"', () => {
+    expect(PgnUtils.extractMoveToPosition('e2')).toEqual({ column: 5, row: 2 });
+  });
+
+  it('should return [column:5, row:4] for "Ne4"', () => {
+    expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
+  });
+
+  it('should return [column:5, row:4] for "Nxe4"', () => {
+    expect(PgnUtils.extractMoveToPosition('Ne4')).toEqual({ column: 5, row: 4 });
+  });
+
+  it('should return [column:6, row:3] for "N1f3"', () => {
+    expect(PgnUtils.extractMoveToPosition('N1f3')).toEqual({ column: 6, row: 3 });
+  });
+
+  it('should return [column:7, row:6] for "Bg6+"', () => {
+    expect(PgnUtils.extractMoveToPosition('Bg6+')).toEqual({ column: 7, row: 6 });
+  });
+
+  it('should return [column:2, row:5] for "axb5"', () => {
+    expect(PgnUtils.extractMoveToPosition('axb5')).toEqual({ column: 2, row: 5 });
+  });
+
+  it('should return undefined for "axa"', () => {
+    expect(PgnUtils.extractMoveToPosition('axa')).toEqual(undefined);
+  });
+
+  it('should return [column:7, row:1] for white "O-O"', () => {
+    expect(PgnUtils.extractMoveToPosition('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
+  });
+
+  it('should return [column:3, row:1] for white "O-O-O"', () => {
+    expect(PgnUtils.extractMoveToPosition('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
+  });
+
+  it('should return [column:7, row:8] for black "O-O"', () => {
+    expect(PgnUtils.extractMoveToPosition('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
+  });
+
+  it('should return [column:3, row:8] for black "O-O-O"', () => {
+    expect(PgnUtils.extractMoveToPosition('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
+  });
+});
+
+describe('extractMoveFromPosition', () => {
+  it('should return [column:2] for "Nbc4"', () => {
+    expect(PgnUtils.extractMoveFromPosition('Nbc4')).toEqual({ column: 2 });
+  });
+
+  it('should return [column:2] for "bc4"', () => {
+    expect(PgnUtils.extractMoveFromPosition('bc4')).toEqual({ column: 2 });
+  });
+
+  it('should return [] for "c4"', () => {
+    expect(PgnUtils.extractMoveFromPosition('c4')).toEqual({});
+  });
+
+  it('should return [row:1] for "R1c1"', () => {
+    expect(PgnUtils.extractMoveFromPosition('R1c1')).toEqual({ row: 1 });
+  });
+});
 });
