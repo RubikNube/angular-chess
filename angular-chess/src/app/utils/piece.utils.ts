@@ -115,4 +115,26 @@ export default class PieceUtils {
         return PieceType.PAWN;
     }
   }
+
+  public static sortPieces(pieces: Piece[]|undefined): Piece[] {
+    if (pieces === undefined) {
+        return [];
+    }
+
+    return pieces.sort((a, b) => {
+        if (a.position.row < b.position.row) {
+            return -1;
+        }
+        if (a.position.row > b.position.row) {
+            return 1;
+        }
+        if (a.position.column < b.position.column) {
+            return -1;
+        }
+        if (a.position.column > b.position.column) {
+            return 1;
+        }
+        return 0;
+    });
+}
 }

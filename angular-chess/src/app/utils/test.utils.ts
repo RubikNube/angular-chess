@@ -1,5 +1,6 @@
 import { Board } from "../types/board.t";
 import { Piece } from "../types/pieces.t";
+import PieceUtils from "./piece.utils";
 
 export default class TestUtils {
 
@@ -8,28 +9,6 @@ export default class TestUtils {
         expect(board1?.whiteCastleRights).toEqual(board2?.whiteCastleRights);
         expect(board1?.enPassantSquare).toEqual(board2?.enPassantSquare);
         expect(board1?.playerToMove).toEqual(board2?.playerToMove);
-        expect(this.sortPieces(board1?.pieces)).toEqual(this.sortPieces(board2?.pieces));
-    }
-
-    public static sortPieces(pieces: Piece[]|undefined): Piece[] {
-        if (pieces === undefined) {
-            return [];
-        }
-
-        return pieces.sort((a, b) => {
-            if (a.position.row < b.position.row) {
-                return -1;
-            }
-            if (a.position.row > b.position.row) {
-                return 1;
-            }
-            if (a.position.column < b.position.column) {
-                return -1;
-            }
-            if (a.position.column > b.position.column) {
-                return 1;
-            }
-            return 0;
-        });
+        expect(PieceUtils.sortPieces(board1?.pieces)).toEqual(PieceUtils.sortPieces(board2?.pieces));
     }
 }
