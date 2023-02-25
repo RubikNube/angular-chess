@@ -2,6 +2,7 @@ import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import PieceUtils from "../utils/piece.utils";
+import PositionUtils from "../utils/position.utils";
 
 /** A builder that is responsible for creating the board.*/
 export class BoardBuilder {
@@ -28,29 +29,9 @@ export class BoardBuilder {
     return this;
   }
 
-  public removePiece(draggedPiece: Piece): BoardBuilder {
-    let index = -1;
-    let currentPieces = this._board.pieces;
-
-    for (let i = 0; i < currentPieces.length; i++) {
-      const piece = currentPieces[i];
-
-      if (PieceUtils.pieceEquals(piece, draggedPiece)) {
-        index = i;
-      }
-    }
-
-    const printedPiece: string = JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index });
-    console.log("removePiece " + printedPiece);
-
-    if (index > -1) {
-      currentPieces.splice(index, 1);
-
-      return this.pieces(currentPieces);
-    } else {
-      console.error("Could not remove piece " + printedPiece);
-      return this;
-    }
+  public removePiece(pieceToRemove: Piece): BoardBuilder {
+    this._board.pieces = this._board.pieces.filter(piece => !PositionUtils.positionEquals(piece.position, pieceToRemove.position));
+    return this;
   }
 
   public addPiece(piece: Piece): BoardBuilder {
@@ -62,9 +43,17 @@ export class BoardBuilder {
   public movePiece(move: Move): BoardBuilder {
     console.log("movePiece: " + JSON.stringify(move));
 
-    this.removePiece(move.piece);
-    move.piece.position = move.to;
-    this.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
+    if(!move.promotedPiece){
+      this.removePiece(move.piece);
+      move.piece.position = move.to;
+      this.addPiece(move.piece);
+    }
+    else{
+      this.removePiece(move.piece);
+      this.removePiece(move.promotedPiece);
+      move.promotedPiece.position = move.to;
+      this.addPiece(move.promotedPiece);
+    }
 
     return this;
   }
