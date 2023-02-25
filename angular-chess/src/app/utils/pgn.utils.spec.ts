@@ -35,6 +35,8 @@ describe('PgnUtils', () => {
   const positionE4 = { column: 5, row: 4 };
   const positionE5 = { column: 5, row: 5 };
 
+  const positionF1 = { column: 6, row: 1 };
+  const positionF2 = { column: 6, row: 2 };
   const positionF5 = { column: 6, row: 5 };
   const positionF6 = { column: 6, row: 6 };
 
@@ -76,6 +78,35 @@ describe('PgnUtils', () => {
 51. Kg4 Kf7 52. h4 Ng8 53. Kf4 Kf6 54. g4 Ne7 55. h5 g5+
 56. Ke4 Kf7 57. Ra5 Ng8 58. Ke5 Kg7 59. Ra7+ Kh8 60. Ke6 1-0`).length).toEqual(119);
     });
+
+    it('should be able to extract whole game with promotion', () => {
+      expect(PgnUtils.extractMovesFromPgn(`[Event "Rated Blitz game"]
+    [Site "https://lichess.org/jwpBRIs6"]
+    [Date "2023.02.05"]
+    [White "RubikNube"]
+    [Black "Dirk_Gently"]
+    [Result "0-1"]
+    [UTCDate "2023.02.05"]
+    [UTCTime "18:12:41"]
+    [WhiteElo "2043"]
+    [BlackElo "2066"]
+    [WhiteRatingDiff "-5"]
+    [BlackRatingDiff "+5"]
+    [Variant "Standard"]
+    [TimeControl "300+3"]
+    [ECO "B11"]
+    [Opening "Caro-Kann Defense: Two Knights Attack, Mindeno Variation, Exchange Line"]
+    [Termination "Normal"]
+    
+    1. e4 c6 2. Nc3 d5 3. Nf3 Bg4 4. h3 Bxf3 5. Qxf3 dxe4 6. Nxe4 Nf6 7. c3 Nbd7 8. d4 e6 
+    9. Bc4 Be7 10. O-O O-O 11. Re1 c5 12. dxc5 Nxc5 13. Nxf6+ Bxf6 14. Be3 b6 
+    15. Red1 Qc7 16. Rd2 Rad8 17. Rad1 Rxd2 18. Rxd2 g6 19. Qxf6 Ne4 
+    20. Qd4 Nxd2 21. Bxd2 Rd8 22. Qf4 e5 23. Qg5 Rxd2 24. Qxd2 Qxc4 25. b3 Qe6 
+    26. c4 a5 27. Kf1 Kg7 28. Ke2 f6 29. a3 Qe7 30. b4 Qb7 31. f3 e4 32. Qd5 exf3+ 
+    33. Kxf3 Qxd5+ 34. cxd5 axb4 35. axb4 Kf7 36. Ke4 Ke7 37. g4 Kd6 38. Kd4 h6 39. Ke4 b5 
+    40. Kd4 f5 41. gxf5 gxf5 42. h4 h5 43. Ke3 Kxd5 44. Kf4 Ke6 45. Kg5 Ke5 46. Kxh5 f4 47. Kg6 f3 
+    48. h5 f2 49. h6 f1=Q 50. h7 Qf8 0-1`).length).toEqual(100);
+    });
   });
 
   describe('getMoveGroups', () => {
@@ -86,6 +117,15 @@ describe('PgnUtils', () => {
         blackMoveString: 'c6'
       };
       expect(PgnUtils.getMoveGroups('1.e4 c6')).toEqual([expectedGroup]);
+    });
+
+    it('get single move group with promotion"', () => {
+      const expectedGroup: MoveGroup = {
+        moveCount: 49,
+        whiteMoveString: 'h6',
+        blackMoveString: 'f1=Q'
+      };
+      expect(PgnUtils.getMoveGroups('49. h6 f1=Q')).toEqual([expectedGroup]);
     });
 
     it('get two move groups"', () => {
@@ -286,6 +326,28 @@ describe('PgnUtils', () => {
       }
 
       expect(PgnUtils.getMoveFromString(board, 'Nbc3')).toEqual(expectedMove);
+    });
+
+    it('should return correct queen promotion for "f1=Q" in "8/8/6KP/1p2k3/1P6/8/5p2/8 b - - 0 1"', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('8/8/6KP/1p2k3/1P6/8/5p2/8 b - - 0 1');
+      const expectedMove: Move = {
+        from: positionF2,
+        to: positionF1,
+        piece: {
+          color: Color.BLACK,
+          position: positionF2,
+          type: PieceType.PAWN
+        },
+        promotedPiece: {
+          color: Color.BLACK,
+          position: positionF1,
+          type: PieceType.QUEEN
+        },
+        isCheck: false
+      }
+
+      const actualMove = PgnUtils.getMoveFromString(board, 'f1=Q');
+      expect(actualMove).toEqual(expectedMove);
     });
   });
 
