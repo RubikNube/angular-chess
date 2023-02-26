@@ -115,9 +115,4 @@ export default class MoveGenerationUtils {
     const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
     return pieceOnPos ? pieceOnPos.color !== color : false;
   }
-
-
-  public static isMate(board: Board): boolean {
-    return BoardUtils.isMate(board);
-  }
 }
