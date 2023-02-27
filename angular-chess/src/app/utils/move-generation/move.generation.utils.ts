@@ -1,6 +1,7 @@
 import { Board, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
 import { MoveGenerationHandler } from "./move-generation.handler";

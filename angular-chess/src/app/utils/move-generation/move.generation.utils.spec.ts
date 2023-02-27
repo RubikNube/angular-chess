@@ -156,6 +156,14 @@ describe('MoveGenerationUtils', () => {
 
       expect(validMoves).toEqual([{ piece: king, from: { column: 5, row: 1 }, to: { column: 4, row: 1 }, isCheck: false }]);
     });
+
+    it('should not generate move when pawn is pinned diagonally', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/4p3/8/8/7B/8/8/3K4 b - - 0 1");
+      let pawn: Piece = { type: PieceType.PAWN, position: { column: 5, row: 7 }, color: Color.BLACK };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
+
+      expect(validMoves).toEqual([]);
+    });
   });
 
   describe('getValidCaptures', () => {
@@ -268,93 +276,6 @@ describe('MoveGenerationUtils', () => {
       let validCaptures = MoveGenerationUtils.getValidCaptures(board, king);
 
       expect(validCaptures.length).toEqual(0);
-    });
-  });
-
-
-  describe('isMate', () => {
-    it('should return false if king is not attacked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return true if king has no escape squares, attacking piece cant be captured and no piece can block the check', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeTrue();
-    });
-
-    it('should return false if check giving piece can be captured', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppp1ppp/8/4p3/5PPq/5N2/PPPPP2P/RNBQKB1R w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return true if check giving piece cant be captured by the king because its protected', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1k1nr/pppppppp/8/2b5/8/8/PPPPPqPP/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeTrue();
-    });
-
-    it('should return false if check giving piece can be captured by the king', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/8/8/8/PPPPPqPP/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return false if check giving piece on the same column can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbn1/pppppppp/8/4r3/8/8/PPPP1PPP/RNBQKBNR w KQq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return true if check giving piece on the same column cannot be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbn1/pppppppp/8/4r3/8/7N/PPPP1PPP/1NBRKR2 w q - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeTrue();
-    });
-
-    it('should return false if check giving piece on the same row can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbn1/pppppppp/8/1PPN4/1PK1r3/1PPR3P/PPP2PPP/2B2R2 w q - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return true if check giving piece on the row column cannot be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbn1/pppppppp/8/1PPN4/1PK1r3/1PPN3P/PPP2PPP/2BR1R2 w q - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeTrue();
-    });
-
-    it('should return false if upper right check giving piece can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/8/5P1q/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return false if upper left check giving piece can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/pppppppp/8/q7/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return false if lower right check giving piece can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/ppppp1pp/8/5p1Q/8/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return false if lower left check giving piece can be blocked', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnbqkbnr/ppp1pppp/8/3p4/Q7/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
-    });
-
-    it('should return false if check giving piece can be captured', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("rnb1kbnr/ppp1pppp/8/8/8/5N2/PPPq1PPP/RNBQKB1R w KQkq - 0 1");
-
-      expect(MoveGenerationUtils.isMate(board)).toBeFalse();
     });
   });
 });

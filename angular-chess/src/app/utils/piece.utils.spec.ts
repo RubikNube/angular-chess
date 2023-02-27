@@ -1,5 +1,6 @@
-import { Color } from '../types/board.t';
+import { Board, Color } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
 
 describe('PieceUtils', () => {
@@ -70,6 +71,15 @@ describe('PieceUtils', () => {
 
     it('should return "King" for "O-O-O"', () => {
       expect(PieceUtils.getPieceTypeFromMoveString('O-O-O')).toBe(PieceType.KING);
+    });
+  });
+
+  describe('isPinnedDiagonally', () => {
+    it('should return true if pawn is pinned diagonally by a bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/4p3/8/8/7B/8/8/3K4 b - - 0 1");
+      let pawn: Piece = { type: PieceType.PAWN, position: { column: 5, row: 7 }, color: Color.BLACK };
+      
+      expect(PieceUtils.isPinnedDiagonally(pawn.position,board)).toBeTrue();
     });
   });
 });

@@ -1,6 +1,7 @@
 import { Board, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
@@ -12,6 +13,11 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
   public getMoves(piece: Piece, board: Board): Move[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
+    // if piece is pinned diagonally then it cannot move
+    if (PieceUtils.isPinnedDiagonally(piece.position, board)) {
+      return [];
+    }
+
     if (piece.color === Color.WHITE) {
       if (piece.position.row === 2) {
         return BoardUtils.getFreeFrontSquares(board, piece, 2)
