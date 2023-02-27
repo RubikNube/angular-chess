@@ -4,11 +4,11 @@ import PieceUtils from "./piece.utils";
 
 export default class TestUtils {
 
-    public static checkBoards(board1: Board | undefined, board2: Board | undefined): void {
-        expect(board1?.blackCastleRights).toEqual(board2?.blackCastleRights);
-        expect(board1?.whiteCastleRights).toEqual(board2?.whiteCastleRights);
-        expect(board1?.enPassantSquare).toEqual(board2?.enPassantSquare);
-        expect(board1?.playerToMove).toEqual(board2?.playerToMove);
-        expect(PieceUtils.sortPieces(board1?.pieces)).toEqual(PieceUtils.sortPieces(board2?.pieces));
+    public static checkBoards(expectedBoard: Board | undefined, actualBoard: Board | undefined): void {
+        expect(expectedBoard?.blackCastleRights).toEqual(actualBoard?.blackCastleRights);
+        expect(expectedBoard?.whiteCastleRights).toEqual(actualBoard?.whiteCastleRights);
+        expect(expectedBoard?.enPassantSquare).toEqual(actualBoard?.enPassantSquare);
+        expect(expectedBoard?.playerToMove).toEqual(actualBoard?.playerToMove);
+        expect(PieceUtils.sortPieces(expectedBoard?.pieces)).toEqual(PieceUtils.sortPieces(actualBoard?.pieces));
     }
 }
