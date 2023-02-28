@@ -14,7 +14,8 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
   public getMoves(piece: Piece, board: Board): Move[] {
     console.log("getMoveSquares: " + JSON.stringify(piece));
     // if piece is pinned diagonally then it cannot move
-    if (PieceUtils.isPinnedDiagonally(piece.position, board)) {
+    if (PieceUtils.isPinnedDiagonally(piece.position, board)||
+        PieceUtils.isPinnedHorizontally(piece.position, board)) {
       return [];
     }
 

@@ -168,4 +168,14 @@ export default class PositionUtils {
       }
     };
   }
+
+  public static getHorizontalSquares(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    for (let i: number = 1; i <= 8; i++) {
+      squares.push({ row: position.row, column: i });
+    }
+
+    return squares;
+  }
 }

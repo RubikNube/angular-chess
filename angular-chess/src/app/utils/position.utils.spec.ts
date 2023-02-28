@@ -159,4 +159,23 @@ describe('PositionUtils', () => {
       expect(actualPositions).toEqual(expectedPositions);
     });
   });
+
+  describe('getHorizontalSquares', () => {
+    it('should return a2-h2 diagonal for h2', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 2 },
+        { column: 2, row: 2 },
+        { column: 3, row: 2 },
+        { column: 4, row: 2 },
+        { column: 5, row: 2 },
+        { column: 6, row: 2 },
+        { column: 7, row: 2 },
+        { column: 8, row: 2 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getHorizontalSquares({ column: 8, row: 2 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
 });

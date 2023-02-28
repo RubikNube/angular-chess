@@ -82,4 +82,13 @@ describe('PieceUtils', () => {
       expect(PieceUtils.isPinnedDiagonally(pawn.position,board)).toBeTrue();
     });
   });
+
+  describe('isPinnedHorizontally', () => {
+    it('should return true if pawn is pinned horizontally by a rook.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
+      let pawn: Piece = { type: PieceType.PAWN, position: { column: 6, row: 2 }, color: Color.WHITE };
+      
+      expect(PieceUtils.isPinnedHorizontally(pawn.position,board)).toBeTrue();
+    });
+  });
 });

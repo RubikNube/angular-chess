@@ -149,26 +149,26 @@ export default class PieceUtils {
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
     const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
 
-    return this.isPiecePinnedDiagonnally(piece, board, lowerToUpperDiagonal) ||
-      this.isPiecePinnedDiagonnally(piece, board, upperToLowerDiagonal);
+    return this.isPiecePinned(piece, board, lowerToUpperDiagonal, [PieceType.BISHOP, PieceType.QUEEN]) ||
+      this.isPiecePinned(piece, board, upperToLowerDiagonal, [PieceType.BISHOP, PieceType.QUEEN]);
   }
 
-  private static isPiecePinnedDiagonnally(piece: Piece, board: Board, diagonal: Position[]): boolean {
-    const piecesOnDiagonal: Piece[] = diagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
-    const opponents = piecesOnDiagonal.filter((diagonalPiece) => diagonalPiece.color !== piece.color && (diagonalPiece.type === PieceType.BISHOP || diagonalPiece.type === PieceType.QUEEN));
-    const king = piecesOnDiagonal.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
+  private static isPiecePinned(piece: Piece, board: Board, lineOrDiagonal: Position[], pieceTypes: PieceType[]): boolean {
+    const pieces: Piece[] = lineOrDiagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
+    const opponents = pieces.filter((diagonalPiece) => diagonalPiece.color !== piece.color && pieceTypes.includes(diagonalPiece.type));
+    const king = pieces.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
 
     // are king and opposite colored diagonal moving piece on diagonal?
     if (king && opponents.length > 0) {
       for (const opponent of opponents) {
         // check if piece is between king and opponent
-        const kingIndex = piecesOnDiagonal.indexOf(king);
-        const opponentIndex = piecesOnDiagonal.indexOf(opponent);
-        const pieceIndex = piecesOnDiagonal.indexOf(piece);
+        const kingIndex = pieces.indexOf(king);
+        const opponentIndex = pieces.indexOf(opponent);
+        const pieceIndex = pieces.indexOf(piece);
 
         if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
           // check if other pieces are between king and opponent
-          const piecesBetweenKingAndOpponent = piecesOnDiagonal.slice(kingIndex + 1, opponentIndex);
+          const piecesBetweenKingAndOpponent = pieces.slice(kingIndex + 1, opponentIndex);
           if (piecesBetweenKingAndOpponent.length === 1) {
             return true;
           }
@@ -177,5 +177,18 @@ export default class PieceUtils {
     }
 
     return false;
+  }
+
+  public static isPinnedHorizontally(position: Position, board: Board): boolean {
+    // get piece on position
+    const piece = PositionUtils.getPieceOnPos(board, position);
+    if (!piece) {
+      return false;
+    }
+
+    // get horizontal squares for piece
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+
+    return this.isPiecePinned(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN]);
   }
 }
