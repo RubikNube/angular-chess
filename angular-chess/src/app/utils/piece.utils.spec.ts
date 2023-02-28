@@ -1,4 +1,4 @@
-import { Board, Color } from '../types/board.t';
+import { Board, Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
@@ -77,25 +77,67 @@ describe('PieceUtils', () => {
   describe('isPinnedDiagonally', () => {
     it('should return true if pawn is pinned diagonally by a bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3k4/4p3/8/8/7B/8/8/3K4 b - - 0 1");
-      let pawn: Piece = { type: PieceType.PAWN, position: { column: 5, row: 7 }, color: Color.BLACK };
-      
-      expect(PieceUtils.isPinnedDiagonally(pawn.position,board)).toBeTrue();
+      let pawnPosition: Position = { column: 5, row: 7 };
+
+      expect(PieceUtils.isPinnedDiagonally(pawnPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned diagonally by a lower right bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/4n3/8/8/7B/8/8/3K4 b - - 0 1");
+      let knightPosition: Position = { column: 5, row: 7 };
+
+      expect(PieceUtils.isPinnedDiagonally(knightPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned diagonally by a lower left bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/2n5/8/B7/8/8/8/3K4 b - - 0 1");
+      let knightPosition: Position = { column: 3, row: 7 };
+
+      expect(PieceUtils.isPinnedDiagonally(knightPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned diagonally by a upper right bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/6B1/8/4n3/3k4/8/8/3K4 b - - 0 1");
+      let knightPosition: Position = { column: 5, row: 5 };
+
+      expect(PieceUtils.isPinnedDiagonally(knightPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned diagonally by a upper left bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/B7/8/2n5/3k4/8/8/3K4 b - - 0 1");
+      let knightPosition: Position = { column: 3, row: 5 };
+
+      expect(PieceUtils.isPinnedDiagonally(knightPosition, board)).toBeTrue();
     });
   });
 
   describe('isPinnedHorizontally', () => {
     it('should return true if pawn is pinned horizontally by a rook from the right side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
-      let pawn: Piece = { type: PieceType.PAWN, position: { column: 6, row: 2 }, color: Color.WHITE };
-      
-      expect(PieceUtils.isPinnedHorizontally(pawn.position,board)).toBeTrue();
+      let pawnPosition: Position = { column: 6, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(pawnPosition, board)).toBeTrue();
     });
 
     it('should return true if pawn is pinned horizontally by a rook from the left side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1P1K3/8 w - - 0 1");
-      let pawn: Piece = { type: PieceType.PAWN, position: { column: 3, row: 2 }, color: Color.WHITE };
-      
-      expect(PieceUtils.isPinnedHorizontally(pawn.position,board)).toBeTrue();
+      let pawnPosition: Position = { column: 3, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(pawnPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned horizontally by a rook from the right side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1N1r/8 w - - 0 1");
+      let knightPosition: Position = { column: 6, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(knightPosition, board)).toBeTrue();
+    });
+
+    it('should return true if knight is pinned horizontally by a rook from the left side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1N1K3/8 w - - 0 1");
+      let knightPosition: Position = { column: 3, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(knightPosition, board)).toBeTrue();
     });
   });
 });
