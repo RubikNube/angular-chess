@@ -165,9 +165,17 @@ describe('MoveGenerationUtils', () => {
       expect(validMoves).toEqual([]);
     });
 
-    it('should not generate move when pawn is pinned horizontally', () => {
+    it('should not generate move when pawn is pinned horizontally from right side', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
       let pawn: Piece = { type: PieceType.PAWN, position: { column: 6, row: 2 }, color: Color.WHITE };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should not generate move when pawn is pinned horizontally from left side', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1P1K3/8 w - - 0 1");
+      let pawn: Piece = { type: PieceType.PAWN, position: { column: 3, row: 2 }, color: Color.WHITE };
       let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
 
       expect(validMoves).toEqual([]);

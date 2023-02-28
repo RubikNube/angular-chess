@@ -173,6 +173,13 @@ export default class PieceUtils {
             return true;
           }
         }
+        if(pieceIndex < kingIndex && pieceIndex > opponentIndex) {
+          // check if other pieces are between king and opponent
+          const piecesBetweenKingAndOpponent = pieces.slice(opponentIndex + 1, kingIndex);
+          if (piecesBetweenKingAndOpponent.length === 1) {
+            return true;
+          }
+        }
       }
     }
 
