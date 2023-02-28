@@ -149,46 +149,33 @@ export default class PieceUtils {
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
     const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
 
-    // get pieces on diagonals
-    const lowerToUpperDiagonalPieces: Piece[] = lowerToUpperDiagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
-    const upperToLowerDiagonalPieces: Piece[] = upperToLowerDiagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
+    return this.isPiecePinnedDiagonnally(piece, lowerToUpperDiagonal) ||
+      this.isPiecePinnedDiagonnally(piece, upperToLowerDiagonal);
+  }
+
+  private static isPiecePinnedDiagonnally(piece: Piece, diagonal: Position[]): boolean {
+    const piecesOnDiagonal: Piece[] = diagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
+    const opponents = piecesOnDiagonal.filter((diagonalPiece) => diagonalPiece.color !== piece.color && (diagonalPiece.type === PieceType.BISHOP || diagonalPiece.type === PieceType.QUEEN));
+    const king = piecesOnDiagonal.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
 
     // are king and opposite colored diagonal moving piece on diagonal?
-    const lowerToUpperDiagonalKing = lowerToUpperDiagonalPieces.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
-    const upperToLowerDiagonalKing = upperToLowerDiagonalPieces.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
-    const lowerToUpperDiagonalOpponent = lowerToUpperDiagonalPieces.find((diagonalPiece) => diagonalPiece.color !== piece.color && (diagonalPiece.type === PieceType.BISHOP || diagonalPiece.type === PieceType.QUEEN));
-    const upperToLowerDiagonalOpponent = upperToLowerDiagonalPieces.find((diagonalPiece) => diagonalPiece.color !== piece.color && (diagonalPiece.type === PieceType.BISHOP || diagonalPiece.type === PieceType.QUEEN));
+    if (king && opponents.length > 0) {
+      for (const opponent of opponents) {
+        // check if piece is between king and opponent
+        const kingIndex = piecesOnDiagonal.indexOf(king);
+        const opponentIndex = piecesOnDiagonal.indexOf(opponent);
+        const pieceIndex = piecesOnDiagonal.indexOf(piece);
 
-    if (lowerToUpperDiagonalKing && lowerToUpperDiagonalOpponent) {
-      // check if piece is between king and opponent
-      const kingIndex = lowerToUpperDiagonalPieces.indexOf(lowerToUpperDiagonalKing);
-      const opponentIndex = lowerToUpperDiagonalPieces.indexOf(lowerToUpperDiagonalOpponent);
-      const pieceIndex = lowerToUpperDiagonalPieces.indexOf(piece);
-
-      if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
-        // check if other pieces are between king and opponent
-        const piecesBetweenKingAndOpponent = lowerToUpperDiagonalPieces.slice(kingIndex + 1, opponentIndex);
-        if (piecesBetweenKingAndOpponent.length === 1) {
-          return true;
+        if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
+          // check if other pieces are between king and opponent
+          const piecesBetweenKingAndOpponent = piecesOnDiagonal.slice(kingIndex + 1, opponentIndex);
+          if (piecesBetweenKingAndOpponent.length === 1) {
+            return true;
+          }
         }
       }
     }
-
-    if (upperToLowerDiagonalKing && upperToLowerDiagonalOpponent) {
-      // check if piece is between king and opponent
-      const kingIndex = upperToLowerDiagonalPieces.indexOf(upperToLowerDiagonalKing);
-      const opponentIndex = upperToLowerDiagonalPieces.indexOf(upperToLowerDiagonalOpponent);
-      const pieceIndex = upperToLowerDiagonalPieces.indexOf(piece);
-
-      if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
-        // check if other pieces are between king and opponent
-        const piecesBetweenKingAndOpponent = upperToLowerDiagonalPieces.slice(kingIndex + 1, opponentIndex);
-        if (piecesBetweenKingAndOpponent.length === 1) {
-          return true;
-        }
-      }
-    }
-
+    
     return false;
   }
 }
