@@ -158,27 +158,13 @@ export default class PieceUtils {
     const opponents = pieces.filter((diagonalPiece) => diagonalPiece.color !== piece.color && pieceTypes.includes(diagonalPiece.type));
     const king = pieces.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
 
-    // are king and opposite colored diagonal moving piece on diagonal?
+    // are king and opposite colored diagonal moving piece on same diagonal?
     if (king && opponents.length > 0) {
       for (const opponent of opponents) {
-        // check if piece is between king and opponent
-        const kingIndex = pieces.indexOf(king);
-        const opponentIndex = pieces.indexOf(opponent);
-        const pieceIndex = pieces.indexOf(piece);
+        const piecesBetweenKingAndOpponent = this.getPiecesBetweenKingAndOpponent(king, opponent, piece, pieces);
 
-        if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
-          // check if other pieces are between king and opponent
-          const piecesBetweenKingAndOpponent = pieces.slice(kingIndex + 1, opponentIndex);
-          if (piecesBetweenKingAndOpponent.length === 1) {
-            return true;
-          }
-        }
-        if(pieceIndex < kingIndex && pieceIndex > opponentIndex) {
-          // check if other pieces are between king and opponent
-          const piecesBetweenKingAndOpponent = pieces.slice(opponentIndex + 1, kingIndex);
-          if (piecesBetweenKingAndOpponent.length === 1) {
-            return true;
-          }
+        if (piecesBetweenKingAndOpponent.length === 1) {
+          return true;
         }
       }
     }
@@ -186,14 +172,26 @@ export default class PieceUtils {
     return false;
   }
 
+  private static getPiecesBetweenKingAndOpponent(king: Piece, opponent: Piece, piece: Piece, pieces: Piece[]): Piece[] {
+    const kingIndex = pieces.indexOf(king);
+    const opponentIndex = pieces.indexOf(opponent);
+    const pieceIndex = pieces.indexOf(piece);
+
+    if (pieceIndex > kingIndex && pieceIndex < opponentIndex) {
+      return pieces.slice(kingIndex + 1, opponentIndex);
+    }
+    else if (pieceIndex < kingIndex && pieceIndex > opponentIndex) {
+      return pieces.slice(opponentIndex + 1, kingIndex);
+    }
+    return [];
+  }
+
   public static isPinnedHorizontally(position: Position, board: Board): boolean {
-    // get piece on position
     const piece = PositionUtils.getPieceOnPos(board, position);
     if (!piece) {
       return false;
     }
 
-    // get horizontal squares for piece
     const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
 
     return this.isPiecePinned(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN]);
