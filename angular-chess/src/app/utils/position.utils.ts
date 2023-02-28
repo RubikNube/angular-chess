@@ -178,4 +178,14 @@ export default class PositionUtils {
 
     return squares;
   }
+
+  public static getVerticalSquares(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    for (let i: number = 1; i <= 8; i++) {
+      squares.push({ row: i, column: position.column });
+    }
+
+    return squares;
+  }
 }

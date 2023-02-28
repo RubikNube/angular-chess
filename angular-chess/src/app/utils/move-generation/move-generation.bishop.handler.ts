@@ -12,8 +12,8 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
-    // if piece is pinned horizontally it cannot move
-    if (PieceUtils.isPinnedHorizontally(piece.position, board)) {
+    // if piece is pinned it cannot move
+    if (PieceUtils.isPinnedHorizontally(piece.position, board)|| PieceUtils.isPinnedVertically(piece.position, board)) {
       return [];
     }
 

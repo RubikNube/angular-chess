@@ -161,7 +161,7 @@ describe('PositionUtils', () => {
   });
 
   describe('getHorizontalSquares', () => {
-    it('should return a2-h2 diagonal for h2', () => {
+    it('should return a2-h2 line for h2', () => {
       const expectedPositions: Position[] = [
         { column: 1, row: 2 },
         { column: 2, row: 2 },
@@ -174,6 +174,25 @@ describe('PositionUtils', () => {
       ].sort(PositionUtils.comparePositions());
 
       const actualPositions: Position[] = PositionUtils.getHorizontalSquares({ column: 8, row: 2 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
+
+  describe('getVerticalSquares', () => {
+    it('should return a1-a8 line for a8', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 1 },
+        { column: 1, row: 2 },
+        { column: 1, row: 3 },
+        { column: 1, row: 4 },
+        { column: 1, row: 5 },
+        { column: 1, row: 6 },
+        { column: 1, row: 7 },
+        { column: 1, row: 8 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getVerticalSquares({ column: 1, row: 8 }).sort(PositionUtils.comparePositions());
 
       expect(actualPositions).toEqual(expectedPositions);
     });

@@ -196,4 +196,15 @@ export default class PieceUtils {
 
     return this.isPiecePinned(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN]);
   }
+
+  public static isPinnedVertically(position: Position, board: Board): boolean {
+    const piece = PositionUtils.getPieceOnPos(board, position);
+    if (!piece) {
+      return false;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+
+    return this.isPiecePinned(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN]);
+  }
 }

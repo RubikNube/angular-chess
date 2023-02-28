@@ -181,7 +181,7 @@ describe('MoveGenerationUtils', () => {
       expect(validMoves).toEqual([]);
     });
 
-    it('should not generate move when pawn is pinned horizontally from right side', () => {
+    it('should not generate move when bishop is pinned horizontally from right side', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1B1r/8 w - - 0 1");
       let pawn: Piece = { type: PieceType.BISHOP, position: { column: 6, row: 2 }, color: Color.WHITE };
       let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
@@ -193,6 +193,14 @@ describe('MoveGenerationUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1B1K3/8 w - - 0 1");
       let bishop: Piece = { type: PieceType.BISHOP, position: { column: 3, row: 2 }, color: Color.WHITE };
       let validMoves = MoveGenerationUtils.getValidMoves(board, bishop, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should not generate move when bishop is pinned vertically from top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3r4/8/3B4/8/3K2k1/8/8/8 w - - 0 1");
+      let pawn: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 6 }, color: Color.WHITE };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
 
       expect(validMoves).toEqual([]);
     });
