@@ -1,6 +1,7 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
@@ -11,6 +12,11 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
+    // if piece is pinned horizontally it cannot move
+    if (PieceUtils.isPinnedHorizontally(piece.position, board)) {
+      return [];
+    }
+
     const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
     const frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
     const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
