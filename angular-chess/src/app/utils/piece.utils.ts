@@ -149,11 +149,11 @@ export default class PieceUtils {
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
     const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
 
-    return this.isPiecePinnedDiagonnally(piece, lowerToUpperDiagonal) ||
-      this.isPiecePinnedDiagonnally(piece, upperToLowerDiagonal);
+    return this.isPiecePinnedDiagonnally(piece, board, lowerToUpperDiagonal) ||
+      this.isPiecePinnedDiagonnally(piece, board, upperToLowerDiagonal);
   }
 
-  private static isPiecePinnedDiagonnally(piece: Piece, diagonal: Position[]): boolean {
+  private static isPiecePinnedDiagonnally(piece: Piece, board: Board, diagonal: Position[]): boolean {
     const piecesOnDiagonal: Piece[] = diagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
     const opponents = piecesOnDiagonal.filter((diagonalPiece) => diagonalPiece.color !== piece.color && (diagonalPiece.type === PieceType.BISHOP || diagonalPiece.type === PieceType.QUEEN));
     const king = piecesOnDiagonal.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
@@ -175,7 +175,7 @@ export default class PieceUtils {
         }
       }
     }
-    
+
     return false;
   }
 }
