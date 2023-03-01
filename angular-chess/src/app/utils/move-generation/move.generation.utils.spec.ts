@@ -199,11 +199,44 @@ describe('MoveGenerationUtils', () => {
 
     it('should not generate move when bishop is pinned vertically from top', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3r4/8/3B4/8/3K2k1/8/8/8 w - - 0 1");
-      let pawn: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 6 }, color: Color.WHITE };
-      let validMoves = MoveGenerationUtils.getValidMoves(board, pawn, true);
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 6 }, color: Color.WHITE };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, bishop, true);
 
       expect(validMoves).toEqual([]);
     });
+
+    it('should not generate move when rook is pinned diagonally pinned from top left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("B7/8/2r5/8/4k3/1K6/8/8 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 3, row: 6 }, color: Color.BLACK };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should not generate move when rook is pinned diagonally pinned from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("7B/8/5r2/4k3/8/2K5/8/8 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 6, row: 6 }, color: Color.BLACK };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should not generate move when rook is pinned diagonally pinned from bottom right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/4k1K1/8/2r5/8/B7 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 3, row: 3 }, color: Color.BLACK };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should not generate move when rook is pinned diagonally pinned from bottom left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/3k4/1K6/5r2/8/7B b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 6, row: 3 }, color: Color.BLACK };
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
   });
 
   describe('getValidCaptures', () => {
