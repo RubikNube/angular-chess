@@ -6,6 +6,11 @@ export type Piece = {
   position: Position;
 }
 
+export type ClosestPieces = {
+  left: Piece | undefined;
+  right: Piece | undefined;
+}
+
 export enum PieceType {
   KING = "KING",
   QUEEN = "QUEEN",

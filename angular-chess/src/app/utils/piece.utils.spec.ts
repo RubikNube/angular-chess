@@ -2,6 +2,7 @@ import { Board, Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
+import PositionUtils from './position.utils';
 
 describe('PieceUtils', () => {
   const whiteKing55: Piece = {
@@ -133,6 +134,25 @@ describe('PieceUtils', () => {
       let piecePosition: Position = { column: 4, row: 4 };
 
       expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTrue();
+    });
+  });
+
+  describe('getClosestPieces', () => {
+    it('should return king on c3 and bishop on g7 for bishop on e5 on lower to upper diagonal.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
+      let bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
+      let piecesOnDiagonal: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!
+      ]
+
+      const actualClosestPieces = PieceUtils.getClosestPieces(bishop, piecesOnDiagonal);
+      const expectedClosestPieces = { left: piecesOnDiagonal[2], right: piecesOnDiagonal[3] };
+      expect(actualClosestPieces).toEqual(expectedClosestPieces);
     });
   });
 });

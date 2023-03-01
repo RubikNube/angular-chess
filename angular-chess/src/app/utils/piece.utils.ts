@@ -1,5 +1,5 @@
 import { Board, Color, Position } from "../types/board.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { ClosestPieces, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import PositionUtils from "./position.utils";
 
@@ -206,5 +206,39 @@ export default class PieceUtils {
     const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
 
     return this.isPiecePinned(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN]);
+  }
+
+  /** return left and right pieces closest to the piece */
+  public static getClosestPieces(piece: Piece, pieces: Piece[]): ClosestPieces {
+    const closestPieces: ClosestPieces = { left: undefined, right: undefined };
+
+    const piecesByDistance: Piece[] = pieces.sort(PieceUtils.sortByDistanceToPiece(piece));
+
+    const leftPiece = piecesByDistance.find((p) => p.position.column < piece.position.column);
+    const rightPiece = piecesByDistance.find((p) => p.position.column > piece.position.column);
+
+    if (leftPiece) {
+      closestPieces.left = leftPiece;
+    }
+    if (rightPiece) {
+      closestPieces.right = rightPiece;
+    }
+
+    return closestPieces;
+  }
+
+  private static sortByDistanceToPiece(piece: Piece): ((a: Piece, b: Piece) => number) | undefined {
+    return (a, b) => {
+      const aDistance = Math.abs(a.position.column - piece.position.column);
+      const bDistance = Math.abs(b.position.column - piece.position.column);
+
+      if (aDistance < bDistance) {
+        return -1;
+      }
+      if (aDistance > bDistance) {
+        return 1;
+      }
+      return 0;
+    };
   }
 }
