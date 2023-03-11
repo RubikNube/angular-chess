@@ -137,11 +137,11 @@ describe('PieceUtils', () => {
     });
   });
 
-  describe('getClosestPieces', () => {
-    it('should return king on c3 and bishop on g7 for bishop on e5 on lower to upper diagonal.', () => {
-      let board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
-      let bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
-      let piecesOnDiagonal: Piece[] = [
+  describe('sortByDistanceToPiece', () => {
+    it('should return pieces sorted by distance to the bishop on e5', () => {
+      const board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
+      const bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
+      const piecesOnDiagonal: Piece[] = [
         PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!,
         PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
         PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
@@ -150,9 +150,34 @@ describe('PieceUtils', () => {
         PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!
       ]
 
-      const actualClosestPieces = PieceUtils.getClosestPieces(bishop, piecesOnDiagonal);
-      const expectedClosestPieces = { left: piecesOnDiagonal[2], right: piecesOnDiagonal[3] };
-      expect(actualClosestPieces).toEqual(expectedClosestPieces);
+      const sortedPieces: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!,
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!
+      ]
+
+      const actualClosestPieces = PieceUtils.sortByDistanceToPiece(bishop, piecesOnDiagonal);
+      expect(actualClosestPieces).toEqual(sortedPieces);
+    });
+
+    it('should not change input piece array', () => {
+      const board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
+      const bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
+      const piecesOnDiagonal: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!
+      ];
+
+      const actualClosestPieces = PieceUtils.sortByDistanceToPiece(bishop, piecesOnDiagonal);
+
+      expect(actualClosestPieces).not.toEqual(piecesOnDiagonal);
     });
   });
 });

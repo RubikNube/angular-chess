@@ -205,6 +205,20 @@ describe('MoveGenerationUtils', () => {
       expect(validMoves).toEqual([]);
     });
 
+    it('should generate limited moves when bishop is partially pinned from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("7B/8/8/4b3/8/2k5/8/K7 b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 5, row: 5 }, color: Color.BLACK };
+      let expectedMoves = [
+        { piece: bishop, from: { column: 5, row: 5 }, to: { column: 4, row: 4 }, isCheck: false },
+        { piece: bishop, from: { column: 5, row: 5 }, to: { column: 6, row: 6 }, isCheck: false },
+        { piece: bishop, from: { column: 5, row: 5 }, to: { column: 7, row: 7 }, isCheck: false }
+      ];
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, bishop, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
     it('should not generate move when rook is pinned diagonally pinned from top left', () => {
       let board: Board = BoardUtils.loadBoardFromFen("B7/8/2r5/8/4k3/1K6/8/8 b - - 0 1");
       let rook: Piece = { type: PieceType.ROOK, position: { column: 3, row: 6 }, color: Color.BLACK };
