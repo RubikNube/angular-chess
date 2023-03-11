@@ -1,5 +1,5 @@
 import { Board, Color } from 'src/app/types/board.t';
-import { Piece, PieceType } from 'src/app/types/pieces.t';
+import { Move, Piece, PieceType } from 'src/app/types/pieces.t';
 import BoardUtils from '../board.utils';
 import MoveGenerationUtils from './move.generation.utils';
 
@@ -405,6 +405,82 @@ describe('MoveGenerationUtils', () => {
       let validCaptures = MoveGenerationUtils.getValidCaptures(board, king);
 
       expect(validCaptures.length).toEqual(0);
+    });
+
+    it('should generate limited captures if bishop is partially pinned from bottom right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K7/8/2k5/7N/8/5b2/8/3N3B b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 6, row: 3 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+      let expectedCaptures: Move[] = [
+        { piece: bishop, from: { column: 6, row: 3 }, to: { column: 8, row: 1 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 8, row: 1 }, color: Color.WHITE } },
+      ];
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if bishop is partially pinned from top left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("B7/5N2/8/3b4/8/5k2/N7/7K b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 5 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+      let expectedCaptures: Move[] = [
+        { piece: bishop, from: { column: 4, row: 5 }, to: { column: 1, row: 8 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 1, row: 8 }, color: Color.WHITE } },
+      ];
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if bishop is partially pinned from bottom left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/N3k3/8/2b5/8/B3N2K b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 3, row: 3 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+      let expectedCaptures: Move[] = [
+        { piece: bishop, from: { column: 3, row: 3 }, to: { column: 1, row: 1 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 1, row: 1 }, color: Color.WHITE } },
+      ];
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if bishop is partially pinned from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/2N3B1/8/4b3/8/2k5/7N/7K b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 5, row: 5 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+      let expectedCaptures: Move[] = [
+        { piece: bishop, from: { column: 5, row: 5 }, to: { column: 7, row: 7 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 7, row: 7 }, color: Color.WHITE } },
+      ];
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate no captures if bishop is pinned from right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/1N6/5K2/7N/8/2k2b1R/8/7N b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 6, row: 3 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if bishop is pinned from left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/5K2/N3N3/8/R1b1k3/8/4N3 b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 3, row: 3 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if bishop is pinned from top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3R4/1N3N2/8/3b2K1/8/3k4/6N1/8 b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 5 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if bishop is pinned from bottom', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/1N1k2K1/8/3b4/8/1N1R1N2 b - - 0 1");
+      let bishop: Piece = { type: PieceType.BISHOP, position: { column: 4, row: 3 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+
+      expect(validCaptures).toEqual([]);
     });
   });
 });
