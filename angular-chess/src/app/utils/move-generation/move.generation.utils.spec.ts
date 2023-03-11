@@ -293,6 +293,64 @@ describe('MoveGenerationUtils', () => {
       expect(validMoves).toEqual([]);
     });
 
+    it('should generate limited moves when rook is partially pinned from right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/8/k1r3R1/8/8/5K2 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 3, row: 4 }, color: Color.BLACK };
+
+      let expectedMoves = [
+        { piece: rook, from: { column: 3, row: 4 }, to: { column: 2, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 3, row: 4 }, to: { column: 4, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 3, row: 4 }, to: { column: 5, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 3, row: 4 }, to: { column: 6, row: 4 }, isCheck: true }
+      ];
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
+    it('should generate limited moves when rook is partially pinned from left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/8/8/1R1r2k1/8/8/K7 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+
+      let expectedMoves = [
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 3, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 5, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 6, row: 4 }, isCheck: false }
+      ];
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
+    it('should generate limited moves when rook is partially pinned from top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3R4/8/8/3r4/8/8/K2k4 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+
+      let expectedMoves = [
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 2 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 3 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 5 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 6 }, isCheck: false }
+      ];
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
+    it('should generate limited moves when rook is partially pinned from bottom', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/K2k4/8/8/3r4/8/8/3R4 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+
+      let expectedMoves = [
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 2 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 3 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 5 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 4 }, to: { column: 4, row: 6 }, isCheck: false }
+      ];
+      let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
   });
 
   describe('getValidCaptures', () => {

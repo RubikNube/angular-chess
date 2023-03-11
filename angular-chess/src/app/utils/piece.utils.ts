@@ -1,5 +1,5 @@
 import { Board, Color, Position } from "../types/board.t";
-import { ClosestPieces, Piece, PieceType } from "../types/pieces.t";
+import { ClosestPieces, Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
 import PositionUtils from "./position.utils";

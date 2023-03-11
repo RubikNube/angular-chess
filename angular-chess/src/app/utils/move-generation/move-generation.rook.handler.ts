@@ -17,6 +17,18 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       return [];
     }
 
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedMoves(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
