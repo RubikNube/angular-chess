@@ -19,9 +19,16 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
 
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
 
-    const partiallyPinnedMoves: Move[] | undefined = this.getPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
-    if (partiallyPinnedMoves) {
-      return partiallyPinnedMoves;
+    const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = this.getPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
+    if (pinningMovesOnLowerToUpperDiagonal) {
+      return pinningMovesOnLowerToUpperDiagonal;
+    }
+
+    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+
+    const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = this.getPartiallyPinnedMoves(piece, board, upperToLowerDiagonal);
+    if (pinningMovesOnUpperToLowerDiagonal) {
+      return pinningMovesOnUpperToLowerDiagonal;
     }
 
     const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
@@ -52,7 +59,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
     const closestLeftPiece: Piece | undefined = closestPieces.find(p => p.position.column < piece.position.column);
     const closestRightPiece: Piece | undefined = closestPieces.find(p => p.position.column > piece.position.column);
 
-    if (this.isPartiallyPinned(closestLeftPiece, closestRightPiece, piece)) {
+    if (this.isPartiallyPinned(closestLeftPiece, closestRightPiece, piece) || this.isPartiallyPinned(closestRightPiece, closestLeftPiece, piece)) {
 
       const validMoves: Move[] = [];
 
@@ -73,12 +80,12 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
     }
   }
 
-  private isPartiallyPinned(leftPiece: Piece | undefined, rightPiece: Piece | undefined, piece: Piece) {
-    return leftPiece
-      && rightPiece
-      && leftPiece.type === PieceType.KING
-      && leftPiece.color === piece.color
-      && [PieceType.BISHOP, PieceType.QUEEN].includes(rightPiece.type);
+  private isPartiallyPinned(king: Piece | undefined, pinningPiece: Piece | undefined, pinnedPiece: Piece) {
+    return king
+      && pinningPiece
+      && king.type === PieceType.KING
+      && king.color === pinnedPiece.color
+      && [PieceType.BISHOP, PieceType.QUEEN].includes(pinningPiece.type);
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
