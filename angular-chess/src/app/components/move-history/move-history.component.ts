@@ -7,6 +7,7 @@ import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
+import { MoveHistoryKeyHandler } from './move-history.key-handler';
 
 @Component({
   selector: 'app-move-history',
@@ -31,9 +32,11 @@ export class MoveHistoryComponent implements AfterViewInit {
   public isPlaying$: Observable<boolean> = this.isPlaying$$.asObservable();
 
   private playingInterval: number | undefined = undefined;
+  protected moveHistoryKeyHandler: MoveHistoryKeyHandler;
 
   constructor(private moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
+    this.moveHistoryKeyHandler = new MoveHistoryKeyHandler(this);
   }
 
   ngAfterViewInit(): void {
