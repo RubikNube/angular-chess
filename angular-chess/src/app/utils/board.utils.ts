@@ -167,7 +167,7 @@ export default class BoardUtils {
         }
         else {
           if (p.type === PieceType.PAWN) {
-            MoveGenerationPawnHandler.getCaptureCanditates(p)
+            MoveGenerationPawnHandler.getCaptureCandidates(p)
               .forEach(m => {
                 attackedSquares.add(m);
               });
