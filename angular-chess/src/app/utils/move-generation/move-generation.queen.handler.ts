@@ -24,14 +24,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
     }
 
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
-
     const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
     if (pinningMovesOnLowerToUpperDiagonal) {
       return pinningMovesOnLowerToUpperDiagonal;
     }
 
     const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
-
     const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, upperToLowerDiagonal);
     if (pinningMovesOnUpperToLowerDiagonal) {
       return pinningMovesOnUpperToLowerDiagonal;
@@ -66,6 +64,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedCaptures(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
