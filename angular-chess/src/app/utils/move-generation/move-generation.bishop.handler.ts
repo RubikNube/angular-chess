@@ -58,14 +58,12 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
     }
 
     const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
-
     const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, upperToLowerDiagonal);
     if (pinningMovesOnLowerToUpperDiagonal) {
       return pinningMovesOnLowerToUpperDiagonal;
     }
 
     const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
-
     const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, lowerToUpperDiagonal);
     if (pinningMovesOnUpperToLowerDiagonal) {
       return pinningMovesOnUpperToLowerDiagonal;

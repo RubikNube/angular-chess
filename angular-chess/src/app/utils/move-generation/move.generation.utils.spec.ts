@@ -934,5 +934,49 @@ describe('MoveGenerationUtils', () => {
 
       expect(validCaptures).toEqual(expectedCaptures);
     });
+
+    it('should generate limited captures if queen is pinned diagonally from top left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/B2N2N1/8/7K/1N1q2N1/8/3N4/N5k1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 1, row: 7 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 1, row: 7 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if queen is pinned diagonally from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3N2B1/1N6/7K/1N1q2N1/8/3N4/k5N1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 7, row: 7 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 7, row: 7 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if queen is pinned diagonally from bottom right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/k2N2N1/8/7K/1N1q2N1/8/1N1N4/6B1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 7, row: 1 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 7, row: 1 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if queen is pinned diagonally from bottom left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/N2N2k1/8/7K/1N1q2N1/8/3N4/BN4N1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 1, row: 1 }, isCheck: false, capturedPiece: { type: PieceType.BISHOP, position: { column: 1, row: 1 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
   });
 });

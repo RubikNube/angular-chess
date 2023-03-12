@@ -76,6 +76,18 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       return verticalPinningMoves;
     }
 
+    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, upperToLowerDiagonal);
+    if (pinningMovesOnLowerToUpperDiagonal) {
+      return pinningMovesOnLowerToUpperDiagonal;
+    }
+
+    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, lowerToUpperDiagonal);
+    if (pinningMovesOnUpperToLowerDiagonal) {
+      return pinningMovesOnUpperToLowerDiagonal;
+    }
+
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
