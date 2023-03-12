@@ -351,6 +351,28 @@ describe('MoveGenerationUtils', () => {
 
       expect(validMoves).toEqual(expectedMoves);
     });
+
+    it('should generate rook moves when same colored rook is "pinning" it', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("r4rk1/p1q2ppp/1p2pb2/2n5/2B5/2P1BQ1P/PP3PP1/R2R2K1 w - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 1 }, color: Color.WHITE };
+      const compareColumns = (a: Move, b: Move): number => a.to.column - b.to.column;
+      let expectedCaptures: Move[] = [
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 2, row: 1 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 3, row: 1 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 5, row: 1 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 6, row: 1 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 2 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 3 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 4 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 5 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 6 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 7 }, isCheck: false },
+        { piece: rook, from: { column: 4, row: 1 }, to: { column: 4, row: 8 }, isCheck: false }
+      ].sort(compareColumns);
+      let validCaptures = MoveGenerationUtils.getValidMoves(board, rook, true).sort(compareColumns);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
   });
 
   describe('getValidCaptures', () => {

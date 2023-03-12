@@ -982,9 +982,10 @@ export default class BoardUtils {
 
   private static isPartiallyPinned(king: Piece | undefined, pinningPiece: Piece | undefined, pinnedPiece: Piece, pinningTypes: PieceType[]) {
     return king
-      && pinningPiece
       && king.type === PieceType.KING
       && king.color === pinnedPiece.color
+      && pinningPiece
+      && pinningPiece.color !== pinnedPiece.color
       && pinningTypes.includes(pinningPiece.type);
   }
 
