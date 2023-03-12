@@ -38,6 +38,7 @@ export class MoveHistoryService {
   }
 
   public resetMoveHistory(): void {
+    this.persistenceService.save('moveHistory', []);
     return this.moveHistory$$.next([]);
   }
 
