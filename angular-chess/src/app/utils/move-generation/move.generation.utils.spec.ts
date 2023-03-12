@@ -978,5 +978,23 @@ describe('MoveGenerationUtils', () => {
 
       expect(validCaptures).toEqual(expectedCaptures);
     });
+
+    it('should not generate captures pawn is pinned from right side', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("2k5/8/8/8/8/2p1p3/K2P2r1/8 w - - 0 1");
+      let queen: Piece = { type: PieceType.PAWN, position: { column: 4, row: 2 }, color: Color.WHITE };
+
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should not generate captures pawn is pinned from left side', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("2k5/8/8/8/8/2p1p3/r2P2K1/8 w - - 0 1");
+      let queen: Piece = { type: PieceType.PAWN, position: { column: 4, row: 2 }, color: Color.WHITE };
+
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual([]);
+    });
   });
 });
