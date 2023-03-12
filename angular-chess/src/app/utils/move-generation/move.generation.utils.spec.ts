@@ -409,6 +409,42 @@ describe('MoveGenerationUtils', () => {
 
       expect(validMoves).toEqual([]);
     });
+
+    it('should generate no moves when knight is diagonally pinned from top left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/1B6/8/3n4/8/1K3k2/8 b - - 0 1");
+      let knight: Piece = { type: PieceType.KNIGHT, position: { column: 4, row: 4 }, color: Color.BLACK };
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should generate no moves when knight is diagonally pinned from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/5B2/8/3n1K2/8/1k6/8 b - - 0 1");
+      let knight: Piece = { type: PieceType.KNIGHT, position: { column: 4, row: 4 }, color: Color.BLACK };
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
+    it('should generate no moves when knight is diagonally pinned from bottom left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/5k2/8/3n1K2/8/1B6/8/8 b - - 0 1");
+      let knight: Piece = { type: PieceType.KNIGHT, position: { column: 4, row: 5 }, color: Color.BLACK };
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
+
+      expect(validMoves).toEqual([]);
+    });  
+    
+    it('should generate no moves when knight is diagonally pinned from bottom right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/1k6/8/3n1K2/8/5B2/8/8 b - - 0 1");
+      let knight: Piece = { type: PieceType.KNIGHT, position: { column: 4, row: 5 }, color: Color.BLACK };
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
+
+      expect(validMoves).toEqual([]);
+    });   
   });
 
   describe('getValidCaptures', () => {
