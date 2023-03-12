@@ -41,7 +41,8 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
-    if (PieceUtils.isPinnedHorizontally(piece.position, board)) {
+    if (PieceUtils.isPinnedHorizontally(piece.position, board) ||
+      PieceUtils.isPinnedVertically(piece.position, board)) {
       return [];
     }
     const captureCandidates = MoveGenerationPawnHandler.getCaptureCandidates(piece);
