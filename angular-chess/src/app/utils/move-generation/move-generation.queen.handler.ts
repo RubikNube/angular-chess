@@ -11,6 +11,30 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedMoves(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
+    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
+    if (pinningMovesOnLowerToUpperDiagonal) {
+      return pinningMovesOnLowerToUpperDiagonal;
+    }
+
+    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, upperToLowerDiagonal);
+    if (pinningMovesOnUpperToLowerDiagonal) {
+      return pinningMovesOnUpperToLowerDiagonal;
+    }
+
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
@@ -40,6 +64,30 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedCaptures(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedCaptures(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
+    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, upperToLowerDiagonal);
+    if (pinningMovesOnLowerToUpperDiagonal) {
+      return pinningMovesOnLowerToUpperDiagonal;
+    }
+
+    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, lowerToUpperDiagonal);
+    if (pinningMovesOnUpperToLowerDiagonal) {
+      return pinningMovesOnUpperToLowerDiagonal;
+    }
+
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);

@@ -167,7 +167,7 @@ export default class BoardUtils {
         }
         else {
           if (p.type === PieceType.PAWN) {
-            MoveGenerationPawnHandler.getCaptureCanditates(p)
+            MoveGenerationPawnHandler.getCaptureCandidates(p)
               .forEach(m => {
                 attackedSquares.add(m);
               });
@@ -918,6 +918,127 @@ export default class BoardUtils {
     }
     else {
       return board.blackCastleRights;
+    }
+  }
+
+  public static getDiagonalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedMoves(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
+  }
+
+  public static getHorizontalPartiallyPinnedMoves(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedMoves(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
+  }
+
+  public static getVerticalPartiallyPinnedMoves(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedMoves(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
+  }
+
+  private static getPartiallyPinnedMoves(piece: Piece, board: Board, orderedSquares: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
+    const pieces: Piece[] = orderedSquares.map(p => PositionUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
+
+    const closestPieces: Piece[] = PieceUtils.sortByDistanceToPiece(piece, pieces);
+
+    let compareLeft: (p: Piece) => boolean;
+    let compareRight: (p: Piece) => boolean;
+    let filterLeft: (p: Position) => boolean;
+    let filterRight: (p: Position) => boolean;
+
+    if (orderByColumn) {
+      compareLeft = (p: Piece): boolean => p.position.column < piece.position.column;
+      compareRight = (p: Piece): boolean => p.position.column > piece.position.column;
+      filterLeft = (p: Position): boolean => p.column < piece.position.column && p.column > closestLeftPiece!.position.column;
+      filterRight = (p: Position): boolean => p.column > piece.position.column && p.column < closestRightPiece!.position.column;
+    }
+    else {
+      compareLeft = (p: Piece): boolean => p.position.row < piece.position.row;
+      compareRight = (p: Piece): boolean => p.position.row > piece.position.row;
+      filterLeft = (p: Position): boolean => p.row < piece.position.row && p.row > closestLeftPiece!.position.row;
+      filterRight = (p: Position): boolean => p.row > piece.position.row && p.row < closestRightPiece!.position.row;
+    }
+
+    const closestLeftPiece: Piece | undefined = closestPieces.find(compareLeft);
+    const closestRightPiece: Piece | undefined = closestPieces.find(compareRight);
+
+    if (this.isPartiallyPinned(closestLeftPiece, closestRightPiece, piece, pinningTypes) || this.isPartiallyPinned(closestRightPiece, closestLeftPiece, piece, pinningTypes)) {
+
+      const validMoves: Move[] = [];
+
+      const freeFieldsBetweenPieceAndLeftClosestPiece: Position[] = orderedSquares
+        .filter(filterLeft);
+      const movesToLeft: Move[] = freeFieldsBetweenPieceAndLeftClosestPiece.map(PositionUtils.positionToMoveFunction(piece));
+      validMoves.push(...movesToLeft);
+
+      const freeFieldsBetweenPieceAndRightClosestPiece: Position[] = orderedSquares
+        .filter(filterRight);
+      const movesToRight: Move[] = freeFieldsBetweenPieceAndRightClosestPiece.map(PositionUtils.positionToMoveFunction(piece));
+      validMoves.push(...movesToRight);
+
+      return validMoves;
+    }
+    else {
+      return undefined;
+    }
+  }
+
+  private static isPartiallyPinned(king: Piece | undefined, pinningPiece: Piece | undefined, pinnedPiece: Piece, pinningTypes: PieceType[]) {
+    return king
+      && king.type === PieceType.KING
+      && king.color === pinnedPiece.color
+      && pinningPiece
+      && pinningPiece.color !== pinnedPiece.color
+      && pinningTypes.includes(pinningPiece.type);
+  }
+
+  public static getDiagonalPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedCaptures(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
+  }
+
+  public static getHorizontalPartiallyPinnedCaptures(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedCaptures(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
+  }
+
+  public static getVerticalPartiallyPinnedCaptures(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedCaptures(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
+  }
+
+  private static getPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
+    const piecesOnDiagonal: Piece[] = diagonal.map(p => PositionUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
+
+    const closestPieces: Piece[] = PieceUtils.sortByDistanceToPiece(piece, piecesOnDiagonal);
+
+    let compareLeft: (p: Piece) => boolean;
+    let compareRight: (p: Piece) => boolean;
+
+    if (orderByColumn) {
+      compareLeft = (p: Piece): boolean => p.position.column < piece.position.column;
+      compareRight = (p: Piece): boolean => p.position.column > piece.position.column;
+    }
+    else {
+      compareLeft = (p: Piece): boolean => p.position.row < piece.position.row;
+      compareRight = (p: Piece): boolean => p.position.row > piece.position.row;
+    }
+
+    const closestLeftPiece: Piece | undefined = closestPieces.find(compareLeft);
+    const closestRightPiece: Piece | undefined = closestPieces.find(compareRight);
+
+    if (this.isPartiallyPinned(closestLeftPiece, closestRightPiece, piece, pinningTypes) || this.isPartiallyPinned(closestRightPiece, closestLeftPiece, piece, pinningTypes)) {
+
+      const validMoves: Move[] = [];
+
+      // if left piece is an enemy piece, it can be captured
+      if (closestLeftPiece && closestLeftPiece.color !== piece.color) {
+        validMoves.push(PositionUtils.positionToMoveFunction(piece)(closestLeftPiece.position, 0, [closestLeftPiece.position]));
+      }
+
+      // if right piece is an enemy piece, it can be captured
+      if (closestRightPiece && closestRightPiece.color !== piece.color) {
+        validMoves.push(PositionUtils.positionToMoveFunction(piece)(closestRightPiece.position, 0, [closestRightPiece.position]));
+      }
+
+      return validMoves;
+    }
+    else {
+      return undefined;
     }
   }
 }

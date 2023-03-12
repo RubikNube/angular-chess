@@ -1,6 +1,7 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
@@ -11,6 +12,23 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
+    // if piece is pinned diagonally it cannot move
+    if (PieceUtils.isPinnedDiagonally(piece.position, board)) {
+      return [];
+    }
+
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedMoves(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
@@ -26,6 +44,23 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
+    // if piece is pinned diagonally it cannot move
+    if (PieceUtils.isPinnedDiagonally(piece.position, board)) {
+      return [];
+    }
+
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedCaptures(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedCaptures(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);

@@ -93,4 +93,108 @@ describe('PositionUtils', () => {
       expect(PositionUtils.getSquareRepresentation(8, 8)).toEqual('h8');
     });
   });
+
+  describe('getUpperToLowerDiagonal', () => {
+    it('should return a7-g1 diagonals for d4', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 4, row: 4 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getUpperToLowerDiagonal({ column: 4, row: 4 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+
+    it('should return a7-g1 diagonal for b6', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 4, row: 4 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getUpperToLowerDiagonal({ column: 2, row: 6 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
+
+  describe('getLowerToUpperDiagonal', () => {
+    it('should return a1-h8 diagonal for d4', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 1 },
+        { column: 2, row: 2 },
+        { column: 3, row: 3 },
+        { column: 4, row: 4 },
+        { column: 5, row: 5 },
+        { column: 6, row: 6 },
+        { column: 7, row: 7 },
+        { column: 8, row: 8 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getLowerToUpperDiagonal({ column: 4, row: 4 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+
+    it('should return a5-d8 diagonal for b6', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 5 },
+        { column: 2, row: 6 },
+        { column: 3, row: 7 },
+        { column: 4, row: 8 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getLowerToUpperDiagonal({ column: 2, row: 6 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
+
+  describe('getHorizontalSquares', () => {
+    it('should return a2-h2 line for h2', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 2 },
+        { column: 2, row: 2 },
+        { column: 3, row: 2 },
+        { column: 4, row: 2 },
+        { column: 5, row: 2 },
+        { column: 6, row: 2 },
+        { column: 7, row: 2 },
+        { column: 8, row: 2 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getHorizontalSquares({ column: 8, row: 2 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
+
+  describe('getVerticalSquares', () => {
+    it('should return a1-a8 line for a8', () => {
+      const expectedPositions: Position[] = [
+        { column: 1, row: 1 },
+        { column: 1, row: 2 },
+        { column: 1, row: 3 },
+        { column: 1, row: 4 },
+        { column: 1, row: 5 },
+        { column: 1, row: 6 },
+        { column: 1, row: 7 },
+        { column: 1, row: 8 }
+      ].sort(PositionUtils.comparePositions());
+
+      const actualPositions: Position[] = PositionUtils.getVerticalSquares({ column: 1, row: 8 }).sort(PositionUtils.comparePositions());
+
+      expect(actualPositions).toEqual(expectedPositions);
+    });
+  });
 });

@@ -108,4 +108,84 @@ export default class PositionUtils {
 
     return String.fromCharCode('a'.charCodeAt(0) + (column - 1)) + row;
   }
+
+  public static getUpperToLowerDiagonal(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    const currentRow: number = position.row;
+    const currentColumn: number = position.column;
+
+    // get diagonal squares from position to upper left corner
+    for (let i: number = 1; i <= Math.min(8 - currentRow, currentColumn - 1); i++) {
+      squares.push({ row: currentRow + i, column: currentColumn - i });
+    }
+    
+    squares.push(position);
+
+    // get diagonal squares from position to lower right corner
+    for (let i: number = 1; i <= Math.min(currentRow - 1, 8 - currentColumn); i++) {
+      squares.push({ row: currentRow - i, column: currentColumn + i });
+    }
+
+    return squares.sort(PositionUtils.comparePositions());
+  }
+
+  public static getLowerToUpperDiagonal(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    const currentRow: number = position.row;
+    const currentColumn: number = position.column;
+
+    // get diagonal squares from position to lower left corner
+    for (let i: number = 1; i <= Math.min(currentRow - 1, currentColumn - 1); i++) {
+      squares.push({ row: currentRow - i, column: currentColumn - i });
+    }
+
+    // get diagonal squares from position to upper right corner
+    for (let i: number = 1; i <= Math.min(8 - currentRow, 8 - currentColumn); i++) {
+      squares.push({ row: currentRow + i, column: currentColumn + i });
+    }
+
+    squares.push(position);
+
+    return squares.sort(PositionUtils.comparePositions());
+  }
+
+
+  public static comparePositions(): ((a: Position, b: Position) => number) | undefined {
+    return (a, b) => {
+      // if positions are equal, return 0
+      if (a.column === b.column && a.row === b.row) {
+        return 0;
+      }
+      // if a is before b, return -1
+      else if (a.column < b.column || (a.column === b.column && a.row < b.row)) {
+        return -1;
+      }
+      // if a is after b, return 1
+      else {
+        return 1;
+      }
+    };
+  }
+
+  public static getHorizontalSquares(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    for (let i: number = 1; i <= 8; i++) {
+      squares.push({ row: position.row, column: i });
+    }
+
+    return squares;
+  }
+
+  public static getVerticalSquares(position: Position): Position[] {
+    const squares: Position[] = [];
+
+    for (let i: number = 1; i <= 8; i++) {
+      squares.push({ row: i, column: position.column });
+    }
+
+    return squares;
+  }
 }

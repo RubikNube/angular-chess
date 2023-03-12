@@ -1,6 +1,8 @@
-import { Color } from '../types/board.t';
+import { Board, Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
+import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
+import PositionUtils from './position.utils';
 
 describe('PieceUtils', () => {
   const whiteKing55: Piece = {
@@ -70,6 +72,112 @@ describe('PieceUtils', () => {
 
     it('should return "King" for "O-O-O"', () => {
       expect(PieceUtils.getPieceTypeFromMoveString('O-O-O')).toBe(PieceType.KING);
+    });
+  });
+
+  describe('isPinnedDiagonally', () => {
+    it('should return true if piece is pinned diagonally by a lower right bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/4n3/8/8/7B/8/8/3K4 b - - 0 1");
+      let piecePosition: Position = { column: 5, row: 7 };
+
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+    });
+
+    it('should return true if piece is pinned diagonally by a lower left bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3k4/2n5/8/B7/8/8/8/3K4 b - - 0 1");
+      let piecePosition: Position = { column: 3, row: 7 };
+
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+    });
+
+    it('should return true if piece is pinned diagonally by a upper right bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/6B1/8/4n3/3k4/8/8/3K4 b - - 0 1");
+      let piecePosition: Position = { column: 5, row: 5 };
+
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+    });
+
+    it('should return true if piece is pinned diagonally by a upper left bishop.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/B7/8/2n5/3k4/8/8/3K4 b - - 0 1");
+      let piecePosition: Position = { column: 3, row: 5 };
+
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+    });
+  });
+
+  describe('isPinnedHorizontally', () => {
+    it('should return true if piece is pinned horizontally by a rook from the right side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
+      let piecePosition: Position = { column: 6, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTrue();
+    });
+
+    it('should return true if piece is pinned horizontally by a rook from the left side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1P1K3/8 w - - 0 1");
+      let piecePosition: Position = { column: 3, row: 2 };
+
+      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTrue();
+    });
+  });
+
+  describe('isPinnedVertically', () => {
+    it('should return true if piece is pinned vertically by a rook from the top side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3r4/8/3B4/8/3K2k1/8/8/8 w - - 0 1");
+      let piecePosition: Position = { column: 4, row: 6 };
+
+      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTrue();
+    });
+
+    it('should return true if piece is pinned vertically by a rook from the bottom side.', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/8/3K4/8/1k1B4/8/3r4/8 w - - 0 1");
+      let piecePosition: Position = { column: 4, row: 4 };
+
+      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTrue();
+    });
+  });
+
+  describe('sortByDistanceToPiece', () => {
+    it('should return pieces sorted by distance to the bishop on e5', () => {
+      const board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
+      const bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
+      const piecesOnDiagonal: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!
+      ]
+
+      const sortedPieces: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!,
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!
+      ]
+
+      const actualClosestPieces = PieceUtils.sortByDistanceToPiece(bishop, piecesOnDiagonal);
+      expect(actualClosestPieces).toEqual(sortedPieces);
+    });
+
+    it('should not change input piece array', () => {
+      const board: Board = BoardUtils.loadBoardFromFen("7B/6B1/8/4b3/8/2k5/1N6/K7 b - - 0 1");
+      const bishop: Piece = PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!;
+      const piecesOnDiagonal: Piece[] = [
+        PositionUtils.getPieceOnPos(board, { column: 1, row: 1 })!,
+        PositionUtils.getPieceOnPos(board, { column: 2, row: 2 })!,
+        PositionUtils.getPieceOnPos(board, { column: 3, row: 3 })!,
+        PositionUtils.getPieceOnPos(board, { column: 5, row: 5 })!,
+        PositionUtils.getPieceOnPos(board, { column: 7, row: 7 })!,
+        PositionUtils.getPieceOnPos(board, { column: 8, row: 8 })!
+      ];
+
+      const actualClosestPieces = PieceUtils.sortByDistanceToPiece(bishop, piecesOnDiagonal);
+
+      expect(actualClosestPieces).not.toEqual(piecesOnDiagonal);
     });
   });
 });
