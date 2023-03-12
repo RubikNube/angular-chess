@@ -166,6 +166,10 @@ export class MoveHistoryComponent implements OnInit {
     }
 
     const selectedMove: Move = this.moveHistory[selectedMoveIndex];
+    if(selectedMove === undefined) {
+      console.warn("selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory) + "");
+      return;
+    }
     const selectedPos: Board | undefined = selectedMove.boardAfterMove;
 
     if (selectedPos) {
