@@ -70,6 +70,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       return horizontalPinningMoves;
     }
 
+    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedCaptures(piece, board, verticalSquares);
+    if (verticalPinningMoves) {
+      return verticalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);

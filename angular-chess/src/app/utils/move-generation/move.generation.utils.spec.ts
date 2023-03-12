@@ -912,5 +912,27 @@ describe('MoveGenerationUtils', () => {
 
       expect(validCaptures).toEqual(expectedCaptures);
     });
+
+    it('should generate limited captures if queen is pinned from top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/N2R2N1/8/8/1N1q2N1/8/6K1/N2k2N1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 7 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 4, row: 7 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if queen is pinned from bottom', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("8/N2k2N1/8/8/1N1q2N1/8/6K1/N2R2N1 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 1 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 4, row: 1 }, color: Color.WHITE } }
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, queen);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
   });
 });
