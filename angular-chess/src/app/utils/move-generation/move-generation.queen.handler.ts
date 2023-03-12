@@ -23,6 +23,20 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       return verticalPinningMoves;
     }
 
+    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+
+    const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
+    if (pinningMovesOnLowerToUpperDiagonal) {
+      return pinningMovesOnLowerToUpperDiagonal;
+    }
+
+    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+
+    const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, upperToLowerDiagonal);
+    if (pinningMovesOnUpperToLowerDiagonal) {
+      return pinningMovesOnUpperToLowerDiagonal;
+    }
+
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
