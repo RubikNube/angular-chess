@@ -540,5 +540,81 @@ describe('MoveGenerationUtils', () => {
 
       expect(validCaptures).toEqual([]);
     });
+
+    it('should generate no captures if rook is pinned diagonally from bottom left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("1K1N4/8/5k2/8/3r3N/8/1B6/3N4 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if rook is pinned diagonally from bottom right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("1K1N4/8/1k6/8/3r3N/8/5B2/3N4 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if rook is pinned diagonally from top right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("1K1N4/8/5B2/8/N2r3N/8/8/k2N4 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate no captures if rook is pinned diagonally from top left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("3N3K/8/1B6/8/N2r3N/8/8/3N2k1 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual([]);
+    });
+
+    it('should generate limited captures if rook is partially pinned right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("4N1K1/8/8/8/1k2r2R/8/8/4N3 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: rook, from: { column: 5, row: 4 }, to: { column: 8, row: 4 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 8, row: 4 }, color: Color.WHITE } },
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if rook is partially pinned left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K3N3/8/8/8/1R2r2k/8/8/4N3 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: rook, from: { column: 5, row: 4 }, to: { column: 2, row: 4 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 2, row: 4 }, color: Color.WHITE } },
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if rook is partially pinned top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("1K6/4R3/8/8/1N2r2N/8/8/4k3 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: rook, from: { column: 5, row: 4 }, to: { column: 5, row: 7 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 5, row: 7 }, color: Color.WHITE } },
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
+
+    it('should generate limited captures if rook is partially pinned bottom', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("1K6/4k3/8/8/1N2r2N/8/4R3/8 b - - 0 1");
+      let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 4 }, color: Color.BLACK };
+      let expectedCaptures: Move[] = [
+        { piece: rook, from: { column: 5, row: 4 }, to: { column: 5, row: 2 }, isCheck: false, capturedPiece: { type: PieceType.ROOK, position: { column: 5, row: 2 }, color: Color.WHITE } },
+      ];
+      let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+      expect(validCaptures).toEqual(expectedCaptures);
+    });
   });
 });

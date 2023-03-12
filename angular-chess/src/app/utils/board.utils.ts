@@ -925,12 +925,12 @@ export default class BoardUtils {
     return this.getPartiallyPinnedMoves(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
   }
 
-  public static getHorizontalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
-    return this.getPartiallyPinnedMoves(piece, board, diagonal, [PieceType.ROOK, PieceType.QUEEN], true);
+  public static getHorizontalPartiallyPinnedMoves(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedMoves(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
   }
 
-  public static getVerticalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
-    return this.getPartiallyPinnedMoves(piece, board, diagonal, [PieceType.ROOK, PieceType.QUEEN], false);
+  public static getVerticalPartiallyPinnedMoves(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedMoves(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
   }
 
   private static getPartiallyPinnedMoves(piece: Piece, board: Board, orderedSquares: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
@@ -989,16 +989,36 @@ export default class BoardUtils {
   }
 
   public static getDiagonalPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
-    return this.getPartiallyPinnedCaptures(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN]);
+    return this.getPartiallyPinnedCaptures(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
   }
 
-  private static getPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[], pinningTypes: PieceType[]): Move[] | undefined {
+  public static getHorizontalPartiallyPinnedCaptures(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedCaptures(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
+  }
+
+  public static getVerticalPartiallyPinnedCaptures(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+    return this.getPartiallyPinnedCaptures(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
+  }
+
+  private static getPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
     const piecesOnDiagonal: Piece[] = diagonal.map(p => PositionUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
 
     const closestPieces: Piece[] = PieceUtils.sortByDistanceToPiece(piece, piecesOnDiagonal);
 
-    const closestLeftPiece: Piece | undefined = closestPieces.find(p => p.position.column < piece.position.column);
-    const closestRightPiece: Piece | undefined = closestPieces.find(p => p.position.column > piece.position.column);
+    let compareLeft: (p: Piece) => boolean;
+    let compareRight: (p: Piece) => boolean;
+
+    if (orderByColumn) {
+      compareLeft = (p: Piece): boolean => p.position.column < piece.position.column;
+      compareRight = (p: Piece): boolean => p.position.column > piece.position.column;
+    }
+    else {
+      compareLeft = (p: Piece): boolean => p.position.row < piece.position.row;
+      compareRight = (p: Piece): boolean => p.position.row > piece.position.row;
+    }
+
+    const closestLeftPiece: Piece | undefined = closestPieces.find(compareLeft);
+    const closestRightPiece: Piece | undefined = closestPieces.find(compareRight);
 
     if (this.isPartiallyPinned(closestLeftPiece, closestRightPiece, piece, pinningTypes) || this.isPartiallyPinned(closestRightPiece, closestLeftPiece, piece, pinningTypes)) {
 
