@@ -475,6 +475,36 @@ describe('MoveGenerationUtils', () => {
 
       expect(validMoves).toEqual(expectedMoves);
     });
+
+    it('should generate limited moves when queen is pinned from top', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K7/3R4/8/8/3q4/8/8/3k4 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedMoves: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 2 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 3 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 5 }, isCheck: true },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 6 }, isCheck: false }
+      ];
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, queen, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
+    it('should generate limited moves when queen is pinned from bottom', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K7/3k4/8/8/3q4/8/8/3R4 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedMoves: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 2 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 3 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 5 }, isCheck: true },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 4, row: 6 }, isCheck: false }
+      ];
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, queen, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
   });
 
   describe('getValidCaptures', () => {
