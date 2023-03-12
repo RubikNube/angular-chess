@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { PersistenceService } from './persistence.service';
 
 export interface BoardThemeConfig {
   darkField: string;
@@ -24,9 +25,17 @@ export class BoardThemingService {
   private readonly selectedTheme$$: BehaviorSubject<BoardThemeConfig> = new BehaviorSubject(this.woodTheme);
   public readonly selectedTheme$: Observable<BoardThemeConfig> = this.selectedTheme$$.asObservable();
 
+  private constructor(private persistenceService: PersistenceService) {
+    const persistedTheme = this.persistenceService.load('selectedTheme');
+    if (persistedTheme) {
+      this.selectedTheme$$.next(persistedTheme);
+    }
+   }
+
   public toggleTheme(): void {
     const actualTheme = this.selectedTheme$$.getValue();
-    this.selectedTheme$$.next(actualTheme === this.woodTheme ? this.brownTheme : this.woodTheme)
+    const newTheme = actualTheme === this.woodTheme ? this.brownTheme : this.woodTheme;
+    this.persistenceService.save('selectedTheme', newTheme);
+    this.selectedTheme$$.next(newTheme);
   }
-
 }
