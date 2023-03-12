@@ -12,7 +12,8 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
   public getMoves(piece: Piece, board: Board): Move[] {
     // if piece is pinned it cannot move
     if (PieceUtils.isPinnedDiagonally(piece.position, board) ||
-      PieceUtils.isPinnedHorizontally(piece.position, board)) {
+      PieceUtils.isPinnedHorizontally(piece.position, board)||
+      PieceUtils.isPinnedVertically(piece.position, board)) {
       return [];
     }
 
