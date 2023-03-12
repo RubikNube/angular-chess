@@ -8,6 +8,7 @@ import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { HighlightingService } from './highlighting.service';
 import { MoveHistoryService } from './move-history.service';
+import { PersistenceService } from './persistence.service';
 
 /** The FEN of the normal starting position of a chess game.*/
 const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
@@ -40,8 +41,17 @@ export class ChessBoardService {
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
 
   constructor(private moveHistoryService: MoveHistoryService,
-    private highlightingService: HighlightingService) {
-    this.importFen(STARTING_FEN);
+    private highlightingService: HighlightingService,
+    private persistenceService: PersistenceService) {
+      const persistedStartingBoard = persistenceService.load("startingBoard");
+      if (persistedStartingBoard) {
+        this.startingBoard = persistedStartingBoard;
+      }
+      
+      const moveHistory = persistenceService.load("moveHistory");
+      if (!moveHistory) {
+        this.importFen(STARTING_FEN);
+      }
   }
 
   public updateResult(result: Result) {
@@ -72,6 +82,7 @@ export class ChessBoardService {
   }
 
   public setStartingBoard(board: Board | undefined): void {
+    this.persistenceService.save("startingBoard", board);
     this.startingBoard = CopyUtils.deepCopyElement(board);
   }
 
@@ -216,6 +227,10 @@ export class ChessBoardService {
     this.moveHistoryService.resetMoveHistory();
     this.updateResult(Result.UNKNOWN);
 
+    this.importFenWithoutHistoryReset(newFen);
+  }
+
+  private importFenWithoutHistoryReset(newFen: string) {
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
     this.setStartingBoard(board);
 

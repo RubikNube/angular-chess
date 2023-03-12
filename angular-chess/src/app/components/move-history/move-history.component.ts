@@ -1,8 +1,9 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
+import { PersistenceService } from 'src/app/services/persistence.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -14,7 +15,7 @@ import { MoveHistoryKeyHandler } from './move-history.key-handler';
   templateUrl: './move-history.component.html',
   styleUrls: ['./move-history.component.scss']
 })
-export class MoveHistoryComponent implements AfterViewInit {
+export class MoveHistoryComponent implements OnInit {
   public readonly startIndex = -1;
   public math = Math;
 
@@ -39,7 +40,7 @@ export class MoveHistoryComponent implements AfterViewInit {
     this.moveHistoryKeyHandler = new MoveHistoryKeyHandler(this);
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
       fullMoveHistory => {
         this.fullMoveHistory = fullMoveHistory;
@@ -68,6 +69,8 @@ export class MoveHistoryComponent implements AfterViewInit {
         }
       }
     );
+
+    this.moveToEnd();
   }
 
   private setFocusToNewMove(idOfElement: string) {
