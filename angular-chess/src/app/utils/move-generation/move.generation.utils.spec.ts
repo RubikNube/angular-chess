@@ -435,8 +435,8 @@ describe('MoveGenerationUtils', () => {
       let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
 
       expect(validMoves).toEqual([]);
-    });  
-    
+    });
+
     it('should generate no moves when knight is diagonally pinned from bottom right', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/1k6/8/3n1K2/8/5B2/8/8 b - - 0 1");
       let knight: Piece = { type: PieceType.KNIGHT, position: { column: 4, row: 5 }, color: Color.BLACK };
@@ -444,7 +444,37 @@ describe('MoveGenerationUtils', () => {
       let validMoves = MoveGenerationUtils.getValidMoves(board, knight, true);
 
       expect(validMoves).toEqual([]);
-    });   
+    });
+
+    it('should generate limited moves when queen is pinned from left', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K2N4/8/8/8/1R1q3k/8/8/3N4 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedMoves: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 3, row: 4 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 5, row: 4 }, isCheck: true },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 6, row: 4 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 7, row: 4 }, isCheck: false }
+      ];
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, queen, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
+
+    it('should generate limited moves when queen is pinned from right', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("K2N4/8/8/8/1k1q3R/8/8/3N4 b - - 0 1");
+      let queen: Piece = { type: PieceType.QUEEN, position: { column: 4, row: 4 }, color: Color.BLACK };
+      let expectedMoves: Move[] = [
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 3, row: 4 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 5, row: 4 }, isCheck: true },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 6, row: 4 }, isCheck: false },
+        { piece: queen, from: { column: 4, row: 4 }, to: { column: 7, row: 4 }, isCheck: false }
+      ];
+
+      let validMoves = MoveGenerationUtils.getValidMoves(board, queen, true);
+
+      expect(validMoves).toEqual(expectedMoves);
+    });
   });
 
   describe('getValidCaptures', () => {

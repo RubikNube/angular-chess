@@ -11,6 +11,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
+    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
+    if (horizontalPinningMoves) {
+      return horizontalPinningMoves;
+    }
+
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
