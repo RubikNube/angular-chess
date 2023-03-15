@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
 import PositionUtils from '../utils/position.utils';
+import { PersistenceService } from './persistence.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,18 @@ export class PositioningService {
   perspectiveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
   perspective$: Observable<Color> = this.perspectiveSource.asObservable();
 
+  constructor(private persistenceService:PersistenceService) {
+    const persistedPerspective = this.persistenceService.load('perspective');
+    if (persistedPerspective) {
+      this.perspectiveSource.next(persistedPerspective);
+    }
+   }
+
+
   public switchPerspective(): void {
-    this.perspectiveSource.next(this.perspectiveSource.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE);
+    const newPerspective = this.perspectiveSource.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE;
+    this.persistenceService.save('perspective', newPerspective);
+    this.perspectiveSource.next(newPerspective);
   }
 
   public getUiPosition(position: Position): Position {

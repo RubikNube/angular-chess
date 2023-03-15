@@ -1,45 +1,36 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
+import { PersistenceService } from 'src/app/services/persistence.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
-import { MoveHistoryKeyHandler } from './move-history.key-handler';
+import { MoveHistoryKeyHandler } from '../../services/move-history.key-handler';
 
 @Component({
   selector: 'app-move-history',
   templateUrl: './move-history.component.html',
   styleUrls: ['./move-history.component.scss']
 })
-export class MoveHistoryComponent implements AfterViewInit {
-  public readonly startIndex = -1;
+export class MoveHistoryComponent implements OnInit {
   public math = Math;
 
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
   public menuItems: MenuItem[] = [
-    { label: "white", command: () => this.moveToIndex((2 * this.selectedMove.count) - 2) },
-    { label: "black", command: () => this.moveToIndex((2 * this.selectedMove.count) - 1) }
+    { label: "white", command: () => this.moveHistoryService.moveToIndex((2 * this.selectedMove.count) - 2) },
+    { label: "black", command: () => this.moveHistoryService.moveToIndex((2 * this.selectedMove.count) - 1) }
   ];
   public moveHistory: Move[] = [];
-  private selectedMoveNumber$$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  public selectedMoveNumber$: Observable<number> = this.selectedMoveNumber$$.asObservable();
 
-  private isPlaying$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public isPlaying$: Observable<boolean> = this.isPlaying$$.asObservable();
-
-  private playingInterval: number | undefined = undefined;
-  protected moveHistoryKeyHandler: MoveHistoryKeyHandler;
-
-  constructor(private moveHistoryService: MoveHistoryService,
+  constructor(public moveHistoryService: MoveHistoryService,
     public boardService: ChessBoardService) {
-    this.moveHistoryKeyHandler = new MoveHistoryKeyHandler(this);
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.moveHistoryService.getFullMoveHistory$().subscribe(
       fullMoveHistory => {
         this.fullMoveHistory = fullMoveHistory;
@@ -56,16 +47,6 @@ export class MoveHistoryComponent implements AfterViewInit {
     this.moveHistoryService.getMoveHistory$().subscribe(
       moveHistory => {
         this.moveHistory = moveHistory;
-        this.selectedMoveNumber$$.next(moveHistory.length);
-      }
-    );
-
-    this.isPlaying$.subscribe(
-      isPlaying => {
-        if (!isPlaying && this.playingInterval) {
-          window.clearInterval(this.playingInterval);
-          this.playingInterval = undefined;
-        }
       }
     );
   }
@@ -137,61 +118,5 @@ export class MoveHistoryComponent implements AfterViewInit {
 
   private getEnPassantRepresentation(move: Move): string {
     return move.isEnPassant ? " e.p" : "";
-  }
-
-  public moveToStart(): void {
-    this.moveToStartBoard();
-  }
-
-  public moveBack(): void {
-    this.moveToIndex(this.selectedMoveNumber$$.getValue() - 1 > this.startIndex ? this.selectedMoveNumber$$.getValue() - 1 : this.startIndex);
-  }
-
-  public moveForward(): void {
-    this.moveToIndex(this.selectedMoveNumber$$.getValue() + 1 < this.moveHistory.length - 1 ? this.selectedMoveNumber$$.getValue() + 1 : this.moveHistory.length - 1);
-  }
-
-  public moveToEnd(): void {
-    this.moveToIndex(this.moveHistory.length - 1);
-  }
-
-  private moveToIndex(selectedMoveIndex: number) {
-    console.error("moveToIndex: " + selectedMoveIndex);
-    this.selectedMoveNumber$$.next(selectedMoveIndex);
-    if (selectedMoveIndex === this.startIndex) {
-      this.moveToStartBoard();
-    }
-
-    const selectedMove: Move = this.moveHistory[selectedMoveIndex];
-    const selectedPos: Board | undefined = selectedMove.boardAfterMove;
-
-    if (selectedPos) {
-      this.boardService.loadBoard(selectedPos);
-      this.setFocusToNewMove("fullMove_" + (Math.floor(selectedMoveIndex / 2) + 1));
-    }
-  }
-
-  private moveToStartBoard(): void {
-    console.error("moveToStartBoard: ");
-    const startingBoard = this.boardService.getStartingBoard();
-    this.selectedMoveNumber$$.next(this.startIndex);
-    this.boardService.loadBoard(startingBoard);
-    this.setFocusToNewMove("fullMove_1");
-  }
-
-  public play(): void {
-    this.playingInterval = window.setInterval(() => {
-      this.isPlaying$$.next(true);
-      let selectedMoveIndex: number = this.selectedMoveNumber$$.getValue() + 1;
-      if (!this.isPlaying$$.getValue() || selectedMoveIndex >= this.moveHistory.length - 1) {
-        this.isPlaying$$.next(false);
-      }
-
-      this.moveToIndex(selectedMoveIndex);
-    }, 1000);
-  }
-
-  public pause(): void {
-    this.isPlaying$$.next(false);
   }
 }
