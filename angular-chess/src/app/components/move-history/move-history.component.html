@@ -25,8 +25,8 @@
         id="fullMove_{{fullMove.count}}"
         [pSelectableRow]="fullMove"
         [pContextMenuRow]="fullMove"
-        [class.p-highlight]="(fullMove.count === 1 && (selectedMoveNumber$|async) === startIndex)
-                            ||math.floor((selectedMoveNumber$|async)! / 2) + 1 === fullMove.count"
+        [class.p-highlight]="(fullMove.count === 1 && (moveHistoryService.selectedMoveNumber$|async) === moveHistoryService.startIndex)
+                            ||math.floor((moveHistoryService.selectedMoveNumber$|async)! / 2) + 1 === fullMove.count"
       >
 
         <td>{{fullMove?.count}}</td>
@@ -37,7 +37,7 @@
             *ngIf="fullMove?.whiteMove?.promotedPiece"
             class="chess-motif"
           >
-            {{this.getPromotionRepresentation(fullMove?.whiteMove)}}
+            {{getPromotionRepresentation(fullMove?.whiteMove)}}
           </div>
           {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
         </td>
@@ -48,7 +48,7 @@
             *ngIf="fullMove?.blackMove?.promotedPiece"
             class="chess-motif"
           >
-            {{this.getPromotionRepresentation(fullMove?.blackMove)}}
+            {{getPromotionRepresentation(fullMove?.blackMove)}}
           </div>
           {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
         </td>
@@ -58,65 +58,65 @@
 
   <span class="p-buttonset">
     <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
+      [disabled]="moveHistory.length===0 || (moveHistoryService.selectedMoveNumber$|async)===moveHistoryService.startIndex"
       icon="pi pi-fast-backward"
       pButton
       pRipple
       pTooltip="Move to start position."
       tooltipPosition="top"
-      (click)="this.moveToStart()"
+      (click)="moveHistoryService.moveToStart()"
     >
     </button>
     <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===startIndex"
+      [disabled]="moveHistory.length===0 || (moveHistoryService.selectedMoveNumber$|async)===moveHistoryService.startIndex"
       icon="pi pi-step-backward-alt"
       pButton
       pRipple
       pTooltip="Move back."
       tooltipPosition="top"
-      (click)="this.moveBack()"
+      (click)="moveHistoryService.moveBack()"
     >
     </button>
     <button
       [disabled]="moveHistory.length===0"
-      [class.invisible]="isPlaying$|async"
+      [class.invisible]="moveHistoryService.isPlaying$|async"
       icon="pi pi-play"
       pButton
       pRipple
       pTooltip="Play"
       tooltipPosition="top"
-      (click)="this.play()"
+      (click)="moveHistoryService.play()"
     >
     </button>
     <button
       [disabled]="moveHistory.length===0"
-      [class.invisible]="!(isPlaying$|async)"
+      [class.invisible]="!(moveHistoryService.isPlaying$|async)"
       icon="pi pi-pause"
       pButton
       pRipple
       pTooltip="Pause"
       tooltipPosition="top"
-      (click)="this.pause()"
+      (click)="moveHistoryService.pause()"
     >
     </button>
     <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
+      [disabled]="moveHistory.length===0 || (moveHistoryService.selectedMoveNumber$|async)===moveHistory.length-1"
       icon="pi pi-step-forward-alt"
       pButton
       pRipple
       pTooltip="Move forward."
       tooltipPosition="top"
-      (click)="this.moveForward()"
+      (click)="moveHistoryService.moveForward()"
     >
     </button>
     <button
-      [disabled]="moveHistory.length===0 || (selectedMoveNumber$|async)===moveHistory.length-1"
+      [disabled]="moveHistory.length===0 || (moveHistoryService.selectedMoveNumber$|async)===moveHistory.length-1"
       icon="pi pi-fast-forward"
       pButton
       pRipple
       pTooltip="Move to end position."
       tooltipPosition="top"
-      (click)="this.moveToEnd()"
+      (click)="moveHistoryService.moveToEnd()"
     >
     </button>
   </span>

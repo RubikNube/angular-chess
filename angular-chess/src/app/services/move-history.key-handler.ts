@@ -1,4 +1,5 @@
-import { MoveHistoryComponent } from "./move-history.component";
+import { MoveHistoryComponent } from "../components/move-history/move-history.component";
+import { MoveHistoryService } from "./move-history.service";
 
 /**
  * listen to key events and handles them
@@ -10,20 +11,20 @@ import { MoveHistoryComponent } from "./move-history.component";
  * - ArrowDown: move to end of move history
  */
 export class MoveHistoryKeyHandler {
-    constructor(private moveHistoryComponent: MoveHistoryComponent) {
+    constructor(private moveHistoryService: MoveHistoryService) {
         // subscribe to key events
         document.addEventListener("keydown", (event: KeyboardEvent) => this.handleKeydown(event));
     }
 
     public handleKeydown(event: KeyboardEvent): void {
         if (event.key === "ArrowUp") {
-            this.moveHistoryComponent.moveToStart();
+            this.moveHistoryService.moveToStart();
         } else if (event.key === "ArrowLeft") {
-            this.moveHistoryComponent.moveBack();
+            this.moveHistoryService.moveBack();
         } else if (event.key === "ArrowRight") {
-            this.moveHistoryComponent.moveForward();
+            this.moveHistoryService.moveForward();
         } else if (event.key === "ArrowDown") {
-            this.moveHistoryComponent.moveToEnd();
+            this.moveHistoryService.moveToEnd();
         }
     }
 }

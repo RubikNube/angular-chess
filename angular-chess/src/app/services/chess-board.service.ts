@@ -3,7 +3,6 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
-import CopyUtils from '../utils/copy.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { HighlightingService } from './highlighting.service';
@@ -28,8 +27,6 @@ export class ChessBoardService {
   private board$$: BehaviorSubject<Board> = new BehaviorSubject<Board>(this.initialBoard);
   private board$: Observable<Board> = this.board$$.asObservable();
 
-  private startingBoard: Board | undefined;
-
   public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
   public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
 
@@ -42,11 +39,8 @@ export class ChessBoardService {
 
   constructor(private moveHistoryService: MoveHistoryService,
     private highlightingService: HighlightingService,
-    private persistenceService: PersistenceService) {
-      const persistedStartingBoard = persistenceService.load("startingBoard");
-      if (persistedStartingBoard) {
-        this.startingBoard = persistedStartingBoard;
-      }
+    protected persistenceService: PersistenceService) {
+      this.moveHistoryService.boardToLoad$.subscribe(board => this.loadBoard(board));
       
       const moveHistory = persistenceService.load("moveHistory");
       if (!moveHistory) {
@@ -79,15 +73,6 @@ export class ChessBoardService {
 
   public updateBoard(board: Board): void {
     this.board$$.next(board);
-  }
-
-  public setStartingBoard(board: Board | undefined): void {
-    this.persistenceService.save("startingBoard", board);
-    this.startingBoard = CopyUtils.deepCopyElement(board);
-  }
-
-  public getStartingBoard(): Board | undefined {
-    return this.startingBoard;
   }
 
   public clearEnPassantSquares(): void {
@@ -232,7 +217,7 @@ export class ChessBoardService {
 
   private importFenWithoutHistoryReset(newFen: string) {
     let board: Board = BoardUtils.loadBoardFromFen(newFen);
-    this.setStartingBoard(board);
+    this.moveHistoryService.setStartingBoard(board);
 
     this.loadBoard(board);
   }
@@ -275,7 +260,7 @@ export class ChessBoardService {
     }
 
     let startingBoard: Board = BoardUtils.loadBoardFromFen(STARTING_FEN);
-    this.setStartingBoard(startingBoard);
+    this.moveHistoryService.setStartingBoard(startingBoard);
     const boardFromLastMove: Board | undefined = moves[moves.length - 1].boardAfterMove;
     this.loadBoard(boardFromLastMove);
   }
