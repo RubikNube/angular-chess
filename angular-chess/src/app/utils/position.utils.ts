@@ -188,4 +188,27 @@ export default class PositionUtils {
 
     return squares;
   }
+
+  public static getDiagonalPositionsBetween(start: Position, end: Position):Position[] {
+    const positions: Position[] = [];
+
+    const rowDistance: number = Math.abs(start.row - end.row);
+    const columnDistance: number = Math.abs(start.column - end.column);
+
+    if (rowDistance !== columnDistance) {
+      return [];
+    }
+
+    const rowDirection: number = start.row < end.row ? 1 : -1;
+    const columnDirection: number = start.column < end.column ? 1 : -1;
+
+    for (let i: number = 1; i < rowDistance; i++) {
+      positions.push({
+        row: start.row + (i * rowDirection),
+        column: start.column + (i * columnDirection)
+      });
+    }
+
+    return positions;
+  }
 }

@@ -65,6 +65,44 @@ export default class MoveGenerationUtils {
       moves = matchingHandler.getMoves(piece, board);
     }
 
+    const enemyPieces = board.pieces.filter(p => p.color !== piece.color);
+    const diagonalMovingEnemyPieces = enemyPieces.filter(p => p.type === PieceType.BISHOP || p.type === PieceType.QUEEN);
+
+    const diagonalAttackingMoves = diagonalMovingEnemyPieces.map(enemyPiece => {
+      return this.getValidCaptures(board, enemyPiece, true)
+        .filter(m => m.capturedPiece?.type === PieceType.KING);
+    }).flat();
+
+    // if diagonal attacking moves are available no moves are possible
+    if (diagonalAttackingMoves.length > 0) {
+      // if piece to move is the king, check if the king can move to a safe position
+      if (piece.type === PieceType.KING) {
+        const kingMoves = moves.filter(m => !diagonalAttackingMoves.find(a => PositionUtils.positionEquals(a.to, m.to)));
+        return this.getFreeMovesOnBoard(kingMoves, board, false);
+      }
+      else {
+        // see if piece can block the check
+        const diagonalBlockingMoves = MoveGenerationUtils.getDiagonalBlockingMoves(diagonalAttackingMoves, moves, board, shouldCalculateCheck);
+
+        return this.getFreeMovesOnBoard(diagonalBlockingMoves, board, shouldCalculateCheck);
+      }
+    }
+
+    return this.getFreeMovesOnBoard(moves, board, shouldCalculateCheck);
+  }
+
+  private static getDiagonalBlockingMoves(diagonalAttackingMoves: Move[], moves: Move[], board: Board, shouldCalculateCheck: boolean) {
+    return diagonalAttackingMoves.flatMap(attackingMove => {
+      // get diagonal positions between king and attacking piece
+      const positionsBetween = PositionUtils.getDiagonalPositionsBetween(attackingMove.to, attackingMove.piece.position);
+      // get all moves from this piece that are on the diagonal positions between king and attacking piece
+      const movesBetween = moves.filter(move => positionsBetween.find(p => PositionUtils.positionEquals(p, move.to)));
+
+      return this.getFreeMovesOnBoard(movesBetween, board, shouldCalculateCheck);
+    });
+  }
+
+  private static getFreeMovesOnBoard(moves: Move[], board: Board, shouldCalculateCheck: boolean): Move[] {
     return moves
       .filter(m => PositionUtils.isOnBoard(m.to))
       .filter(m => PositionUtils.isFree(board, m.to))
