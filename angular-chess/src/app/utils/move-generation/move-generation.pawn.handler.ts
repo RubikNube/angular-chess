@@ -6,7 +6,6 @@ import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
-
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.PAWN;
   }
@@ -117,5 +116,20 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
       };
       return [leftUpperField, rightUpperField];
     }
+  }
+
+  public isAttackingKing(piece: Piece, board: Board): boolean {
+    const kingPos = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
+    if (!kingPos) {
+      return false;
+    }
+
+    const captureCandidates = MoveGenerationPawnHandler.getCaptureCandidates(piece);
+
+    return PositionUtils.includes(captureCandidates, kingPos);
+  }
+
+  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+    return [];
   }
 }

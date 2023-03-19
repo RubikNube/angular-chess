@@ -6,7 +6,6 @@ import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationKingHandler implements MoveGenerationHandler {
-
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.KING;
   }
@@ -97,5 +96,13 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     return PositionUtils.getSurroundingSquares(piece)
       .map(PositionUtils.positionToMoveFunction(piece))
       .filter(m => !BoardUtils.isProtected(board, PositionUtils.getPieceOnPos(board, m.to)))
+  }
+
+  public isAttackingKing(): boolean {
+    return false;
+  }
+
+  public getBlockingSquares(): Position[] {
+    return [];
   }
 }

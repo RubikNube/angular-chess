@@ -65,6 +65,27 @@ export default class MoveGenerationUtils {
       moves = matchingHandler.getMoves(piece, board);
     }
 
+    if (piece.type !== PieceType.KING) {
+      const attackingEnemyPieces = this.getKingAttackingPieces(board, piece.color);
+      if (attackingEnemyPieces.length === 1) {
+        const attackingPiece = attackingEnemyPieces[0];
+        const blockingSquares = this.generationHandlers.find(h => h.canHandle(attackingPiece))?.getBlockingSquares(attackingPiece, board);
+        
+        if (blockingSquares !== undefined) {
+          // can piece move to a blocking square?
+          moves = moves.filter(m => blockingSquares.find(s => PositionUtils.positionEquals(s, m.to)));
+        }
+      }
+      
+      if (attackingEnemyPieces.length > 1) {
+        return [];
+      }
+    }
+
+    return this.getFreeMovesOnBoard(moves, board, shouldCalculateCheck);
+  }
+
+  private static getFreeMovesOnBoard(moves: Move[], board: Board, shouldCalculateCheck: boolean): Move[] {
     return moves
       .filter(m => PositionUtils.isOnBoard(m.to))
       .filter(m => PositionUtils.isFree(board, m.to))
@@ -86,6 +107,15 @@ export default class MoveGenerationUtils {
     }
     else {
       console.log("getValidMoves: found no matching handler")
+    }
+
+    // get all pieces that attack the king
+    const enemyAttackingPieces = this.getKingAttackingPieces(board, piece.color);
+
+    // if there are attacking pieces check if the piece can be captured
+    if (enemyAttackingPieces.length > 0) {
+      // filter out all moves that capture the attacking piece
+      captureMoves = captureMoves.filter(m => enemyAttackingPieces.some(p => PositionUtils.positionEquals(p.position, m.to)));
     }
 
     return captureMoves
@@ -110,6 +140,12 @@ export default class MoveGenerationUtils {
         }
         return m;
       });
+  }
+
+  private static getKingAttackingPieces(board: Board, colorOfAttackedKing: Color): Piece[] {
+    return board.pieces
+      .filter(p => p.color !== colorOfAttackedKing)
+      .filter(p => this.generationHandlers.find(h => h.canHandle(p))?.isAttackingKing(p, board));
   }
 
   private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {

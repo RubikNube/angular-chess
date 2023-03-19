@@ -119,7 +119,7 @@ export default class PositionUtils {
     for (let i: number = 1; i <= Math.min(8 - currentRow, currentColumn - 1); i++) {
       squares.push({ row: currentRow + i, column: currentColumn - i });
     }
-    
+
     squares.push(position);
 
     // get diagonal squares from position to lower right corner
@@ -169,6 +169,10 @@ export default class PositionUtils {
     };
   }
 
+  public static sortPositions(positions: Position[]): Position[] {
+    return positions.sort(PositionUtils.comparePositions());
+  }
+
   public static getHorizontalSquares(position: Position): Position[] {
     const squares: Position[] = [];
 
@@ -187,5 +191,72 @@ export default class PositionUtils {
     }
 
     return squares;
+  }
+
+  public static getDiagonalPositionsBetween(start: Position, end: Position): Position[] {
+    const positions: Position[] = [];
+
+    const rowDistance: number = Math.abs(start.row - end.row);
+    const columnDistance: number = Math.abs(start.column - end.column);
+
+    if (rowDistance !== columnDistance) {
+      return [];
+    }
+
+    const rowDirection: number = start.row < end.row ? 1 : -1;
+    const columnDirection: number = start.column < end.column ? 1 : -1;
+
+    for (let i: number = 1; i < rowDistance; i++) {
+      positions.push({
+        row: start.row + (i * rowDirection),
+        column: start.column + (i * columnDirection)
+      });
+    }
+
+    return positions;
+  }
+
+  public static getHorizontalPositionsBetween(start: Position, end: Position): Position[] {
+    const positions: Position[] = [];
+
+    const rowDistance: number = Math.abs(start.row - end.row);
+    const columnDistance: number = Math.abs(start.column - end.column);
+
+    if (rowDistance !== 0 || columnDistance === 0) {
+      return [];
+    }
+
+    const columnDirection: number = start.column < end.column ? 1 : -1;
+
+    for (let i: number = 1; i < columnDistance; i++) {
+      positions.push({
+        row: start.row,
+        column: start.column + (i * columnDirection)
+      });
+    }
+
+    return positions;
+  }
+
+  public static getVerticalPositionsBetween(start: Position, end: Position): Position[] {
+    const positions: Position[] = [];
+
+    const rowDistance: number = Math.abs(start.row - end.row);
+    const columnDistance: number = Math.abs(start.column - end.column);
+
+    if (columnDistance !== 0 || rowDistance === 0) {
+      return [];
+    }
+
+    const rowDirection: number = start.row < end.row ? 1 : -1;
+
+    for (let i: number = 1; i < rowDistance; i++) {
+      positions.push({
+        row: start.row + (i * rowDirection),
+        column: start.column
+      });
+    }
+
+    return positions;
   }
 }

@@ -6,7 +6,6 @@ import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationBishopHandler implements MoveGenerationHandler {
-
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.BISHOP;
   }
@@ -81,5 +80,32 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
       ...backRightSquares];
 
     return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
+  }
+
+  public isAttackingKing(piece: Piece, board: Board): boolean {
+    const frontLeftSquares: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
+    const frontRightSquares: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
+    const backLeftSquares: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
+    const backRightSquares: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
+
+    const fieldsToMove = [
+      ...frontLeftSquares,
+      ...frontRightSquares,
+      ...backLeftSquares,
+      ...backRightSquares];
+
+    return fieldsToMove.some(p => {
+      return PositionUtils.getPieceOnPos(board, p)?.type === PieceType.KING && PositionUtils.getPieceOnPos(board, p)?.color !== piece.color;
+    });
+  }
+
+  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+    const enemyKingPosition = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
+
+    if (!enemyKingPosition) {
+      return [];
+    }
+
+    return PositionUtils.getDiagonalPositionsBetween(piece.position, enemyKingPosition);
   }
 }
