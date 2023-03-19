@@ -5,7 +5,6 @@ import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationQueenHandler implements MoveGenerationHandler {
-
   public canHandle(piece: Piece): boolean {
     return piece.type === PieceType.QUEEN;
   }
@@ -88,6 +87,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       return pinningMovesOnUpperToLowerDiagonal;
     }
 
+    const fieldsToMove = this.getOccupiedSquares(board, piece);
+
+    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
+  }
+
+  private getOccupiedSquares(board: Board, piece: Piece) {
     const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
@@ -105,8 +110,40 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       ...frontLeftSquares,
       ...frontRightSquares,
       ...backLeftSquares,
-      ...backRightSquares];
+      ...backRightSquares
+    ];
+    return fieldsToMove;
+  }
 
-    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
+  public isAttackingKing(piece: Piece, board: Board): boolean {
+    const kingPos = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
+    if (!kingPos) {
+      return false;
+    }
+    const occupiedSquares = this.getOccupiedSquares(board, piece);
+
+    return PositionUtils.includes(occupiedSquares, kingPos);
+  }
+
+  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+    // get horizontal squares between king and rook
+    const kingPos = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
+    if (!kingPos) {
+      return [];
+    }
+
+    // are king and rook on the same row?
+    if (kingPos.row === piece.position.row) {
+      // get squares between king and rook
+      return PositionUtils.getHorizontalPositionsBetween(piece.position, kingPos);
+    }
+
+    // are king and rook on the same column?
+    if (kingPos.column === piece.position.column) {
+      // get squares between king and rook
+      return PositionUtils.getVerticalPositionsBetween(piece.position, kingPos);
+    }
+
+    return PositionUtils.getDiagonalPositionsBetween(piece.position, kingPos);
   }
 }

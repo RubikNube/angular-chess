@@ -234,4 +234,93 @@ describe('PositionUtils', () => {
       expect(actualPositions).toEqual(expectedPositions);
     });
   })
+
+  describe('getHorizontalPositionsBetween', () => {
+    function getHorizontalPositionsBetween(description: string, start: Position, end: Position, expectedPositions: Position[]) {
+      it(description, () => {
+        const sortedExpectedPositions: Position[] = expectedPositions.sort(PositionUtils.comparePositions());
+        const actualPositions: Position[] = PositionUtils.getHorizontalPositionsBetween(start, end).sort(PositionUtils.comparePositions());
+
+        expect(actualPositions).toEqual(sortedExpectedPositions);
+      });
+    }
+
+    getHorizontalPositionsBetween(
+      'should return b1-g1 row for a1 and h1',
+      { column: 1, row: 1 },
+      { column: 8, row: 1 },
+      [
+        { column: 2, row: 1 },
+        { column: 3, row: 1 },
+        { column: 4, row: 1 },
+        { column: 5, row: 1 },
+        { column: 6, row: 1 },
+        { column: 7, row: 1 }
+      ]      
+    );
+
+    getHorizontalPositionsBetween(
+      'should return b2-f2 row for a2 and g2',
+      { column: 1, row: 2 },
+      { column: 7, row: 2 },
+      [
+        { column: 2, row: 2 },
+        { column: 3, row: 2 },
+        { column: 4, row: 2 },
+        { column: 5, row: 2 },
+        { column: 6, row: 2 }
+      ]
+    );
+
+    getHorizontalPositionsBetween(
+      'should return no positions for a2 and h7',
+      { column: 1, row: 2 },
+      { column: 8, row: 7 },
+      []
+    );
+  });
+
+  describe('getVerticalPositionsBetween', () => {
+    function getVerticalPositionsBetween(description: string, start: Position, end: Position, expectedPositions: Position[]) {
+      it(description, () => {
+        const sortedExpectedPositions: Position[] = expectedPositions.sort(PositionUtils.comparePositions());
+        const actualPositions: Position[] = PositionUtils.getVerticalPositionsBetween(start, end).sort(PositionUtils.comparePositions());
+
+        expect(actualPositions).toEqual(sortedExpectedPositions);
+      });
+    }
+
+    getVerticalPositionsBetween(
+      'should return a2-a7 column for a1 and a8',
+      { column: 1, row: 1 },
+      { column: 1, row: 8 },
+      [
+        { column: 1, row: 2 },
+        { column: 1, row: 3 },
+        { column: 1, row: 4 },
+        { column: 1, row: 5 },
+        { column: 1, row: 6 },
+        { column: 1, row: 7 }
+      ]
+    );
+
+    getVerticalPositionsBetween(
+      'should return c3-c6 column for c7 and c2',
+      { column: 3, row: 7 },
+      { column: 3, row: 2 },
+      [
+        { column: 3, row: 6 },
+        { column: 3, row: 5 },
+        { column: 3, row: 4 },
+        { column: 3, row: 3 }
+      ]
+    );
+
+    getVerticalPositionsBetween(
+      'should return no positions for a2 and h7',
+      { column: 1, row: 2 },
+      { column: 8, row: 7 },
+      []
+    );
+  });
 });

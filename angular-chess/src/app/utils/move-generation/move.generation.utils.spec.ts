@@ -1122,6 +1122,14 @@ describe('MoveGenerationUtils', () => {
 
         expect(validCaptures).toEqual([]);
       });
+
+      it('should generate no captures if king is checked diagonally and check giving piece cannot be captured', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("3k4/8/8/8/8/r7/2N1q3/3K4 w - - 0 1");
+        let knight: Piece = { type: PieceType.KNIGHT, position: { column: 3, row: 2 }, color: Color.WHITE };
+        let validCaptures = MoveGenerationUtils.getValidCaptures(board, knight);
+
+        expect(validCaptures).toEqual([]);
+      });
     });
   });
 });
