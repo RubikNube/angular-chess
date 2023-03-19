@@ -374,6 +374,15 @@ describe('MoveGenerationUtils', () => {
         expect(validMoves).toEqual(expectedMoves);
       });
 
+      it('should generate no moves when rook is partially pinned from bottom but diagonally attacked', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("4k3/4r3/8/1B6/8/8/8/2K1R3 b - - 0 1");
+        let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 7 }, color: Color.BLACK };
+
+        let validMoves = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+        expect(validMoves).toEqual([]);
+      });
+
       it('should generate rook moves when same colored rook is "pinning" it', () => {
         let board: Board = BoardUtils.loadBoardFromFen("r4rk1/p1q2ppp/1p2pb2/2n5/2B5/2P1BQ1P/PP3PP1/R2R2K1 w - - 0 1");
         let rook: Piece = { type: PieceType.ROOK, position: { column: 4, row: 1 }, color: Color.WHITE };
@@ -394,6 +403,15 @@ describe('MoveGenerationUtils', () => {
         let validCaptures = MoveGenerationUtils.getValidMoves(board, rook, true).sort(compareColumns);
 
         expect(validCaptures).toEqual(expectedCaptures);
+      });
+
+      it('should generate no moves if king is double checked', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("4k3/5r2/8/1B6/8/8/8/2K1R3 b - - 0 1");
+        let rook: Piece = { type: PieceType.ROOK, position: { column: 6, row: 7 }, color: Color.BLACK };
+
+        let validCaptures = MoveGenerationUtils.getValidMoves(board, rook, true);
+
+        expect(validCaptures).toEqual([]);
       });
     });
 
@@ -978,6 +996,18 @@ describe('MoveGenerationUtils', () => {
 
         expect(validCaptures).toEqual([]);
       });
+
+      it('should generate valid captures on a full board', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("4qr2/2p1b1pk/prPpb2p/N2Np2n/4Pp2/1P1Q1P2/P1P3PP/R1BR2K1 b - - 0 1");
+        let bishop: Piece = { type: PieceType.BISHOP, position: { column: 5, row: 6 }, color: Color.BLACK };
+        let validCaptures = MoveGenerationUtils.getValidCaptures(board, bishop);
+
+        let expectedCaptures: Move[] = [
+          { piece: bishop, from: { column: 5, row: 6 }, to: { column: 4, row: 5 }, isCheck: false, capturedPiece: { type: PieceType.KNIGHT, position: { column: 4, row: 5 }, color: Color.WHITE } },
+        ];
+
+        expect(validCaptures).toEqual(expectedCaptures);
+      });
     });
 
     describe('for rook', () => {
@@ -1055,6 +1085,15 @@ describe('MoveGenerationUtils', () => {
         let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
 
         expect(validCaptures).toEqual(expectedCaptures);
+      });
+
+      it('should generate no captures if rook is partially pinned bottom and diagonally attacked', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("4k3/4r3/8/1B6/8/8/8/2K1R3 b - - 0 1");
+        let rook: Piece = { type: PieceType.ROOK, position: { column: 5, row: 7 }, color: Color.BLACK };
+
+        let validCaptures = MoveGenerationUtils.getValidCaptures(board, rook);
+
+        expect(validCaptures).toEqual([]);
       });
     });
 

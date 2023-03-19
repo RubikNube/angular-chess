@@ -65,41 +65,24 @@ export default class MoveGenerationUtils {
       moves = matchingHandler.getMoves(piece, board);
     }
 
-    const enemyPieces = board.pieces.filter(p => p.color !== piece.color);
-    const diagonalMovingEnemyPieces = enemyPieces.filter(p => p.type === PieceType.BISHOP || p.type === PieceType.QUEEN);
-
-    const diagonalAttackingMoves = diagonalMovingEnemyPieces.map(enemyPiece => {
-      return this.getValidCaptures(board, enemyPiece, true)
-        .filter(m => m.capturedPiece?.type === PieceType.KING);
-    }).flat();
-
-    // if diagonal attacking moves are available no moves are possible
-    if (diagonalAttackingMoves.length > 0) {
-      // if piece to move is the king, check if the king can move to a safe position
-      if (piece.type === PieceType.KING) {
-        const kingMoves = moves.filter(m => !diagonalAttackingMoves.find(a => PositionUtils.positionEquals(a.to, m.to)));
-        return this.getFreeMovesOnBoard(kingMoves, board, false);
+    if (piece.type !== PieceType.KING) {
+      const attackingEnemyPieces = this.getKingAttackingPieces(board, piece.color);
+      if (attackingEnemyPieces.length === 1) {
+        const attackingPiece = attackingEnemyPieces[0];
+        const blockingSquares = this.generationHandlers.find(h => h.canHandle(attackingPiece))?.getBlockingSquares(attackingPiece, board);
+        
+        if (blockingSquares !== undefined) {
+          // can piece move to a blocking square?
+          moves = moves.filter(m => blockingSquares.find(s => PositionUtils.positionEquals(s, m.to)));
+        }
       }
-      else {
-        // see if piece can block the check
-        const diagonalBlockingMoves = MoveGenerationUtils.getDiagonalBlockingMoves(diagonalAttackingMoves, moves, board, shouldCalculateCheck);
-
-        return this.getFreeMovesOnBoard(diagonalBlockingMoves, board, shouldCalculateCheck);
+      
+      if (attackingEnemyPieces.length > 1) {
+        return [];
       }
     }
 
     return this.getFreeMovesOnBoard(moves, board, shouldCalculateCheck);
-  }
-
-  private static getDiagonalBlockingMoves(diagonalAttackingMoves: Move[], moves: Move[], board: Board, shouldCalculateCheck: boolean) {
-    return diagonalAttackingMoves.flatMap(attackingMove => {
-      // get diagonal positions between king and attacking piece
-      const positionsBetween = PositionUtils.getDiagonalPositionsBetween(attackingMove.to, attackingMove.piece.position);
-      // get all moves from this piece that are on the diagonal positions between king and attacking piece
-      const movesBetween = moves.filter(move => positionsBetween.find(p => PositionUtils.positionEquals(p, move.to)));
-
-      return this.getFreeMovesOnBoard(movesBetween, board, shouldCalculateCheck);
-    });
   }
 
   private static getFreeMovesOnBoard(moves: Move[], board: Board, shouldCalculateCheck: boolean): Move[] {
@@ -126,6 +109,15 @@ export default class MoveGenerationUtils {
       console.log("getValidMoves: found no matching handler")
     }
 
+    // get all pieces that attack the king
+    const enemyAttackingPieces = this.getKingAttackingPieces(board, piece.color);
+
+    // if there are attacking pieces check if the piece can be captured
+    if (enemyAttackingPieces.length > 0) {
+      // filter out all moves that capture the attacking piece
+      captureMoves = captureMoves.filter(m => enemyAttackingPieces.some(p => PositionUtils.positionEquals(p.position, m.to)));
+    }
+
     return captureMoves
       .filter(m => this.isOppositeColoredPieceOnPos(board, m.to, piece.color) || m.isEnPassant)
       .map(m => {
@@ -148,6 +140,12 @@ export default class MoveGenerationUtils {
         }
         return m;
       });
+  }
+
+  private static getKingAttackingPieces(board: Board, colorOfAttackedKing: Color): Piece[] {
+    return board.pieces
+      .filter(p => p.color !== colorOfAttackedKing)
+      .filter(p => this.generationHandlers.find(h => h.canHandle(p))?.isAttackingKing(p, board));
   }
 
   private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {

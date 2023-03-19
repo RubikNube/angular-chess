@@ -62,6 +62,13 @@ describe('MoveGenerationBishopHandler', () => {
       { column: 5, row: 5 },
       false
     );
+
+    isAttackingKing(
+      'should return false if bishop if two pieces are blocking check',
+      'B7/5N2/8/3b4/8/5k2/N7/7K b - - 0 1',
+      { column: 1, row: 8 },
+      false
+    );
   });
 
   describe('getBlockingSquares', () => {
