@@ -1,7 +1,5 @@
 import { Board, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
-import BoardUtils from "../board.utils";
-import CopyUtils from "../copy.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -29,6 +27,24 @@ export default class MoveGenerationUtils {
     }, true);
 
     return validCaptures.find(c => c.capturedPiece?.type === PieceType.KING) !== undefined;
+  }
+
+  public static isMate(board: Board): boolean {
+    // get all pieces of current player
+    const pieces: Piece[] = board.pieces.filter(p => p.color === board.playerToMove);
+
+    // get all valid moves of current player
+    let moves: Move[] = [];
+    for (let piece of pieces) {
+      moves = moves.concat(this.getValidMoves(board, piece, false));
+    }
+
+    // get all the valid captures of current player
+    for (let piece of pieces) {
+      moves = moves.concat(this.getValidCaptures(board, piece, false));
+    }
+
+    return moves.length === 0;
   }
 
   public static getExecutableMoves(board: Board, dropPos: Position, color: Color): Move[] {
@@ -70,13 +86,13 @@ export default class MoveGenerationUtils {
       if (attackingEnemyPieces.length === 1) {
         const attackingPiece = attackingEnemyPieces[0];
         const blockingSquares = this.generationHandlers.find(h => h.canHandle(attackingPiece))?.getBlockingSquares(attackingPiece, board);
-        
+
         if (blockingSquares !== undefined) {
           // can piece move to a blocking square?
           moves = moves.filter(m => blockingSquares.find(s => PositionUtils.positionEquals(s, m.to)));
         }
       }
-      
+
       if (attackingEnemyPieces.length > 1) {
         return [];
       }
@@ -151,5 +167,16 @@ export default class MoveGenerationUtils {
   private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
     const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
     return pieceOnPos ? pieceOnPos.color !== color : false;
+  }
+
+  public static calculateAttackedSquares(board: Board, colorOfPieces: Color): Position[] {
+    // get all pieces of the color
+    const pieces = board.pieces.filter(p => p.color === colorOfPieces);
+    // get all attacked squares of the pieces
+    return pieces.map(p => this.generationHandlers
+      .find(h => h.canHandle(p))
+      ?.getAttackingSquares(p, board))
+      .filter(s => s !== undefined)      
+      .flat() as Position[];
   }
 }

@@ -9,7 +9,6 @@ import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
-import BoardUtils from '../utils/board.utils';
 import MoveExecutionUtils from '../utils/move-execution.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
@@ -67,9 +66,6 @@ export class ChessBoardComponent implements OnInit {
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
       console.log("getMoveHistory: " + moveHistory.length);
-      let board = boardService.getBoard();
-      boardService.setAttackedSquaresFromBlack(BoardUtils.calculateAttackedSquares(board, Color.BLACK));
-      boardService.setAttackedSquaresFromWhite(BoardUtils.calculateAttackedSquares(board, Color.WHITE));
     });
   }
 

@@ -7,4 +7,5 @@ export interface MoveGenerationHandler {
   getCaptures(piece: Piece, board: Board): Move[];
   isAttackingKing(piece: Piece, board: Board): boolean;
   getBlockingSquares(piece: Piece, board: Board): Position[];
+  getAttackingSquares(piece: Piece, board: Board): Position[];
 }

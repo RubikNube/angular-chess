@@ -30,11 +30,6 @@ export class ChessBoardService {
   public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
   public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
 
-  private attackedSquaresFromBlack$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
-  private attackedSquaresFromBlack$: Observable<Position[]> = this.attackedSquaresFromBlack$$.asObservable();
-  private attackedSquaresFromWhite$$: BehaviorSubject<Position[]> = new BehaviorSubject<Position[]>([]);
-  private attackedSquaresFromWhite$: Observable<Position[]> = this.attackedSquaresFromWhite$$.asObservable();
-
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
 
   constructor(private moveHistoryService: MoveHistoryService,
@@ -158,39 +153,6 @@ export class ChessBoardService {
 
   public getPlayerToMove(): Color {
     return this.board$$.getValue().playerToMove;
-  }
-
-  public setAttackedSquaresFromBlack(squares: Position[]): void {
-    this.attackedSquaresFromBlack$$.next(squares);
-  }
-
-  public getAttackedSquaresFromBlack$(): Observable<Position[]> {
-    return this.attackedSquaresFromBlack$;
-  }
-
-  public getAttackedSquares(color: Color): Position[] {
-    if (color === Color.WHITE) {
-      return this.attackedSquaresFromWhite$$.getValue();
-    }
-    else {
-      return this.attackedSquaresFromBlack$$.getValue();
-    }
-  }
-
-  public getAttackedSquaresFromBlack(): Position[] {
-    return this.attackedSquaresFromBlack$$.getValue();
-  }
-
-  public setAttackedSquaresFromWhite(squares: Position[]) {
-    this.attackedSquaresFromWhite$$.next(squares);
-  }
-
-  public getAttackedSquaresFromWhite$(): Observable<Position[]> {
-    return this.attackedSquaresFromWhite$;
-  }
-
-  public getAttackedSquaresFromWhite(): Position[] {
-    return this.attackedSquaresFromWhite$$.getValue();
   }
 
   public setFen(fen: string): void {

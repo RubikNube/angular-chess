@@ -1,7 +1,6 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
-import { MoveGenerationPawnHandler } from "./move-generation/move-generation.pawn.handler";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
@@ -147,48 +146,6 @@ export default class BoardUtils {
     return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
   }
 
-  public static calculateAttackedSquares(board: Board, colorOfPieces: Color, includeKing?: boolean): Position[] {
-    const attackedSquares: Set<Position> = new Set<Position>();
-
-    board.pieces
-      .filter(p => p.color === colorOfPieces)
-      .forEach(p => {
-        if (p.type === PieceType.KING) {
-          if (includeKing !== undefined && !includeKing) {
-            return;
-          }
-          else {
-            PositionUtils.getSurroundingSquares(p)
-              .filter(this.isOnBoardFunction())
-              .forEach(m => {
-                attackedSquares.add(m);
-              })
-          }
-        }
-        else {
-          if (p.type === PieceType.PAWN) {
-            MoveGenerationPawnHandler.getCaptureCandidates(p)
-              .forEach(m => {
-                attackedSquares.add(m);
-              });
-          }
-          else {
-            MoveGenerationUtils.getValidMoves(board, p, true)
-              .map(m => m.to).forEach(m => {
-                attackedSquares.add(m);
-              });
-
-            MoveGenerationUtils.getValidCaptures(board, p, true)
-              .map(m => m.to).forEach(m => {
-                attackedSquares.add(m);
-              });
-          }
-        }
-      });
-
-    return Array.from(attackedSquares.values());
-  }
-
   public static calculateBlockingSquares(board: Board, colorOfPieces: Color): Position[] {
     const blockingSquares: Set<Position> = new Set<Position>();
 
@@ -251,22 +208,6 @@ export default class BoardUtils {
       });
 
     return Array.from(attackedSquares.values());
-  }
-
-  public static isMate(board: Board): boolean {
-    const king: Piece = this.getKing(board, board.playerToMove);
-    const attackedSquares: Position[] = this.calculateAttackedSquares(board, PieceUtils.getOpposedColor(board.playerToMove));
-    const attackingMoves: Move[] = this.calculateMovesThatCapturePiece(board, king);
-
-    const isCheck = this.isCheck(attackedSquares, king.position);
-    const hasNoEscapeSquares = !this.hasEscapeSquares(board, attackedSquares, king);
-    const cannotBlockChecks = !this.canBlockChecks(board, king, attackingMoves);
-    const cannotCaptureAttackingPiece = !this.canCaptureAttackingPiece(board, attackingMoves);
-
-    return isCheck
-      && hasNoEscapeSquares
-      && cannotBlockChecks
-      && cannotCaptureAttackingPiece;
   }
 
   private static isCheck(attackedSquares: Position[], kingPosition: Position): boolean {

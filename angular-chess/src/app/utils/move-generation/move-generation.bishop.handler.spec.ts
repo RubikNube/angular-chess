@@ -110,4 +110,77 @@ describe('MoveGenerationBishopHandler', () => {
       []
     );
   });
+
+  describe('getAttackingSquares', () => {
+    function getAttackingSquares(description: string, fen: string, bishopPosition: Position, expectedAttackingSquares: Position[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: Color.WHITE };
+        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(bishop, board));
+
+        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+      });
+    }
+
+    getAttackingSquares(
+      'should return correct squares if bishop is not obstructed',
+      '8/8/4k3/8/3B4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 7, row: 7 }, 
+        { column: 8, row: 8 },
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should ignore enemy king',
+      '8/8/5k2/8/3B4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 7, row: 7 }, 
+        { column: 8, row: 8 },
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should not ignore blocking enemy piece',
+      '8/6k1/5n2/8/3B4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 }
+      ]
+    );
+  });
 });

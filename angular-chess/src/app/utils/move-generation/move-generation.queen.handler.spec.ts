@@ -145,4 +145,119 @@ describe('MoveGenerationQueenHandler', () => {
       []
     );
   });
+
+  describe('getAttackingSquares', () => {
+    function getAttackingSquares(description: string, fen: string, queenPosition: Position, expectedAttackingSquares: Position[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
+        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(queen, board));
+
+        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+      });
+    }
+
+    getAttackingSquares(
+      'should return correct squares if queen is not obstructed',
+      '8/8/4k3/8/3Q4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 7, row: 7 }, 
+        { column: 8, row: 8 },
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 },
+        { column: 1, row: 4 },
+        { column: 2, row: 4 },
+        { column: 3, row: 4 },
+        { column: 5, row: 4 },
+        { column: 6, row: 4 },
+        { column: 7, row: 4 },
+        { column: 8, row: 4 },
+        { column: 4, row: 1 },
+        { column: 4, row: 2 },
+        { column: 4, row: 3 },
+        { column: 4, row: 5 },
+        { column: 4, row: 6 },
+        { column: 4, row: 7 },
+        { column: 4, row: 8 }        
+      ]
+    );
+
+    getAttackingSquares(
+      'should ignore enemy king',
+      '8/8/5k2/8/3Q4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 7, row: 7 }, 
+        { column: 8, row: 8 },
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 },
+        { column: 1, row: 4 },
+        { column: 2, row: 4 },
+        { column: 3, row: 4 },
+        { column: 5, row: 4 },
+        { column: 6, row: 4 },
+        { column: 7, row: 4 },
+        { column: 8, row: 4 },
+        { column: 4, row: 1 },
+        { column: 4, row: 2 },
+        { column: 4, row: 3 },
+        { column: 4, row: 5 },
+        { column: 4, row: 6 },
+        { column: 4, row: 7 },
+        { column: 4, row: 8 }        
+      ]
+    );
+
+    getAttackingSquares(
+      'should not ignore blocking enemy piece',
+      '8/6k1/5n2/8/3Q4/8/8/4K3 w - - 0 1',
+      { column: 4, row: 4 },
+      [
+        { column: 1, row: 1 }, 
+        { column: 2, row: 2 }, 
+        { column: 3, row: 3 }, 
+        { column: 5, row: 5 }, 
+        { column: 6, row: 6 }, 
+        { column: 1, row: 7 },
+        { column: 2, row: 6 },
+        { column: 3, row: 5 },
+        { column: 5, row: 3 },
+        { column: 6, row: 2 },
+        { column: 7, row: 1 },
+        { column: 1, row: 4 },
+        { column: 2, row: 4 },
+        { column: 3, row: 4 },
+        { column: 5, row: 4 },
+        { column: 6, row: 4 },
+        { column: 7, row: 4 },
+        { column: 8, row: 4 },
+        { column: 4, row: 1 },
+        { column: 4, row: 2 },
+        { column: 4, row: 3 },
+        { column: 4, row: 5 },
+        { column: 4, row: 6 },
+        { column: 4, row: 7 },
+        { column: 4, row: 8 }        
+      ]
+    );
+  });
 });

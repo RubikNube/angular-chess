@@ -55,17 +55,48 @@ describe('MoveGenerationPawnHandler', () => {
     }
 
     getBlockingSquares(
-      'should return empty array if pawn is not attacking king',
+      'should return no squares if pawn is not attacking king',
       '8/8/4k3/4P3/8/8/8/2K5 w - - 0 1',
       { column: 5, row: 5 },
       []
     );
 
     getBlockingSquares(
-      'should return empty array if pawn is attacking king',
+      'should return no squares if pawn is attacking king',
       '8/8/5k2/4P3/8/8/8/2K5 w - - 0 1',
       { column: 5, row: 5 },
       []
+    );
+  });
+
+  describe('getAttackingSquares', () => {
+    function getAttackingSquares(description: string, fen: string, pawnPosition: Position, expectedAttackingSquares: Position[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: Color.WHITE };
+        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(pawn, board));
+
+        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+      });
+    }
+
+    getAttackingSquares(
+      'should return upper left and upper right squares',
+      '8/8/4k3/4P3/8/8/8/2K5 w - - 0 1',
+      { column: 5, row: 5 },
+      [
+        { column: 4, row: 6 },
+        { column: 6, row: 6 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should return only attacked squares on the board',
+      '8/8/4k3/P7/8/8/8/2K5 w - - 0 1',
+      { column: 1, row: 5 },
+      [
+        { column: 2, row: 6 }
+      ]
     );
   });
 });

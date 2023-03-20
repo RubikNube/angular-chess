@@ -132,4 +132,9 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
   public getBlockingSquares(piece: Piece, board: Board): Position[] {
     return [];
   }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    return MoveGenerationPawnHandler.getCaptureCandidates(piece)
+      .filter(p => PositionUtils.isOnBoard(p));
+  }
 }

@@ -95,4 +95,9 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
   public getBlockingSquares(piece: Piece, board: Board): Position[] {
     return [];
   }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    return this.getValidKnightMoves(piece)
+      .filter(p => PositionUtils.isOnBoard(p));
+  }
 }
