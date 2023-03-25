@@ -1,6 +1,7 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -30,16 +31,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
       return pinningMovesOnUpperToLowerDiagonal;
     }
 
-    const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-    const frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-    const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-    const backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
-
-    const fieldsToMove = [
-      ...frontLeftSquares,
-      ...frontRightSquares,
-      ...backLeftSquares,
-      ...backRightSquares];
+    const fieldsToMove = this.getFreeSquares(board, piece);
 
     return fieldsToMove.map(p => {
       return {
@@ -48,6 +40,20 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
         to: p
       }
     });
+  }
+
+  private getFreeSquares(board: Board, piece: Piece) {
+    const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
+    const frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
+    const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
+    const backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
+
+    return [
+      ...frontLeftSquares,
+      ...frontRightSquares,
+      ...backLeftSquares,
+      ...backRightSquares
+    ];
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
@@ -68,31 +74,27 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
       return pinningMovesOnUpperToLowerDiagonal;
     }
 
-    const frontLeftSquares: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-    const frontRightSquares: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-    const backLeftSquares: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-    const backRightSquares: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
-
-    const fieldsToMove = [
-      ...frontLeftSquares,
-      ...frontRightSquares,
-      ...backLeftSquares,
-      ...backRightSquares];
+    const fieldsToMove = this.getOccupiedSquares(board, piece);
 
     return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
   }
 
-  public isAttackingKing(piece: Piece, board: Board): boolean {
+  private getOccupiedSquares(board: Board, piece: Piece) {
     const frontLeftSquares: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
     const frontRightSquares: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
     const backLeftSquares: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
     const backRightSquares: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
 
-    const fieldsToMove = [
+    return [
       ...frontLeftSquares,
       ...frontRightSquares,
       ...backLeftSquares,
-      ...backRightSquares];
+      ...backRightSquares
+    ];
+  }
+
+  public isAttackingKing(piece: Piece, board: Board): boolean {
+    const fieldsToMove = this.getOccupiedSquares(board, piece);
 
     return fieldsToMove.some(p => {
       return PositionUtils.getPieceOnPos(board, p)?.type === PieceType.KING && PositionUtils.getPieceOnPos(board, p)?.color !== piece.color;
@@ -107,5 +109,14 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
     }
 
     return PositionUtils.getDiagonalPositionsBetween(piece.position, enemyKingPosition);
+  }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    copiedBoard.pieces= copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
+    const freeSquares = this.getFreeSquares(copiedBoard, piece);
+    const occupiedSquares = this.getOccupiedSquares(copiedBoard, piece);
+
+    return [...freeSquares, ...occupiedSquares];
   }
 }

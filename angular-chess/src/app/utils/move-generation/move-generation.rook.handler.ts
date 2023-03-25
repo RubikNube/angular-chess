@@ -1,6 +1,7 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -28,6 +29,12 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       return verticalPinningMoves;
     }
 
+    const fieldsToMove = this.getFreeSquares(board, piece);
+
+    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece))
+  }
+
+  private getFreeSquares(board: Board, piece: Piece) {
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
@@ -37,9 +44,9 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       ...frontSquares,
       ...backSquares,
       ...leftSquares,
-      ...rightSquares];
-
-    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece))
+      ...rightSquares
+    ];
+    return fieldsToMove;
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
@@ -110,5 +117,12 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
     }
 
     return [];
+  }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    copiedBoard.pieces= copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
+
+    return [...this.getFreeSquares(copiedBoard, piece), ...this.getOccupiedSquares(copiedBoard, piece)];
   }
 }

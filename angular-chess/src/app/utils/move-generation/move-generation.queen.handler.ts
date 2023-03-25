@@ -1,6 +1,7 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
@@ -34,6 +35,18 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       return pinningMovesOnUpperToLowerDiagonal;
     }
 
+    const fieldsToMove = this.getFreeSquares(board, piece);
+
+    return fieldsToMove.map(p => {
+      return {
+        piece: piece,
+        from: piece.position,
+        to: p
+      }
+    });
+  }
+
+  private getFreeSquares(board: Board, piece: Piece) {
     const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
     const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
     const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
@@ -43,7 +56,7 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
     const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
     const backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
 
-    const fieldsToMove = [
+    return [
       ...frontSquares,
       ...backSquares,
       ...leftSquares,
@@ -51,15 +64,8 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
       ...frontLeftSquares,
       ...frontRightSquares,
       ...backLeftSquares,
-      ...backRightSquares];
-
-    return fieldsToMove.map(p => {
-      return {
-        piece: piece,
-        from: piece.position,
-        to: p
-      }
-    });
+      ...backRightSquares
+    ];
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
@@ -145,5 +151,12 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
     }
 
     return PositionUtils.getDiagonalPositionsBetween(piece.position, kingPos);
+  }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    copiedBoard.pieces= copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
+
+    return [...this.getFreeSquares(copiedBoard, piece), ...this.getOccupiedSquares(copiedBoard, piece)];
   }
 }

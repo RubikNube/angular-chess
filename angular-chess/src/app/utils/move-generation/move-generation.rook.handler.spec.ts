@@ -75,4 +75,80 @@ describe('MoveGenerationRookHandler', () => {
       [{ column: 5, row: 2 }, { column: 5, row: 3 }, { column: 5, row: 4 }]
     );
   });
+
+  describe('getAttackingSquares', () => {
+    function getAttackingSquares(description: string, fen: string, rookPosition: Position, expectedAttackingSquares: Position[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const rook: Piece = { type: PieceType.ROOK, position: rookPosition, color: Color.WHITE };
+        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(rook, board));
+
+        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+      });
+    }
+
+    getAttackingSquares(
+      'should return free squares where the rook can move',
+      '8/8/k7/4R3/8/8/8/2K5 w - - 0 1',
+      { column: 5, row: 5 },
+      [
+        { column: 1, row: 5 },
+        { column: 2, row: 5 },
+        { column: 3, row: 5 },
+        { column: 4, row: 5 },
+        { column: 5, row: 1 },
+        { column: 5, row: 2 },
+        { column: 5, row: 3 },
+        { column: 5, row: 4 },
+        { column: 5, row: 6 },
+        { column: 5, row: 7 },
+        { column: 5, row: 8 },
+        { column: 6, row: 5 },
+        { column: 7, row: 5 },
+        { column: 8, row: 5 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should ignore the enemy king',
+      '8/8/8/2k1R3/8/8/8/2K5 w - - 0 1',
+      { column: 5, row: 5 },
+      [
+        { column: 1, row: 5 },
+        { column: 2, row: 5 },
+        { column: 3, row: 5 },
+        { column: 4, row: 5 },
+        { column: 5, row: 1 },
+        { column: 5, row: 2 },
+        { column: 5, row: 3 },
+        { column: 5, row: 4 },
+        { column: 5, row: 6 },
+        { column: 5, row: 7 },
+        { column: 5, row: 8 },
+        { column: 6, row: 5 },
+        { column: 7, row: 5 },
+        { column: 8, row: 5 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should not ignore blocking pieces',
+      '8/8/8/1kn1R3/8/8/8/2K5 w - - 0 1',
+      { column: 5, row: 5 },
+      [
+        { column: 3, row: 5 },
+        { column: 4, row: 5 },
+        { column: 5, row: 1 },
+        { column: 5, row: 2 },
+        { column: 5, row: 3 },
+        { column: 5, row: 4 },
+        { column: 5, row: 6 },
+        { column: 5, row: 7 },
+        { column: 5, row: 8 },
+        { column: 6, row: 5 },
+        { column: 7, row: 5 },
+        { column: 8, row: 5 }
+      ]
+    );
+  });
 });

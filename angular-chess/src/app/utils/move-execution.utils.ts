@@ -1,7 +1,6 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, Color, Result } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
-import BoardUtils from "./board.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PositionUtils from "./position.utils";
 
@@ -75,7 +74,7 @@ export default class MoveExecutionUtils {
     move.isCheck = MoveGenerationUtils.isCheck(boardBuilder.build(), move);
 
     if (move.isCheck) {
-      move.isMate = BoardUtils.isMate(boardBuilder.build());
+      move.isMate = MoveGenerationUtils.isMate(boardBuilder.build());
 
       if (move.isMate) {
         boardBuilder.result(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);

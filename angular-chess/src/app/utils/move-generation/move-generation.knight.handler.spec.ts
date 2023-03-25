@@ -61,4 +61,42 @@ describe('MoveGenerationKnightHandler', () => {
       []
     );
   });
+
+  describe('getAttackingSquares', () => {
+    function getAttackingSquares(description: string, fen: string, knightPosition: Position, expectedAttackingSquares: Position[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const knight: Piece = { type: PieceType.KNIGHT, position: knightPosition, color: Color.WHITE };
+        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(knight, board));
+
+        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+      });
+    }
+
+    getAttackingSquares(
+      'should return all squares where the knight can jump to',
+      '8/6k1/8/4N3/8/8/8/2K5 w - - 0 1',
+      { column: 5, row: 5 },
+      [
+        { column: 3, row: 4 },
+        { column: 3, row: 6 },
+        { column: 4, row: 3 },
+        { column: 4, row: 7 },
+        { column: 6, row: 3 },
+        { column: 6, row: 7 },
+        { column: 7, row: 4 },
+        { column: 7, row: 6 }
+      ]
+    );
+
+    getAttackingSquares(
+      'should return only the squares on the board where the knight can jump to',
+      'N7/6k1/8/8/8/8/8/2K5 w - - 0 1',
+      { column: 1, row: 8 },
+      [
+        { column: 3, row: 7 },
+        { column: 2, row: 6 }        
+      ]
+    );
+  });
 });

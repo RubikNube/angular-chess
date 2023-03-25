@@ -1,9 +1,11 @@
 import { Board, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
+import MoveGenerationUtils from "./move.generation.utils";
 
 export class MoveGenerationKingHandler implements MoveGenerationHandler {
   public canHandle(piece: Piece): boolean {
@@ -24,9 +26,14 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       });
 
     // castle
-    let castleRights = BoardUtils.getCastleRights(piece.color, board);
+    const castleRights = BoardUtils.getCastleRights(piece.color, board);
 
-    let attackedSquares: Position[] = BoardUtils.calculateAttackedSquares(board, PieceUtils.getOpposedColor(piece.color));
+    // deep copy of board, because we need to check if king is attacked after castle
+    let copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    // remove king from copied board, because we need to check if king is attacked after castle
+    copiedBoard.pieces = copiedBoard.pieces.filter(p => !PositionUtils.positionEquals(p.position,piece.position));
+
+    const attackedSquares: Position[] = MoveGenerationUtils.calculateAttackedSquares(copiedBoard, PieceUtils.getOpposedColor(piece.color));
     // kingside castle
     if (castleRights.canShortCastle) {
       const squareBeforeCastle = {
@@ -104,5 +111,10 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
   public getBlockingSquares(): Position[] {
     return [];
+  }
+
+  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+    return PositionUtils.getSurroundingSquares(piece)
+    .filter(p => PositionUtils.isOnBoard(p));
   }
 }
