@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
-import { BehaviorSubject, distinctUntilChanged, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, distinctUntilChanged, map, tap } from 'rxjs';
 import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
@@ -9,7 +9,6 @@ import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
-import MoveExecutionUtils from '../utils/move-execution.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -163,7 +162,7 @@ export class ChessBoardComponent implements OnInit {
 
     if (executableMove !== undefined) {
       this.clearAllSquares();
-      this.executeMove(executableMove, currentBoard);
+      this.boardService.executeMove(executableMove, currentBoard);
     }
     else {
       this.clearAllButLastMoveSquare();
@@ -171,17 +170,6 @@ export class ChessBoardComponent implements OnInit {
       const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
       const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
       this.highlightingService.addSquares(fromSquare, toSquare);
-    }
-  }
-
-  private executeMove(executableMove: Move, currentBoard: Board): void {
-    const executedMove: Move | undefined = MoveExecutionUtils.executeMove(executableMove, currentBoard);
-    if (executedMove && executedMove.boardAfterMove) {
-      this.boardService.updateBoard(executedMove.boardAfterMove);
-      this.moveHistoryService.addMoveToHistory(executedMove);
-      const squareFrom = { highlight: HighlightColor.BLUE, position: executedMove.from };
-      const squareTo = { highlight: HighlightColor.BLUE, position: executedMove.to };
-      this.highlightingService.addSquares(squareFrom, squareTo);
     }
   }
 
@@ -201,7 +189,7 @@ export class ChessBoardComponent implements OnInit {
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
 
-      this.executeMove(this.lastMove, this.boardService.getBoard());
+      this.boardService.executeMove(this.lastMove, this.boardService.getBoard());
     }
 
     this.overlayPanel?.hide();

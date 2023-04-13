@@ -19,6 +19,19 @@ export default class MoveGenerationUtils {
     new MoveGenerationKingHandler()
   ]
 
+  public static getPossibleMoves(board: Board, playerToMove: Color): Move[] {
+    let moves: Move[] = [];
+
+    let piecesOfColor: Piece[] = board.pieces.filter(p => p.color === playerToMove);
+
+    for (let piece of piecesOfColor) {
+      moves = moves.concat(this.getValidMoves(board, piece, true));
+      moves = moves.concat(this.getValidCaptures(board, piece, true));
+    }
+
+    return moves;
+  }
+
   public static isCheck(board: Board, move: Move): boolean {
     let validCaptures = this.getValidCaptures(board, {
       type: move.promotedPiece ? move.promotedPiece.type : move.piece.type,
@@ -176,7 +189,7 @@ export default class MoveGenerationUtils {
     return pieces.map(p => this.generationHandlers
       .find(h => h.canHandle(p))
       ?.getAttackingSquares(p, board))
-      .filter(s => s !== undefined)      
+      .filter(s => s !== undefined)
       .flat() as Position[];
   }
 }
