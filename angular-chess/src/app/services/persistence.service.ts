@@ -16,7 +16,7 @@ export class PersistenceService {
    * @param value the value to save 
    */
   public save(key: string, value: any): void {
-    console.log('saving', key, value);
+    LoggingUtils.log('saving', key, value);
     localStorage.setItem(key, JSON.stringify(value));
   }
 
@@ -32,7 +32,7 @@ export class PersistenceService {
       return undefined;
     }
     const parsedValue = JSON.parse(value);
-    console.log('loading', key, parsedValue);
+    LoggingUtils.log('loading', key, parsedValue);
     return parsedValue;
   }
 }

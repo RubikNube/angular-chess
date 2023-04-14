@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
+import LoggingUtils from '../utils/logging.utils';
 import PositionUtils from '../utils/position.utils';
 import { PersistenceService } from './persistence.service';
 
@@ -11,12 +12,12 @@ export class PositioningService {
   perspectiveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
   perspective$: Observable<Color> = this.perspectiveSource.asObservable();
 
-  constructor(private persistenceService:PersistenceService) {
+  constructor(private persistenceService: PersistenceService) {
     const persistedPerspective = this.persistenceService.load('perspective');
     if (persistedPerspective) {
       this.perspectiveSource.next(persistedPerspective);
     }
-   }
+  }
 
 
   public switchPerspective(): void {
@@ -30,7 +31,7 @@ export class PositioningService {
   }
 
   getMousePosition(event: DragEvent): Position {
-    console.log('getMousePosition event: ', event);
+    LoggingUtils.log(`getMousePosition event: ${event}`);
     const boardElem = document.querySelector('div.board');
     const rect = boardElem?.getBoundingClientRect();
 
@@ -56,7 +57,7 @@ export class PositioningService {
       position = { row: row, column: 9 - column };
     }
 
-    console.log("getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
+    LoggingUtils.log("getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
 
     return position;
   }

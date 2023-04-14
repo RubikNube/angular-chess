@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { HighlightColor, Position, Square } from '../types/board.t';
+import LoggingUtils from '../utils/logging.utils';
 import PositionUtils from '../utils/position.utils';
 
 @Injectable({
@@ -11,7 +12,7 @@ export class HighlightingService {
   private squares$: Observable<Square[]> = this.squares$$.asObservable();
 
   public getSquares$(): Observable<Square[]> {
-    return this.squares$.pipe(tap(data => console.log("Square data: ", data)));
+    return this.squares$.pipe(tap(data => LoggingUtils.log(`Square data: ${data}`)));
   }
 
   public getSquare$(position: Position): Observable<Square | undefined> {

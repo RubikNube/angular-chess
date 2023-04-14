@@ -54,7 +54,7 @@ export class ChessBoardComponent implements OnInit {
 
     this.boardService.getResult$()
       .pipe(
-        tap(r => console.log("getResult: " + r)),
+        tap(r => LoggingUtils.log("getResult: " + r)),
         distinctUntilChanged())
       .subscribe(result => {
         if (result) {
@@ -64,7 +64,7 @@ export class ChessBoardComponent implements OnInit {
       });
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
-      console.log("getMoveHistory: " + moveHistory.length);
+      LoggingUtils.log("getMoveHistory: " + moveHistory.length);
     });
   }
 
@@ -73,7 +73,7 @@ export class ChessBoardComponent implements OnInit {
       map(perspective =>
         perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
       ),
-      tap(data => console.log("ngOnInit result: ", data)),
+      tap(data => LoggingUtils.log("ngOnInit result: ", data)),
     );
     this.playerPerspectiveColumns$ = this.positioningService.perspective$.pipe(map(perspective =>
       perspective === Color.WHITE ? this.numbersOneToEight : this.numbersOneToEightDesc
@@ -81,7 +81,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   private showResultToast(result: Result): void {
-    console.log("showResultToast: " + result);
+    LoggingUtils.log("showResultToast: " + result);
     if (result !== Result.UNKNOWN) {
       this.messageService.add({ severity: 'info', summary: 'Info', detail: this.getResultRepresentation(result) });
     }
@@ -133,7 +133,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   public dragEnd(e: DragEvent): void {
-    console.log('dragEnd: ', e);
+    LoggingUtils.log('dragEnd: ', e);
     if (this.grabbedPiece === undefined) {
       return;
     }
@@ -183,7 +183,7 @@ export class ChessBoardComponent implements OnInit {
 
   // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any): void {
-    console.log("selectedPromotionPiece event: " + JSON.stringify(event));
+    LoggingUtils.log("selectedPromotionPiece event: " + JSON.stringify(event));
 
     let selectedPiece = PieceUtils.getPieceType(event.value);
     if (this.lastMove !== undefined) {

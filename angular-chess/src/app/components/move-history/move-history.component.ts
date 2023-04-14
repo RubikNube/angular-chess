@@ -1,14 +1,11 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
-import { PersistenceService } from 'src/app/services/persistence.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
-import { MoveHistoryKeyHandler } from '../../services/move-history.key-handler';
 
 @Component({
   selector: 'app-move-history',
@@ -62,8 +59,8 @@ export class MoveHistoryComponent implements OnInit {
   }
 
   public loadBoard(board: Board | undefined): void {
-    console.log("selectedMove: " + JSON.stringify(this.selectedMove));
-    console.log("loadBoard: " + JSON.stringify(board));
+    LoggingUtils.log("selectedMove: " + JSON.stringify(this.selectedMove));
+    LoggingUtils.log("loadBoard: " + JSON.stringify(board));
 
     if (board !== undefined) {
       this.boardService.loadBoard(board);

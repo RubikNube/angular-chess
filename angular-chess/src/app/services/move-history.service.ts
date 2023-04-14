@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { ChessBoardComponent } from '../components/chess-board.component';
 import { Board, Color } from '../types/board.t';
 import { FullMove, Move } from '../types/pieces.t';
 import CopyUtils from '../utils/copy.utils';
+import LoggingUtils from '../utils/logging.utils';
 import MoveHistoryUtils from '../utils/move.history.utils';
-import { ChessBoardService } from './chess-board.service';
 import { MoveHistoryKeyHandler } from './move-history.key-handler';
 import { PersistenceService } from './persistence.service';
 
@@ -16,7 +15,7 @@ export class MoveHistoryService {
   public readonly startIndex = -1;
 
   private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
-  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => console.log('moveHistory$', moveHistory)));
+  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => LoggingUtils.log(`moveHistory$ ${moveHistory}`)));
 
   private showMoveHistory$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public showMoveHistory$: Observable<boolean> = this.showMoveHistory$$.asObservable();
@@ -48,7 +47,7 @@ export class MoveHistoryService {
 
     const persistedMoveHistory = this.persistenceService.load('moveHistory');
     if (persistedMoveHistory) {
-      console.log('persistedMoveHistory', persistedMoveHistory);
+      LoggingUtils.log(`persistedMoveHistory ${persistedMoveHistory}`);
       this.moveHistory$$.next(persistedMoveHistory as Move[]);
     }
 
@@ -73,7 +72,7 @@ export class MoveHistoryService {
     return this.selectedMoveNumber$$.getValue();
   }
 
-  public setSelectedMoveNumber(moveNumber:number): void {
+  public setSelectedMoveNumber(moveNumber: number): void {
     this.selectedMoveNumber$$.next(moveNumber);
   }
 
@@ -179,7 +178,7 @@ export class MoveHistoryService {
     }
 
     const selectedMove: Move = this.moveHistory$$.getValue()[selectedMoveIndex];
-    if(selectedMove === undefined) {
+    if (selectedMove === undefined) {
       console.warn("selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
       return;
     }

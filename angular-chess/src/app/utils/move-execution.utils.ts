@@ -2,12 +2,13 @@ import { BoardBuilder } from "../builders/board.builder";
 import { Board, Color, Result } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
+import LoggingUtils from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PositionUtils from "./position.utils";
 
 export default class MoveExecutionUtils {
   public static executeMove(move: Move, board: Board): Move | undefined {
-    console.log("executeMove: " + JSON.stringify(move));
+    LoggingUtils.log("executeMove: " + JSON.stringify(move));
     const copiedMove: Move = CopyUtils.deepCopyElement(move);
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
 
@@ -96,7 +97,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
-    console.log("executeLongCastle: " + JSON.stringify(move));
+    LoggingUtils.log("executeLongCastle: " + JSON.stringify(move));
 
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
 
@@ -107,7 +108,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
-    console.log("executeShortCastle: " + JSON.stringify(move));
+    LoggingUtils.log("executeShortCastle: " + JSON.stringify(move));
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {

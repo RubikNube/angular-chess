@@ -3,6 +3,7 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Board, CastleRights, Color, HighlightColor, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import LoggingUtils from '../utils/logging.utils';
 import MoveExecutionUtils from '../utils/move-execution.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
@@ -56,7 +57,7 @@ export class ChessBoardService {
   }
 
   public updateResult(result: Result) {
-    console.log("updateResult: " + result)
+    LoggingUtils.log("updateResult: " + result)
     const currentBoard = this.board$$.getValue();
     currentBoard.result = result;
 
@@ -148,7 +149,7 @@ export class ChessBoardService {
   }
 
   public togglePlayerToMove(): void {
-    console.log("togglePlayerToMove:");
+    LoggingUtils.log("togglePlayerToMove:");
     let currentBoard: Board = this.board$$.getValue();
     let currentPlayerToMove: Color = currentBoard.playerToMove;
 
@@ -181,7 +182,7 @@ export class ChessBoardService {
   }
 
   public importFen(newFen: string): void {
-    console.log("importFen: " + newFen);
+    LoggingUtils.log("importFen: " + newFen);
 
     this.moveHistoryService.resetMoveHistory();
     this.updateResult(Result.UNKNOWN);
@@ -214,7 +215,7 @@ export class ChessBoardService {
       }
     }
 
-    console.log("removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
+    LoggingUtils.log("removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
 
     if (index > -1) {
       currentPieces.splice(index, 1);
