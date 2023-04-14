@@ -1,13 +1,26 @@
 import { Board, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
+import EvaluationUtils from "./evaltuation.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
+
+export type MoveWithScore = Move & { score?: number };
 
 export default class EngineUtils {
   public static async getEngineMove(board: Board): Promise<Move | undefined> {
     return new Promise<Move | undefined>((resolve, reject) => {
-      let engineMoves = this.getPossibleMoves(board, board.playerToMove);
+      let engineMoves: MoveWithScore[] = this.getPossibleMoves(board, board.playerToMove);
+
+      // rank moves by score
+      engineMoves.map(m => {
+        const boardAfterMove = MoveExecutionUtils.executeMove(m, board)?.boardAfterMove;
+        if (boardAfterMove) {
+          m.score = EvaluationUtils.evaluateBoard(boardAfterMove);
+        }
+        return m as MoveWithScore;
+      }).sort((a, b) => board.playerToMove === Color.WHITE ? b.score! - a.score! : a.score! - b.score!);
+
       resolve(engineMoves[0]);
     });
   }

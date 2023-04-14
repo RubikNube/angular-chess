@@ -1,22 +1,35 @@
 import { Board, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
-import EngineUtils from "./engine.utils";
+import EngineUtils, { MoveWithScore } from "./engine.utils";
 import TestUtils from "./test.utils";
 
 describe('EngineUtils', () => {
 
   describe('getEngineMove', () => {
-    it('should find queen promotions', async () => {
-      const board: Board = BoardUtils.loadBoardFromFen('k7/6P1/8/8/8/8/8/3K4 w - - 0 1');
+    function getEngineMove(description: string, fen: string, expectedMove: MoveWithScore) {
+      it(description, async () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
 
-      let pawn: Piece = { type: PieceType.PAWN, position: { column: 7, row: 7 }, color: Color.WHITE };
+        const actualMove: MoveWithScore | undefined = await EngineUtils.getEngineMove(board);
+        expect(actualMove).toEqual(expectedMove);
+      });
+    }
+    let pawn: Piece = { type: PieceType.PAWN, position: { column: 7, row: 7 }, color: Color.WHITE };
 
-      const expectedMove: Move = { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.QUEEN }, isCheck: true };
-
-      const actualMove: Move | undefined = await EngineUtils.getEngineMove(board);
-      expect(actualMove).toEqual(expectedMove);
-    });
+    getEngineMove('should find white queen promotions',
+      'k7/6P1/8/8/8/8/8/3K4 w - - 0 1',
+      {
+        piece: pawn,
+        from: { column: 7, row: 7 },
+        to: { column: 7, row: 8 },
+        promotedPiece: {
+          color: Color.WHITE,
+          position: { column: 7, row: 8 },
+          type: PieceType.QUEEN
+        },
+        isCheck: true, score: 9
+      });
   });
 
   describe('getPossibleMoves', () => {
