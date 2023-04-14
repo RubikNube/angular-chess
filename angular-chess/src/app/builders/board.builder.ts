@@ -1,7 +1,7 @@
 import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
-import LoggingUtils from "../utils/logging.utils";
+import LoggingUtils, { LogLevel } from "../utils/logging.utils";
 import PositionUtils from "../utils/position.utils";
 
 /** A builder that is responsible for creating the board.*/
@@ -41,7 +41,7 @@ export class BoardBuilder {
   }
 
   public movePiece(move: Move): BoardBuilder {
-    LoggingUtils.log("movePiece: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, "movePiece: " + JSON.stringify(move));
 
     if (!move.promotedPiece) {
       this.removePiece(move.piece);
@@ -59,7 +59,7 @@ export class BoardBuilder {
   }
 
   public capturePiece(move: Move): BoardBuilder {
-    LoggingUtils.log("capturePiece: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, "capturePiece: " + JSON.stringify(move));
     this.removePiece(move.piece);
 
     if (move.capturedPiece !== undefined) {

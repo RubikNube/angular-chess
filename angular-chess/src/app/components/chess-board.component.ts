@@ -9,6 +9,7 @@ import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -54,7 +55,7 @@ export class ChessBoardComponent implements OnInit {
 
     this.boardService.getResult$()
       .pipe(
-        tap(r => LoggingUtils.log("getResult: " + r)),
+        tap(r => LoggingUtils.log(LogLevel.INFO, `getResult: {r}`)),
         distinctUntilChanged())
       .subscribe(result => {
         if (result) {
@@ -64,7 +65,7 @@ export class ChessBoardComponent implements OnInit {
       });
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
-      LoggingUtils.log("getMoveHistory: " + moveHistory.length);
+      LoggingUtils.log(LogLevel.INFO, `getMoveHistory: ${moveHistory.length}`);
     });
   }
 
@@ -73,7 +74,7 @@ export class ChessBoardComponent implements OnInit {
       map(perspective =>
         perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
       ),
-      tap(data => LoggingUtils.log("ngOnInit result: ", data)),
+      tap(data => LoggingUtils.log(LogLevel.INFO, `ngOnInit result: ${data}`)),
     );
     this.playerPerspectiveColumns$ = this.positioningService.perspective$.pipe(map(perspective =>
       perspective === Color.WHITE ? this.numbersOneToEight : this.numbersOneToEightDesc
@@ -81,7 +82,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   private showResultToast(result: Result): void {
-    LoggingUtils.log("showResultToast: " + result);
+    LoggingUtils.log(LogLevel.INFO, `showResultToast: ${result}`);
     if (result !== Result.UNKNOWN) {
       this.messageService.add({ severity: 'info', summary: 'Info', detail: this.getResultRepresentation(result) });
     }
@@ -133,7 +134,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   public dragEnd(e: DragEvent): void {
-    LoggingUtils.log('dragEnd: ', e);
+    LoggingUtils.log(LogLevel.INFO, `dragEnd: ${e}`);
     if (this.grabbedPiece === undefined) {
       return;
     }
@@ -183,7 +184,7 @@ export class ChessBoardComponent implements OnInit {
 
   // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any): void {
-    LoggingUtils.log("selectedPromotionPiece event: " + JSON.stringify(event));
+    LoggingUtils.log(LogLevel.INFO, `selectedPromotionPiece event: ${event}`);
 
     let selectedPiece = PieceUtils.getPieceType(event.value);
     if (this.lastMove !== undefined) {

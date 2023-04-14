@@ -4,6 +4,7 @@ import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
+import LoggingUtils, { LogLevel } from 'src/app/utils/logging.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
@@ -59,8 +60,8 @@ export class MoveHistoryComponent implements OnInit {
   }
 
   public loadBoard(board: Board | undefined): void {
-    LoggingUtils.log("selectedMove: " + JSON.stringify(this.selectedMove));
-    LoggingUtils.log("loadBoard: " + JSON.stringify(board));
+    LoggingUtils.log(LogLevel.INFO, `selectedMove: ${this.selectedMove}`);
+    LoggingUtils.log(LogLevel.INFO, `loadBoard: ${board}`);
 
     if (board !== undefined) {
       this.boardService.loadBoard(board);

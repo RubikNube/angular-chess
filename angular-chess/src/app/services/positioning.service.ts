@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Color, Position } from '../types/board.t';
-import LoggingUtils from '../utils/logging.utils';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import PositionUtils from '../utils/position.utils';
 import { PersistenceService } from './persistence.service';
 
@@ -31,7 +31,7 @@ export class PositioningService {
   }
 
   getMousePosition(event: DragEvent): Position {
-    LoggingUtils.log(`getMousePosition event: ${event}`);
+    LoggingUtils.log(LogLevel.INFO, `getMousePosition event: ${event}`);
     const boardElem = document.querySelector('div.board');
     const rect = boardElem?.getBoundingClientRect();
 
@@ -57,7 +57,7 @@ export class PositioningService {
       position = { row: row, column: 9 - column };
     }
 
-    LoggingUtils.log("getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
+    LoggingUtils.log(LogLevel.INFO, "getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
 
     return position;
   }
