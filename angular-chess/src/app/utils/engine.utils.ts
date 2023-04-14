@@ -5,12 +5,11 @@ import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 
 export default class EngineUtils {
-  public static getEngineMove(board: Board): Move | undefined {
-    // get all possible moves
-    let engineMoves = this.getPossibleMoves(board, board.playerToMove);
-    // let engineMoves = MoveGenerationUtils.getPossibleMoves(board, Color.BLACK);
-
-    return engineMoves[0];
+  public static async getEngineMove(board: Board): Promise<Move | undefined> {
+    return new Promise<Move | undefined>((resolve, reject) => {
+      let engineMoves = this.getPossibleMoves(board, board.playerToMove);
+      resolve(engineMoves[0]);
+    });
   }
 
   public static getPossibleMoves(board: Board, playerToMove: Color): Move[] {

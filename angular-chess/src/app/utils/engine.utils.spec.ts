@@ -7,14 +7,15 @@ import TestUtils from "./test.utils";
 describe('EngineUtils', () => {
 
   describe('getEngineMove', () => {
-    it('should find queen promotions', () => {
+    it('should find queen promotions', async () => {
       const board: Board = BoardUtils.loadBoardFromFen('k7/6P1/8/8/8/8/8/3K4 w - - 0 1');
 
       let pawn: Piece = { type: PieceType.PAWN, position: { column: 7, row: 7 }, color: Color.WHITE };
 
       const expectedMove: Move = { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.QUEEN }, isCheck: true };
 
-      expect(EngineUtils.getEngineMove(board)).toEqual(expectedMove);
+      const actualMove: Move | undefined = await EngineUtils.getEngineMove(board);
+      expect(actualMove).toEqual(expectedMove);
     });
   });
 
