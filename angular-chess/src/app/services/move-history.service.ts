@@ -37,6 +37,9 @@ export class MoveHistoryService {
 
   private startingBoard: Board | undefined;
 
+  private hasMoveHistoryChangedByUser$$ = new BehaviorSubject<boolean>(false);
+  public hasMoveHistoryChangedByUser$: Observable<boolean> = this.hasMoveHistoryChangedByUser$$.asObservable();
+
   private constructor(private persistenceService: PersistenceService) {
     this.moveHistoryKeyHandler = new MoveHistoryKeyHandler(this);
 
@@ -155,18 +158,22 @@ export class MoveHistoryService {
   }
 
   public moveToStart(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToStartBoard();
   }
 
   public moveBack(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.getSelectedMoveNumber() - 1 > this.startIndex ? this.getSelectedMoveNumber() - 1 : this.startIndex);
   }
 
   public moveForward(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.getSelectedMoveNumber() + 1 < this.moveHistory$$.getValue().length - 1 ? this.getSelectedMoveNumber() + 1 : this.moveHistory$$.getValue().length - 1);
   }
 
   public moveToEnd(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.moveHistory$$.getValue().length - 1);
   }
 
@@ -198,6 +205,7 @@ export class MoveHistoryService {
   }
 
   public play(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.playingInterval = window.setInterval(() => {
       this.isPlaying$$.next(true);
       let selectedMoveIndex: number = this.getSelectedMoveNumber() + 1;
@@ -210,6 +218,7 @@ export class MoveHistoryService {
   }
 
   public pause(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.isPlaying$$.next(false);
   }
 
@@ -220,5 +229,9 @@ export class MoveHistoryService {
 
   public getStartingBoard(): Board | undefined {
     return this.startingBoard;
+  }
+
+  public resetMoveHistoryChangedByUser(): void {
+    this.hasMoveHistoryChangedByUser$$.next(false);
   }
 }

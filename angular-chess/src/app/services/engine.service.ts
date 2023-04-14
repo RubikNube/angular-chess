@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Color, Result } from '../types/board.t';
 import EngineUtils from '../utils/engine.utils';
 import { ChessBoardService } from './chess-board.service';
+import { MoveHistoryService } from './move-history.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class EngineService {
 
   private boardSubcription: Subscription | undefined = undefined;
 
-  constructor(private boardService: ChessBoardService) {
+  constructor(private boardService: ChessBoardService,
+    private moveHistoryService: MoveHistoryService) {
     this.isRunning$.subscribe(isRunning => {
       if (isRunning) {
         this.boardSubcription = this.boardService.getBoard$().subscribe(board => {
@@ -43,6 +45,12 @@ export class EngineService {
         this.isRunning$$.next(false);
       }
     });
+
+    this.moveHistoryService.hasMoveHistoryChangedByUser$.subscribe(hasMoveHistoryChangedByUser => {
+      if (hasMoveHistoryChangedByUser) {
+        this.isRunning$$.next(false);
+      }
+    });
   }
 
   public toggleEngineColor(): void {
@@ -54,6 +62,7 @@ export class EngineService {
   }
 
   public startEngine(): void {
+    this.moveHistoryService.resetMoveHistoryChangedByUser();
     this.isRunning$$.next(true);
   }
 }
