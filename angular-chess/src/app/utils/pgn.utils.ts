@@ -2,6 +2,7 @@ import { Board, Color, Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
+import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
@@ -203,7 +204,7 @@ export default class PgnUtils {
           return filteredMoves[0];
         }
         else {
-          console.error(`getMoveFromString can\'t find a unique move for ${moveString}. Moves found: ${moves}`);
+          LoggingUtils.log(LogLevel.ERROR, `getMoveFromString can\'t find a unique move for ${moveString}. Moves found: ${moves}`);
         }
       }
     }

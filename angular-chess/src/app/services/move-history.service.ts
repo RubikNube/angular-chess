@@ -171,7 +171,7 @@ export class MoveHistoryService {
   }
 
   public moveToIndex(selectedMoveIndex: number) {
-    console.error("moveToIndex: " + selectedMoveIndex);
+    LoggingUtils.log(LogLevel.ERROR, "moveToIndex: " + selectedMoveIndex);
     this.setSelectedMoveNumber(selectedMoveIndex);
     if (selectedMoveIndex === this.startIndex) {
       this.moveToStartBoard();
@@ -191,7 +191,6 @@ export class MoveHistoryService {
   }
 
   private moveToStartBoard(): void {
-    console.error("moveToStartBoard: ");
     const startingBoard = this.getStartingBoard();
     this.setSelectedMoveNumber(this.startIndex);
     this.boardToLoad$$.next(startingBoard);

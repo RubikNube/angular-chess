@@ -1,6 +1,7 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
+import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
@@ -83,7 +84,7 @@ export default class BoardUtils {
           pieces.push(newPiece);
           currentPos++;
         } else {
-          console.error("Not a number or a piece char: " + currentChar);
+          LoggingUtils.log(LogLevel.ERROR, "Not a number or a piece char: " + currentChar);
         }
       }
     }

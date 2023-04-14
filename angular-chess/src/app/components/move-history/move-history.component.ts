@@ -55,7 +55,7 @@ export class MoveHistoryComponent implements OnInit {
       elementToFocus.focus();
     }
     else {
-      console.error("Couldn't set focus for id " + idOfElement);
+      LoggingUtils.log(LogLevel.ERROR, "Couldn't set focus for id " + idOfElement);
     }
   }
 
