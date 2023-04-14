@@ -808,7 +808,7 @@ export default class BoardUtils {
     }
 
     pieces.forEach(piece => {
-      console.info("piece:" + JSON.stringify(piece));
+      LoggingUtils.log(LogLevel.INFO, "piece:" + JSON.stringify(piece));
       rows[piece.position.row - 1].push(piece);
     });
 

@@ -179,7 +179,7 @@ export class MoveHistoryService {
 
     const selectedMove: Move = this.moveHistory$$.getValue()[selectedMoveIndex];
     if (selectedMove === undefined) {
-      console.warn("selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
+      LoggingUtils.log(LogLevel.WARN, "selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
       return;
     }
     const selectedPos: Board | undefined = selectedMove.boardAfterMove;

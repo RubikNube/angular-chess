@@ -13,7 +13,7 @@ export default class MoveExecutionUtils {
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
 
     if (copiedMove.piece.color !== board.playerToMove) {
-      console.warn("Not the right player to move. Ignore move.")
+      LoggingUtils.log(LogLevel.WARN, "Not the right player to move. Ignore move.");
       return undefined;
     }
 
