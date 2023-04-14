@@ -15,12 +15,10 @@ describe('EngineUtils', () => {
         expect(actualMove).toEqual(expectedMove);
       });
     }
-    let pawn: Piece = { type: PieceType.PAWN, position: { column: 7, row: 7 }, color: Color.WHITE };
-
     getEngineMove('should find white queen promotions',
       'k7/6P1/8/8/8/8/8/3K4 w - - 0 1',
       {
-        piece: pawn,
+        piece: { type: PieceType.PAWN, position: { column: 7, row: 7 }, color: Color.WHITE },
         from: { column: 7, row: 7 },
         to: { column: 7, row: 8 },
         promotedPiece: {
@@ -29,12 +27,27 @@ describe('EngineUtils', () => {
           type: PieceType.QUEEN
         },
         isCheck: true, score: 9
-      });
+      }
+    );
+
+    getEngineMove('should find black queen promotions',
+      'k7/6P1/8/8/8/8/6p1/3K4 b - - 0 1',
+      {
+        piece: { type: PieceType.PAWN, position: { column: 7, row: 2 }, color: Color.BLACK },
+        from: { column: 7, row: 2 },
+        to: { column: 7, row: 1 },
+        promotedPiece: {
+          color: Color.BLACK,
+          position: { column: 7, row: 1 },
+          type: PieceType.QUEEN
+        },
+        isCheck: true, score: -8
+      }
+    );
   });
 
   describe('getPossibleMoves', () => {
     const king: Piece = { color: Color.WHITE, type: PieceType.KING, position: { column: 4, row: 3 } };
-    const blackBishop: Piece = { color: Color.BLACK, type: PieceType.BISHOP, position: { column: 6, row: 8 } };
     const pawn: Piece = { color: Color.WHITE, type: PieceType.PAWN, position: { column: 7, row: 7 } };
     const kingMoves: Move[] = [
       { piece: king, from: { column: 4, row: 3 }, to: { column: 3, row: 2 }, isCheck: false },
@@ -47,6 +60,9 @@ describe('EngineUtils', () => {
       { piece: king, from: { column: 4, row: 3 }, to: { column: 5, row: 4 }, isCheck: false }
     ];
 
+    const blackBishop: Piece = { color: Color.BLACK, type: PieceType.BISHOP, position: { column: 6, row: 8 } };
+    const blackKing: Piece = { color: Color.BLACK, type: PieceType.KING, position: { column: 1, row: 8 } };
+    const blackPawn: Piece = { color: Color.BLACK, type: PieceType.PAWN, position: { column: 7, row: 2 } };
 
     function getPossibleMoves(description: string, fen: string, color: Color, expectedMoves: Move[]): void {
       it(description, () => {
@@ -100,5 +116,15 @@ describe('EngineUtils', () => {
         { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.KNIGHT }, capturedPiece: blackBishop },
         { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: true, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.ROOK }, capturedPiece: blackBishop },
       ]));
+
+    getPossibleMoves('should add possible moves for black promotion', "k7/6P1/8/8/8/8/6p1/3K4 b - - 0 1", Color.BLACK, [
+      { piece: blackKing, from: { column: 1, row: 8 }, to: { column: 1, row: 7 }, isCheck: false },
+      { piece: blackKing, from: { column: 1, row: 8 }, to: { column: 2, row: 7 }, isCheck: false },
+      { piece: blackKing, from: { column: 1, row: 8 }, to: { column: 2, row: 8 }, isCheck: false },
+      { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: true, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.QUEEN } },
+      { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: false, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.BISHOP } },
+      { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: false, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.KNIGHT } },
+      { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: true, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.ROOK } },
+    ]);
   });
 });
