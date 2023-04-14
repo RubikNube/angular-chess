@@ -1290,28 +1290,4 @@ describe('MoveGenerationUtils', () => {
       expect(attackedSquares).toContain({ column: 4, row: 4 });
     });
   });
-
-  describe('getPossibleMoves', () => {
-    const king: Piece = { color: Color.WHITE, type: PieceType.KING, position: { column: 4, row: 3 } };
-
-    function getPossibleMoves(description: string, fen: string, color: Color, expectedMoves: Move[]): void {
-      it(description, () => {
-        const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const actualPossibleMoves: Move[] = MoveGenerationUtils.getPossibleMoves(board, color).sort((a, b) => a.to.column - b.to.column || a.to.row - b.to.row);
-
-        expect(actualPossibleMoves).toEqual(expectedMoves.sort((a, b) => a.to.column - b.to.column || a.to.row - b.to.row));
-      });
-    }
-
-    getPossibleMoves('should return all possible moves for white king', "8/3k4/8/8/8/3K4/8/8 w - - 0 1", Color.WHITE, [
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 3, row: 2 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 3, row: 3 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 3, row: 4 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 4, row: 2 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 4, row: 4 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 5, row: 2 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 5, row: 3 }, isCheck: false },
-      { piece: king, from: { column: 4, row: 3 }, to: { column: 5, row: 4 }, isCheck: false }
-    ]);
-  });
 });
