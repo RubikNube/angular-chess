@@ -20,6 +20,7 @@ describe('EngineUtils', () => {
 
   describe('getPossibleMoves', () => {
     const king: Piece = { color: Color.WHITE, type: PieceType.KING, position: { column: 4, row: 3 } };
+    const blackBishop: Piece = { color: Color.BLACK, type: PieceType.BISHOP, position: { column: 6, row: 8 } };
     const pawn: Piece = { color: Color.WHITE, type: PieceType.PAWN, position: { column: 7, row: 7 } };
     const kingMoves: Move[] = [
       { piece: king, from: { column: 4, row: 3 }, to: { column: 3, row: 2 }, isCheck: false },
@@ -38,10 +39,14 @@ describe('EngineUtils', () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
 
         const actualPossibleMoves: Move[] = EngineUtils.getPossibleMoves(board, color)
-          .sort(TestUtils.sortByPosition)
-          .sort(TestUtils.sortByPromotedPieceType);
+          .sort(TestUtils.sortMoves);
 
-        expect(actualPossibleMoves).toEqual(expectedMoves.sort(TestUtils.sortByPosition).sort(TestUtils.sortByPromotedPieceType));
+        const expectedPossibleMoves = expectedMoves
+          .sort(TestUtils.sortMoves);
+
+        console.log('actualPossibleMoves', actualPossibleMoves);
+        console.log('expectedPossibleMoves', expectedPossibleMoves);
+        expect(actualPossibleMoves).toEqual(expectedPossibleMoves);
       });
     }
 
@@ -67,5 +72,19 @@ describe('EngineUtils', () => {
       { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.KNIGHT } },
       { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: true, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.ROOK } },
     ]));
+
+    getPossibleMoves('should add possible captures with promotion', "3k1b2/2pp2P1/8/8/8/3K4/8/8 w - - 0 1", Color.WHITE, kingMoves.concat(
+      [
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.QUEEN } },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.BISHOP } },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.KNIGHT } },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 7, row: 8 }, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 7, row: 8 }, type: PieceType.ROOK } },
+      ])
+      .concat([
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: true, isMate: true, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.QUEEN }, capturedPiece: blackBishop },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.BISHOP }, capturedPiece: blackBishop },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: false, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.KNIGHT }, capturedPiece: blackBishop },
+        { piece: pawn, from: { column: 7, row: 7 }, to: { column: 6, row: 8 }, isEnPassant: false, isCheck: true, promotedPiece: { color: Color.WHITE, position: { column: 6, row: 8 }, type: PieceType.ROOK }, capturedPiece: blackBishop },
+      ]));
   });
 });

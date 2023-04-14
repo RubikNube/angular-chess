@@ -11,6 +11,27 @@ export default class TestUtils {
     return 0;
   };
 
+  public static sortByCapturedPieceType = (a: Move, b: Move): number => {
+    if (a.capturedPiece && !b.capturedPiece) {
+      return -1;
+    }
+    if (!a.capturedPiece && b.capturedPiece) {
+      return 1;
+    }
+    if (a.capturedPiece && b.capturedPiece) {
+      return TestUtils.pieceTypeToNumber(a.capturedPiece.type) - TestUtils.pieceTypeToNumber(b.capturedPiece.type);
+    }
+    return 0;
+  };
+
+  public static sortMoves = (a: Move, b: Move): number => {
+    return TestUtils.moveToString(a).localeCompare(TestUtils.moveToString(b));
+  };
+
+  public static moveToString(move: Move): string {
+    return `${move.from.column}${move.from.row}-${move.to.column}${move.to.row}: ${move.capturedPiece?.type} ${move.promotedPiece?.type}`;
+  };
+
   public static pieceTypeToNumber(pieceType: PieceType): number {
     switch (pieceType) {
       case PieceType.QUEEN:
