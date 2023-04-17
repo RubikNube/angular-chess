@@ -927,6 +927,15 @@ describe('MoveGenerationUtils', () => {
       });
     });
 
+    it('should not generate captures for a piece that is protected by a king', () => {
+      const board: Board = BoardUtils.loadBoardFromFen('4r3/8/8/4k3/4B3/4K3/8/8 b - - 5 1');
+      const king: Piece = { type: PieceType.KING, position: { column: 5, row: 5 }, color: Color.BLACK };
+
+      let validMoves = MoveGenerationUtils.getValidCaptures(board, king, true);
+
+      expect(validMoves).toEqual([]);
+    });
+
     describe('for bishop', () => {
       it('should generate limited captures if bishop is partially pinned from bottom right', () => {
         let board: Board = BoardUtils.loadBoardFromFen("K7/8/2k5/7N/8/5b2/8/3N3B b - - 0 1");

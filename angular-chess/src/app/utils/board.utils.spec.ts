@@ -17,6 +17,13 @@ describe('BoardUtils', () => {
       expect(BoardUtils.isProtected(board, queen)).toBeTruthy();
     });
 
+    it('should return true if bishop is protected by own king', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("4r3/8/8/4k3/4B3/4K3/8/8 b - - 5 1");
+      let bishop: Piece = { type: PieceType.BISHOP, color: Color.WHITE, position: { column: 5, row: 4 } };
+
+      expect(BoardUtils.isProtected(board, bishop)).toBeTruthy();
+    });
+
     it('should return false if piece is not protected by own piece', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/6q1/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };

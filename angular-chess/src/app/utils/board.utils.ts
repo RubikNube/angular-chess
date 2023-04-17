@@ -411,7 +411,7 @@ export default class BoardUtils {
 
     const foundPos: Position | undefined = copiedBoard.pieces
       .filter(p => p.color === piece.color)
-      .flatMap(p => MoveGenerationUtils.getValidMoves(copiedBoard, p, false).map(m => m.to))
+      .flatMap(p => MoveGenerationUtils.getAttackingSquares(p, copiedBoard))
       .find(p => PositionUtils.positionEquals(p, piece.position));
 
     return foundPos !== undefined;
