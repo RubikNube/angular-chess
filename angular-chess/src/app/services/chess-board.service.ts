@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { Board, CastleRights, Color, Position, Result } from '../types/board.t';
+import { Board, CastleRights, Color, HighlightColor, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
+import MoveExecutionUtils from '../utils/move-execution.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
 import { HighlightingService } from './highlighting.service';
@@ -35,16 +37,27 @@ export class ChessBoardService {
   constructor(private moveHistoryService: MoveHistoryService,
     private highlightingService: HighlightingService,
     protected persistenceService: PersistenceService) {
-      this.moveHistoryService.boardToLoad$.subscribe(board => this.loadBoard(board));
-      
-      const moveHistory = persistenceService.load("moveHistory");
-      if (!moveHistory) {
-        this.importFen(STARTING_FEN);
-      }
+    this.moveHistoryService.boardToLoad$.subscribe(board => this.loadBoard(board));
+
+    const moveHistory = persistenceService.load("moveHistory");
+    if (!moveHistory) {
+      this.importFen(STARTING_FEN);
+    }
+  }
+
+  public executeMove(executableMove: Move, currentBoard: Board): void {
+    const executedMove: Move | undefined = MoveExecutionUtils.executeMove(executableMove, currentBoard);
+    if (executedMove && executedMove.boardAfterMove) {
+      this.updateBoard(executedMove.boardAfterMove);
+      this.moveHistoryService.addMoveToHistory(executedMove);
+      const squareFrom = { highlight: HighlightColor.BLUE, position: executedMove.from };
+      const squareTo = { highlight: HighlightColor.BLUE, position: executedMove.to };
+      this.highlightingService.addSquares(squareFrom, squareTo);
+    }
   }
 
   public updateResult(result: Result) {
-    console.log("updateResult: " + result)
+    LoggingUtils.log(LogLevel.INFO, "updateResult: " + result)
     const currentBoard = this.board$$.getValue();
     currentBoard.result = result;
 
@@ -136,7 +149,7 @@ export class ChessBoardService {
   }
 
   public togglePlayerToMove(): void {
-    console.log("togglePlayerToMove:");
+    LoggingUtils.log(LogLevel.INFO, "togglePlayerToMove:");
     let currentBoard: Board = this.board$$.getValue();
     let currentPlayerToMove: Color = currentBoard.playerToMove;
 
@@ -169,7 +182,7 @@ export class ChessBoardService {
   }
 
   public importFen(newFen: string): void {
-    console.log("importFen: " + newFen);
+    LoggingUtils.log(LogLevel.INFO, "importFen: " + newFen);
 
     this.moveHistoryService.resetMoveHistory();
     this.updateResult(Result.UNKNOWN);
@@ -202,7 +215,7 @@ export class ChessBoardService {
       }
     }
 
-    console.log("removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
+    LoggingUtils.log(LogLevel.INFO, "removePiece " + JSON.stringify({ pieces: currentPieces, piece: draggedPiece, index: index }));
 
     if (index > -1) {
       currentPieces.splice(index, 1);

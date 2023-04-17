@@ -1,14 +1,12 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
-import { PersistenceService } from 'src/app/services/persistence.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
+import LoggingUtils, { LogLevel } from 'src/app/utils/logging.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
-import { MoveHistoryKeyHandler } from '../../services/move-history.key-handler';
 
 @Component({
   selector: 'app-move-history',
@@ -57,13 +55,13 @@ export class MoveHistoryComponent implements OnInit {
       elementToFocus.focus();
     }
     else {
-      console.error("Couldn't set focus for id " + idOfElement);
+      LoggingUtils.log(LogLevel.ERROR, "Couldn't set focus for id " + idOfElement);
     }
   }
 
   public loadBoard(board: Board | undefined): void {
-    console.log("selectedMove: " + JSON.stringify(this.selectedMove));
-    console.log("loadBoard: " + JSON.stringify(board));
+    LoggingUtils.log(LogLevel.INFO, `selectedMove: ${this.selectedMove}`);
+    LoggingUtils.log(LogLevel.INFO, `loadBoard: ${board}`);
 
     if (board !== undefined) {
       this.boardService.loadBoard(board);

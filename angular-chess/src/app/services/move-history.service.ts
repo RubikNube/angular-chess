@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { ChessBoardComponent } from '../components/chess-board.component';
 import { Board, Color } from '../types/board.t';
 import { FullMove, Move } from '../types/pieces.t';
 import CopyUtils from '../utils/copy.utils';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveHistoryUtils from '../utils/move.history.utils';
-import { ChessBoardService } from './chess-board.service';
 import { MoveHistoryKeyHandler } from './move-history.key-handler';
 import { PersistenceService } from './persistence.service';
 
@@ -16,7 +15,7 @@ export class MoveHistoryService {
   public readonly startIndex = -1;
 
   private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
-  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => console.log('moveHistory$', moveHistory)));
+  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => LoggingUtils.log(LogLevel.INFO, `moveHistory$ ${moveHistory}`)));
 
   private showMoveHistory$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public showMoveHistory$: Observable<boolean> = this.showMoveHistory$$.asObservable();
@@ -38,6 +37,9 @@ export class MoveHistoryService {
 
   private startingBoard: Board | undefined;
 
+  private hasMoveHistoryChangedByUser$$ = new BehaviorSubject<boolean>(false);
+  public hasMoveHistoryChangedByUser$: Observable<boolean> = this.hasMoveHistoryChangedByUser$$.asObservable();
+
   private constructor(private persistenceService: PersistenceService) {
     this.moveHistoryKeyHandler = new MoveHistoryKeyHandler(this);
 
@@ -48,7 +50,7 @@ export class MoveHistoryService {
 
     const persistedMoveHistory = this.persistenceService.load('moveHistory');
     if (persistedMoveHistory) {
-      console.log('persistedMoveHistory', persistedMoveHistory);
+      LoggingUtils.log(LogLevel.INFO, `persistedMoveHistory ${persistedMoveHistory}`);
       this.moveHistory$$.next(persistedMoveHistory as Move[]);
     }
 
@@ -73,7 +75,7 @@ export class MoveHistoryService {
     return this.selectedMoveNumber$$.getValue();
   }
 
-  public setSelectedMoveNumber(moveNumber:number): void {
+  public setSelectedMoveNumber(moveNumber: number): void {
     this.selectedMoveNumber$$.next(moveNumber);
   }
 
@@ -156,31 +158,35 @@ export class MoveHistoryService {
   }
 
   public moveToStart(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToStartBoard();
   }
 
   public moveBack(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.getSelectedMoveNumber() - 1 > this.startIndex ? this.getSelectedMoveNumber() - 1 : this.startIndex);
   }
 
   public moveForward(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.getSelectedMoveNumber() + 1 < this.moveHistory$$.getValue().length - 1 ? this.getSelectedMoveNumber() + 1 : this.moveHistory$$.getValue().length - 1);
   }
 
   public moveToEnd(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.moveToIndex(this.moveHistory$$.getValue().length - 1);
   }
 
   public moveToIndex(selectedMoveIndex: number) {
-    console.error("moveToIndex: " + selectedMoveIndex);
+    LoggingUtils.log(LogLevel.ERROR, "moveToIndex: " + selectedMoveIndex);
     this.setSelectedMoveNumber(selectedMoveIndex);
     if (selectedMoveIndex === this.startIndex) {
       this.moveToStartBoard();
     }
 
     const selectedMove: Move = this.moveHistory$$.getValue()[selectedMoveIndex];
-    if(selectedMove === undefined) {
-      console.warn("selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
+    if (selectedMove === undefined) {
+      LoggingUtils.log(LogLevel.WARN, "selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
       return;
     }
     const selectedPos: Board | undefined = selectedMove.boardAfterMove;
@@ -192,7 +198,6 @@ export class MoveHistoryService {
   }
 
   private moveToStartBoard(): void {
-    console.error("moveToStartBoard: ");
     const startingBoard = this.getStartingBoard();
     this.setSelectedMoveNumber(this.startIndex);
     this.boardToLoad$$.next(startingBoard);
@@ -200,6 +205,7 @@ export class MoveHistoryService {
   }
 
   public play(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.playingInterval = window.setInterval(() => {
       this.isPlaying$$.next(true);
       let selectedMoveIndex: number = this.getSelectedMoveNumber() + 1;
@@ -212,6 +218,7 @@ export class MoveHistoryService {
   }
 
   public pause(): void {
+    this.hasMoveHistoryChangedByUser$$.next(true);
     this.isPlaying$$.next(false);
   }
 
@@ -222,5 +229,9 @@ export class MoveHistoryService {
 
   public getStartingBoard(): Board | undefined {
     return this.startingBoard;
+  }
+
+  public resetMoveHistoryChangedByUser(): void {
+    this.hasMoveHistoryChangedByUser$$.next(false);
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class PersistenceService {
    * @param value the value to save 
    */
   public save(key: string, value: any): void {
-    console.log('saving', key, value);
+    LoggingUtils.log(LogLevel.INFO, `saving key ${key} value ${value}`);
     localStorage.setItem(key, JSON.stringify(value));
   }
 
@@ -32,7 +33,7 @@ export class PersistenceService {
       return undefined;
     }
     const parsedValue = JSON.parse(value);
-    console.log('loading', key, parsedValue);
+    LoggingUtils.log(LogLevel.INFO, `loading key ${key} value ${parsedValue}`);
     return parsedValue;
   }
 }

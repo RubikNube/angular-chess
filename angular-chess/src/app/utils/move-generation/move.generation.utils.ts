@@ -1,5 +1,6 @@
 import { Board, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import LoggingUtils, { LogLevel } from "../logging.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -122,7 +123,7 @@ export default class MoveGenerationUtils {
       captureMoves = matchingHandler.getCaptures(piece, board);
     }
     else {
-      console.log("getValidMoves: found no matching handler")
+      LoggingUtils.log(LogLevel.INFO, "getValidMoves: found no matching handler")
     }
 
     // get all pieces that attack the king
@@ -176,7 +177,7 @@ export default class MoveGenerationUtils {
     return pieces.map(p => this.generationHandlers
       .find(h => h.canHandle(p))
       ?.getAttackingSquares(p, board))
-      .filter(s => s !== undefined)      
+      .filter(s => s !== undefined)
       .flat() as Position[];
   }
 }

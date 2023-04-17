@@ -1,45 +1,47 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, Color, Result } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
+import CopyUtils from "./copy.utils";
+import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PositionUtils from "./position.utils";
 
 export default class MoveExecutionUtils {
   public static executeMove(move: Move, board: Board): Move | undefined {
-    console.log("executeMove: " + JSON.stringify(move));
-
+    LoggingUtils.log(LogLevel.INFO, "executeMove: " + JSON.stringify(move));
+    const copiedMove: Move = CopyUtils.deepCopyElement(move);
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
 
-    if (move.piece.color !== board.playerToMove) {
-      console.warn("Not the right player to move. Ignore move.")
+    if (copiedMove.piece.color !== board.playerToMove) {
+      LoggingUtils.log(LogLevel.WARN, "Not the right player to move. Ignore move.");
       return undefined;
     }
 
-    if (move.piece.type === PieceType.KING && this.executeKingCastle(move, boardBuilder)) {
-      return move;
+    if (copiedMove.piece.type === PieceType.KING && this.executeKingCastle(copiedMove, boardBuilder)) {
+      return copiedMove;
     }
 
-    if (move.capturedPiece === undefined) { // move
-      if (move.piece.type === PieceType.PAWN) {
-        if (move.piece.color === Color.WHITE && move.to.row === 4) {
-          boardBuilder.enPassantSquare({ row: 3, column: move.from.column });
+    if (copiedMove.capturedPiece === undefined) { // move
+      if (copiedMove.piece.type === PieceType.PAWN) {
+        if (copiedMove.piece.color === Color.WHITE && copiedMove.to.row === 4) {
+          boardBuilder.enPassantSquare({ row: 3, column: copiedMove.from.column });
 
-          return this.finishMove(move, boardBuilder);
+          return this.finishMove(copiedMove, boardBuilder);
         }
-        else if (move.piece.color === Color.BLACK && move.to.row === 5) {
-          boardBuilder.enPassantSquare({ row: 6, column: move.from.column });
+        else if (copiedMove.piece.color === Color.BLACK && copiedMove.to.row === 5) {
+          boardBuilder.enPassantSquare({ row: 6, column: copiedMove.from.column });
 
-          return this.finishMove(move, boardBuilder);
+          return this.finishMove(copiedMove, boardBuilder);
         }
       }
 
-      boardBuilder.movePiece(move);
+      boardBuilder.movePiece(copiedMove);
     }
     else { // capture
-      boardBuilder.capturePiece(move);
+      boardBuilder.capturePiece(copiedMove);
     }
 
-    return this.finishMove(move, boardBuilder);
+    return this.finishMove(copiedMove, boardBuilder);
   }
 
   private static executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
@@ -95,7 +97,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
-    console.log("executeLongCastle: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, "executeLongCastle: " + JSON.stringify(move));
 
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
 
@@ -106,7 +108,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
-    console.log("executeShortCastle: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, "executeShortCastle: " + JSON.stringify(move));
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {

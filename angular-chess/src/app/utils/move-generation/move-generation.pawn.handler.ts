@@ -71,13 +71,13 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
     return captureCandidates
       .map(p => {
-        let isEnPassant = BoardUtils.isEnPassantSquare(board, p);
+        const isEnPassant = BoardUtils.isEnPassantSquare(board, p);
 
         return {
           piece: piece,
           from: piece.position,
           to: p,
-          isEnPassant: isEnPassant,
+          isEnPassant,
           capturedPiece: isEnPassant ? PositionUtils.getPieceOnPos(board, { row: p.row - 1, column: p.column }) : PositionUtils.getPieceOnPos(board, p)
         }
       });

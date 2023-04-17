@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
-import { BehaviorSubject, distinctUntilChanged, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, distinctUntilChanged, map, tap } from 'rxjs';
 import { BoardThemingService } from '../services/board-theming.service';
 import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
@@ -9,7 +9,7 @@ import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
-import MoveExecutionUtils from '../utils/move-execution.utils';
+import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
 import PositionUtils from '../utils/position.utils';
@@ -55,7 +55,7 @@ export class ChessBoardComponent implements OnInit {
 
     this.boardService.getResult$()
       .pipe(
-        tap(r => console.log("getResult: " + r)),
+        tap(r => LoggingUtils.log(LogLevel.INFO, `getResult: {r}`)),
         distinctUntilChanged())
       .subscribe(result => {
         if (result) {
@@ -65,7 +65,7 @@ export class ChessBoardComponent implements OnInit {
       });
 
     this.moveHistoryService.getMoveHistory$().subscribe(moveHistory => {
-      console.log("getMoveHistory: " + moveHistory.length);
+      LoggingUtils.log(LogLevel.INFO, `getMoveHistory: ${moveHistory.length}`);
     });
   }
 
@@ -74,7 +74,7 @@ export class ChessBoardComponent implements OnInit {
       map(perspective =>
         perspective === Color.WHITE ? this.numbersOneToEightDesc : this.numbersOneToEight
       ),
-      tap(data => console.log("ngOnInit result: ", data)),
+      tap(data => LoggingUtils.log(LogLevel.INFO, `ngOnInit result: ${data}`)),
     );
     this.playerPerspectiveColumns$ = this.positioningService.perspective$.pipe(map(perspective =>
       perspective === Color.WHITE ? this.numbersOneToEight : this.numbersOneToEightDesc
@@ -82,7 +82,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   private showResultToast(result: Result): void {
-    console.log("showResultToast: " + result);
+    LoggingUtils.log(LogLevel.INFO, `showResultToast: ${result}`);
     if (result !== Result.UNKNOWN) {
       this.messageService.add({ severity: 'info', summary: 'Info', detail: this.getResultRepresentation(result) });
     }
@@ -134,7 +134,7 @@ export class ChessBoardComponent implements OnInit {
   }
 
   public dragEnd(e: DragEvent): void {
-    console.log('dragEnd: ', e);
+    LoggingUtils.log(LogLevel.INFO, `dragEnd: ${e}`);
     if (this.grabbedPiece === undefined) {
       return;
     }
@@ -163,7 +163,7 @@ export class ChessBoardComponent implements OnInit {
 
     if (executableMove !== undefined) {
       this.clearAllSquares();
-      this.executeMove(executableMove, currentBoard);
+      this.boardService.executeMove(executableMove, currentBoard);
     }
     else {
       this.clearAllButLastMoveSquare();
@@ -171,17 +171,6 @@ export class ChessBoardComponent implements OnInit {
       const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
       const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
       this.highlightingService.addSquares(fromSquare, toSquare);
-    }
-  }
-
-  private executeMove(executableMove: Move, currentBoard: Board): void {
-    const executedMove: Move | undefined = MoveExecutionUtils.executeMove(executableMove, currentBoard);
-    if (executedMove && executedMove.boardAfterMove) {
-      this.boardService.updateBoard(executedMove.boardAfterMove);
-      this.moveHistoryService.addMoveToHistory(executedMove);
-      const squareFrom = { highlight: HighlightColor.BLUE, position: executedMove.from };
-      const squareTo = { highlight: HighlightColor.BLUE, position: executedMove.to };
-      this.highlightingService.addSquares(squareFrom, squareTo);
     }
   }
 
@@ -195,13 +184,13 @@ export class ChessBoardComponent implements OnInit {
 
   // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any): void {
-    console.log("selectedPromotionPiece event: " + JSON.stringify(event));
+    LoggingUtils.log(LogLevel.INFO, `selectedPromotionPiece event: ${event}`);
 
     let selectedPiece = PieceUtils.getPieceType(event.value);
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
 
-      this.executeMove(this.lastMove, this.boardService.getBoard());
+      this.boardService.executeMove(this.lastMove, this.boardService.getBoard());
     }
 
     this.overlayPanel?.hide();
