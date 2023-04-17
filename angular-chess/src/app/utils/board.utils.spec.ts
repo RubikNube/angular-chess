@@ -14,14 +14,14 @@ describe('BoardUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/1b6/8/8/8/8/6q1/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
 
-      expect(BoardUtils.isProtected(board, queen)).toBeTrue();
+      expect(BoardUtils.isProtected(board, queen)).toBeTruthy();
     });
 
     it('should return false if piece is not protected by own piece', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/6q1/4K3 w - - 0 1");
       let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
 
-      expect(BoardUtils.isProtected(board, queen)).toBeFalse();
+      expect(BoardUtils.isProtected(board, queen)).toBeFalsy();
     });
   });
 
