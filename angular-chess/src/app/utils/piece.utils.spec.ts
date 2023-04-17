@@ -25,15 +25,15 @@ describe('PieceUtils', () => {
 
   describe('pieceEquals', () => {
     it('should return true for the same instance.', () => {
-      expect(PieceUtils.pieceEquals(whiteKing55, whiteKing55)).toBeTrue();
+      expect(PieceUtils.pieceEquals(whiteKing55, whiteKing55)).toBeTruthy();
     });
 
     it('should return true for the different instances with the same values.', () => {
-      expect(PieceUtils.pieceEquals(whiteKing55, whiteKing55OtherInstance)).toBeTrue();
+      expect(PieceUtils.pieceEquals(whiteKing55, whiteKing55OtherInstance)).toBeTruthy();
     });
 
     it('should return false for different colors.', () => {
-      expect(PieceUtils.pieceEquals(whiteKing55, blackKing55)).toBeFalse();
+      expect(PieceUtils.pieceEquals(whiteKing55, blackKing55)).toBeFalsy();
     });
   });
 
@@ -80,28 +80,28 @@ describe('PieceUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3k4/4n3/8/8/7B/8/8/3K4 b - - 0 1");
       let piecePosition: Position = { column: 5, row: 7 };
 
-      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a lower left bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3k4/2n5/8/B7/8/8/8/3K4 b - - 0 1");
       let piecePosition: Position = { column: 3, row: 7 };
 
-      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a upper right bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/6B1/8/4n3/3k4/8/8/3K4 b - - 0 1");
       let piecePosition: Position = { column: 5, row: 5 };
 
-      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a upper left bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/B7/8/2n5/3k4/8/8/3K4 b - - 0 1");
       let piecePosition: Position = { column: 3, row: 5 };
 
-      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
   });
 
@@ -110,14 +110,14 @@ describe('PieceUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
       let piecePosition: Position = { column: 6, row: 2 };
 
-      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned horizontally by a rook from the left side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1P1K3/8 w - - 0 1");
       let piecePosition: Position = { column: 3, row: 2 };
 
-      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTruthy();
     });
   });
 
@@ -126,14 +126,14 @@ describe('PieceUtils', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3r4/8/3B4/8/3K2k1/8/8/8 w - - 0 1");
       let piecePosition: Position = { column: 4, row: 6 };
 
-      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned vertically by a rook from the bottom side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/8/3K4/8/1k1B4/8/3r4/8 w - - 0 1");
       let piecePosition: Position = { column: 4, row: 4 };
 
-      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTrue();
+      expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTruthy();
     });
   });
 

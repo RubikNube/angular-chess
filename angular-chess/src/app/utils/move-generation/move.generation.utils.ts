@@ -180,4 +180,8 @@ export default class MoveGenerationUtils {
       .filter(s => s !== undefined)
       .flat() as Position[];
   }
+
+  public static getAttackingSquares(piece: Piece, board: Board): Position[] {
+    return this.generationHandlers.find(h => h.canHandle(piece))?.getAttackingSquares(piece, board) ?? [];
+  }
 }

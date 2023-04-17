@@ -10,11 +10,11 @@ describe('PositionUtils', () => {
 
   describe('includes', () => {
     it('should return true if position is found in array.', () => {
-      expect(PositionUtils.includes(positions, pos1)).toBeTrue();
+      expect(PositionUtils.includes(positions, pos1)).toBeTruthy();
     });
 
     it('should return false if position is found in array.', () => {
-      expect(PositionUtils.includes(positions, posNotInArray)).toBeFalse();
+      expect(PositionUtils.includes(positions, posNotInArray)).toBeFalsy();
     });
   });
 
@@ -256,7 +256,7 @@ describe('PositionUtils', () => {
         { column: 5, row: 1 },
         { column: 6, row: 1 },
         { column: 7, row: 1 }
-      ]      
+      ]
     );
 
     getHorizontalPositionsBetween(
