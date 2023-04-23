@@ -4,6 +4,8 @@ import BoardUtils from "./board.utils";
 import EngineUtils, { MoveWithScore } from "./engine.utils";
 import TestUtils from "./test.utils";
 
+type TestMove = Move & { boardBeforeMove: Board | undefined };
+
 describe('EngineUtils', () => {
 
   describe('getEngineMove', () => {
@@ -153,5 +155,141 @@ describe('EngineUtils', () => {
       { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: false, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.KNIGHT } },
       { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: true, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.ROOK } },
     ]);
+
+    describe('getPossibleMoves performance test', () => {
+      // see https://www.chessprogramming.org/Perft_Results
+      it('should generate 20 positions for "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" and 1 ply', () => {
+        const board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        const start = new Date().getTime();
+        const possibleMoves: Move[] = EngineUtils.getPossibleMoves(board, Color.WHITE);
+        const end = new Date().getTime();
+        expect(possibleMoves.length).toBe(20);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 400 positions for "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" and 2 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        const start = new Date().getTime();
+        const possibleTestMoves: TestMove[] = getPossibleTestMoves(board, Color.WHITE);
+        const possibleNodes: TestMove[] = possibleTestMoves.reduce((acc: TestMove[], move: TestMove) => {
+          return move && move.boardBeforeMove ? acc.concat(getPossibleTestMoves(move.boardBeforeMove, Color.BLACK)) : acc;
+        }, []);
+        const end = new Date().getTime();
+
+        expect(possibleNodes.length).toBe(400);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 8902 positions for "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" and 3 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 3);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(8902);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 197281 positions for "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" and 4 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 4);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(197281);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 48 positions for "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -" and 1 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 1);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(48);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 2039 positions for "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -" and 2 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 2);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(2039);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 97862 positions for "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -" and 3 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 3);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(97862);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 14 positions for "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - " and 1 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 1);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(14);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 191 positions for "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - " and 2 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.WHITE, 2);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(191);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 6 positions for "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" and 1 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.BLACK, 1);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(6);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      it('should generate 264 positions for "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" and 2 plies', () => {
+        const board = BoardUtils.loadBoardFromFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1");
+        const start = new Date().getTime();
+        const possibleNodesAfter3 = getPossibleMoves(board, Color.BLACK, 2);
+        const end = new Date().getTime();
+
+        expect(possibleNodesAfter3.length).toBe(264);
+        expect(end - start).toBeLessThan(100);
+      });
+
+      function getPossibleMoves(board: Board, color: Color, ply: number): TestMove[] {
+        if (ply === 1) {
+          return getPossibleTestMoves(board, color);
+        }
+        else {
+          const possibleTestMoves: TestMove[] = getPossibleTestMoves(board, color);
+          return possibleTestMoves.reduce((acc: TestMove[], move: TestMove) => {
+            return move && move.boardBeforeMove ? acc.concat(getPossibleMoves(move.boardBeforeMove, color === Color.WHITE ? Color.BLACK : Color.WHITE, ply - 1)) : acc;
+          }, []);
+        }
+      }
+    });
+
+    function getPossibleTestMoves(board: Board, color: Color): TestMove[] {
+      const possibleMoves: Move[] = EngineUtils.getPossibleMoves(board, color);
+      return possibleMoves.map((move: Move) => {
+        let testMove: TestMove = move as TestMove;
+        testMove.boardBeforeMove = board;
+        return testMove;
+      });
+    }
   });
 });

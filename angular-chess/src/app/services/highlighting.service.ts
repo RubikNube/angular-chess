@@ -12,7 +12,7 @@ export class HighlightingService {
   private squares$: Observable<Square[]> = this.squares$$.asObservable();
 
   public getSquares$(): Observable<Square[]> {
-    return this.squares$.pipe(tap(data => LoggingUtils.log(LogLevel.INFO, `Square data: ${data}`)));
+    return this.squares$.pipe(tap(data => LoggingUtils.log(LogLevel.INFO, () => `Square data: ${data}`)));
   }
 
   public getSquare$(position: Position): Observable<Square | undefined> {

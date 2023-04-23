@@ -12,7 +12,7 @@ export default class EngineUtils {
   public static async getEngineMove(board: Board): Promise<Move | undefined> {
     return new Promise<Move | undefined>((resolve, reject) => {
       let engineMoves: MoveWithScore[] = this.getPossibleMoves(board, board.playerToMove);
-      LoggingUtils.log(LogLevel.DEBUG, "Unsorted engine moves: " + JSON.stringify(engineMoves));
+      LoggingUtils.log(LogLevel.DEBUG, () => "Unsorted engine moves: " + JSON.stringify(engineMoves));
 
       // rank moves by score
       let sortedMoves: Move[] = engineMoves.map(m => {
@@ -23,7 +23,7 @@ export default class EngineUtils {
         return m as MoveWithScore;
       }).sort((a, b) => board.playerToMove === Color.WHITE ? b.score! - a.score! : a.score! - b.score!);
 
-      LoggingUtils.log(LogLevel.DEBUG, "Engine moves: " + JSON.stringify(sortedMoves));
+      LoggingUtils.log(LogLevel.DEBUG, () => "Engine moves: " + JSON.stringify(sortedMoves));
 
       resolve(sortedMoves[0]);
     });

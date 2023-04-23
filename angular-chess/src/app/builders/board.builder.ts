@@ -41,7 +41,7 @@ export class BoardBuilder {
   }
 
   public movePiece(move: Move): BoardBuilder {
-    LoggingUtils.log(LogLevel.INFO, "movePiece: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, () => "movePiece: " + JSON.stringify(move));
 
     if (!move.promotedPiece) {
       this.removePiece(move.piece);
@@ -59,7 +59,7 @@ export class BoardBuilder {
   }
 
   public capturePiece(move: Move): BoardBuilder {
-    LoggingUtils.log(LogLevel.INFO, "capturePiece: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, () => "capturePiece: " + JSON.stringify(move));
     this.removePiece(move.piece);
 
     if (move.capturedPiece !== undefined) {
