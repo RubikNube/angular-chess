@@ -1,8 +1,8 @@
 import { Board, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
-import EvaluationUtils from "./evaltuation.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
+import EvaluationUtils from "./move-evaluation/evaltuation.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 
@@ -12,6 +12,7 @@ export default class EngineUtils {
   public static async getEngineMove(board: Board): Promise<Move | undefined> {
     return new Promise<Move | undefined>((resolve, reject) => {
       let engineMoves: MoveWithScore[] = this.getPossibleMoves(board, board.playerToMove);
+      LoggingUtils.log(LogLevel.DEBUG, "Unsorted engine moves: " + JSON.stringify(engineMoves));
 
       // rank moves by score
       let sortedMoves: Move[] = engineMoves.map(m => {
@@ -45,10 +46,9 @@ export default class EngineUtils {
   private static getPromotionMoves(board: Board, move: Move): Move[] {
     let promotionMoves: Move[] = [];
 
-    if (move.piece.type === PieceType.PAWN) {
-      if (move.piece.color === Color.WHITE && move.to.row === 8 || move.piece.color === Color.BLACK && move.to.row === 1) {
-        this.addPromotionMoves(board, move, promotionMoves);
-      }
+    if (move.piece.type === PieceType.PAWN
+      && (move.piece.color === Color.WHITE && move.to.row === 8 || move.piece.color === Color.BLACK && move.to.row === 1)) {
+      this.addPromotionMoves(board, move, promotionMoves);
     }
     else {
       promotionMoves.push(move);

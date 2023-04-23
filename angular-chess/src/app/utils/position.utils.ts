@@ -51,7 +51,6 @@ export default class PositionUtils {
     }
   }
 
-
   public static getPieceOnPos(board: Board, pos: Position): Piece | undefined {
     return board.pieces.find(p => {
       return p.position.row === pos.row

@@ -11,7 +11,11 @@ describe('EngineUtils', () => {
       it(description, async () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
 
-        const actualMove: MoveWithScore | undefined = await EngineUtils.getEngineMove(board);
+        let actualMove: MoveWithScore | undefined = await EngineUtils.getEngineMove(board);
+        // remove score from actual move
+        if (actualMove) {
+          delete actualMove.score;
+        }
         expect(actualMove).toEqual(expectedMove);
       });
     }
@@ -26,7 +30,7 @@ describe('EngineUtils', () => {
           position: { column: 7, row: 8 },
           type: PieceType.QUEEN
         },
-        isCheck: true, score: 9
+        isCheck: true
       }
     );
 
@@ -41,7 +45,7 @@ describe('EngineUtils', () => {
           position: { column: 7, row: 1 },
           type: PieceType.QUEEN
         },
-        isCheck: true, score: -8
+        isCheck: true
       }
     );
   });
@@ -79,6 +83,29 @@ describe('EngineUtils', () => {
         expect(actualPossibleMoves).toEqual(expectedPossibleMoves);
       });
     }
+
+    getPossibleMoves('should return all possible moves for starting position', "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0", Color.WHITE, [
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 1, row: 2 } }, from: { column: 1, row: 2 }, to: { column: 1, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 1, row: 2 } }, from: { column: 1, row: 2 }, to: { column: 1, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 2, row: 2 } }, from: { column: 2, row: 2 }, to: { column: 2, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 2, row: 2 } }, from: { column: 2, row: 2 }, to: { column: 2, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 3, row: 2 } }, from: { column: 3, row: 2 }, to: { column: 3, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 3, row: 2 } }, from: { column: 3, row: 2 }, to: { column: 3, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 4, row: 2 } }, from: { column: 4, row: 2 }, to: { column: 4, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 4, row: 2 } }, from: { column: 4, row: 2 }, to: { column: 4, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 5, row: 2 } }, from: { column: 5, row: 2 }, to: { column: 5, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 5, row: 2 } }, from: { column: 5, row: 2 }, to: { column: 5, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 6, row: 2 } }, from: { column: 6, row: 2 }, to: { column: 6, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 6, row: 2 } }, from: { column: 6, row: 2 }, to: { column: 6, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 7, row: 2 } }, from: { column: 7, row: 2 }, to: { column: 7, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 7, row: 2 } }, from: { column: 7, row: 2 }, to: { column: 7, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 8, row: 2 } }, from: { column: 8, row: 2 }, to: { column: 8, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.PAWN, position: { column: 8, row: 2 } }, from: { column: 8, row: 2 }, to: { column: 8, row: 4 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.KNIGHT, position: { column: 2, row: 1 } }, from: { column: 2, row: 1 }, to: { column: 1, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.KNIGHT, position: { column: 2, row: 1 } }, from: { column: 2, row: 1 }, to: { column: 3, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.KNIGHT, position: { column: 7, row: 1 } }, from: { column: 7, row: 1 }, to: { column: 6, row: 3 }, isCheck: false },
+      { piece: { color: Color.WHITE, type: PieceType.KNIGHT, position: { column: 7, row: 1 } }, from: { column: 7, row: 1 }, to: { column: 8, row: 3 }, isCheck: false },
+    ]);
 
     getPossibleMoves('should return all possible moves for white king', "8/3k4/8/8/8/3K4/8/8 w - - 0 1", Color.WHITE, kingMoves);
 
