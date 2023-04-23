@@ -158,6 +158,27 @@ describe('EngineUtils', () => {
 
     describe('getPossibleMoves performance test', () => {
       // see https://www.chessprogramming.org/Perft_Results
+      function getPossibleMoves(board: Board, color: Color, ply: number): TestMove[] {
+        if (ply === 1) {
+          return getPossibleTestMoves(board, color);
+        }
+        else {
+          const possibleTestMoves: TestMove[] = getPossibleTestMoves(board, color);
+          return possibleTestMoves.reduce((acc: TestMove[], move: TestMove) => {
+            return move && move.boardBeforeMove ? acc.concat(getPossibleMoves(move.boardBeforeMove, color === Color.WHITE ? Color.BLACK : Color.WHITE, ply - 1)) : acc;
+          }, []);
+        }
+      }
+
+      function getPossibleTestMoves(board: Board, color: Color): TestMove[] {
+        const possibleMoves: Move[] = EngineUtils.getPossibleMoves(board, color);
+        return possibleMoves.map((move: Move) => {
+          let testMove: TestMove = move as TestMove;
+          testMove.boardBeforeMove = board;
+          return testMove;
+        });
+      }
+
       it('should generate 20 positions for "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" and 1 ply', () => {
         const board = BoardUtils.loadBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         const start = new Date().getTime();
@@ -269,27 +290,6 @@ describe('EngineUtils', () => {
         expect(possibleNodes.length).toBe(264);
         expect(end - start).toBeLessThan(100);
       });
-
-      function getPossibleMoves(board: Board, color: Color, ply: number): TestMove[] {
-        if (ply === 1) {
-          return getPossibleTestMoves(board, color);
-        }
-        else {
-          const possibleTestMoves: TestMove[] = getPossibleTestMoves(board, color);
-          return possibleTestMoves.reduce((acc: TestMove[], move: TestMove) => {
-            return move && move.boardBeforeMove ? acc.concat(getPossibleMoves(move.boardBeforeMove, color === Color.WHITE ? Color.BLACK : Color.WHITE, ply - 1)) : acc;
-          }, []);
-        }
-      }
     });
-
-    function getPossibleTestMoves(board: Board, color: Color): TestMove[] {
-      const possibleMoves: Move[] = EngineUtils.getPossibleMoves(board, color);
-      return possibleMoves.map((move: Move) => {
-        let testMove: TestMove = move as TestMove;
-        testMove.boardBeforeMove = board;
-        return testMove;
-      });
-    }
   });
 });
