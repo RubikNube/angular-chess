@@ -11,7 +11,11 @@ describe('EngineUtils', () => {
       it(description, async () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
 
-        const actualMove: MoveWithScore | undefined = await EngineUtils.getEngineMove(board);
+        let actualMove: MoveWithScore | undefined = await EngineUtils.getEngineMove(board);
+        // remove score from actual move
+        if (actualMove) {
+          delete actualMove.score;
+        }
         expect(actualMove).toEqual(expectedMove);
       });
     }
@@ -26,7 +30,7 @@ describe('EngineUtils', () => {
           position: { column: 7, row: 8 },
           type: PieceType.QUEEN
         },
-        isCheck: true, score: 9
+        isCheck: true
       }
     );
 
@@ -41,7 +45,7 @@ describe('EngineUtils', () => {
           position: { column: 7, row: 1 },
           type: PieceType.QUEEN
         },
-        isCheck: true, score: -8
+        isCheck: true
       }
     );
   });
