@@ -37,13 +37,14 @@ def main(argv):
         for move in move_sequence:
             # execute the move on the copied board
             copied_board.push(move)
-        node_fens.append(copied_board.fen())
+        node_fens.append(copied_board.fen()+' ' +
+                         show_move_sequence(move_sequence))
 
     node_fens.sort()
     i = 0
     for fen in node_fens:
         i += 1
-        print(str(i)+' '+fen + ' ' + show_move_sequence(move_sequences[i-1]))
+        print(str(i)+' '+fen)
 
     engine.quit()
 
