@@ -21,10 +21,6 @@ def main(argv):
         elif opt in ("-d", "--depth"):
             depth = int(arg)
 
-    print('Engine path is ', engine_path)
-    print('FEN is ', start_fen)
-    print('Depth is ', depth)
-
     # Here we assume the engine file is in same folder as our python script
     # Let's try our code with the starting position of chess:
     board = chess.Board(start_fen)
@@ -47,7 +43,7 @@ def main(argv):
     i = 0
     for fen in node_fens:
         i += 1
-        print(str(i)+' '+fen)
+        print(str(i)+' '+fen + ' ' + show_move_sequence(move_sequences[i-1]))
 
     engine.quit()
 
@@ -64,6 +60,11 @@ def generate_valid_move_sequences(board, depth, moves=[]):
                 board, depth - 1, moves + [move])
             board.pop()
         return move_sequences
+
+
+def show_move_sequence(move_sequence):
+    """Returns a string representation of the move sequence."""
+    return '['+','.join([str(move) for move in move_sequence])+']'
 
 
 if __name__ == '__main__':
