@@ -802,6 +802,15 @@ describe('MoveGenerationUtils', () => {
 
         expect(validCaptures).toEqual([]);
       });
+
+      it('should not generate en passant capture if pawn is pinned from left', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("8/2p5/3p4/KP5r/1R2Pp1k/8/6P1/8 b - e3 0 0");
+        let pawn: Piece = { type: PieceType.PAWN, position: { column: 6, row: 4 }, color: Color.BLACK };
+
+        let validCaptures = MoveGenerationUtils.getValidCaptures(board, pawn);
+
+        expect(validCaptures).toEqual([]);
+      });
     });
 
     describe('for queen', () => {

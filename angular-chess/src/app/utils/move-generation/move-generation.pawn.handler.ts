@@ -1,6 +1,7 @@
 import { Board, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
+import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
 import PositionUtils from "../position.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
@@ -73,14 +74,35 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
       .map(p => {
         const isEnPassant = BoardUtils.isEnPassantSquare(board, p);
 
-        return {
-          piece: piece,
-          from: piece.position,
-          to: p,
-          isEnPassant,
-          capturedPiece: isEnPassant ? PositionUtils.getPieceOnPos(board, { row: p.row - 1, column: p.column }) : PositionUtils.getPieceOnPos(board, p)
+        if (!isEnPassant) {
+          return {
+            piece: piece,
+            from: piece.position,
+            to: p,
+            isEnPassant,
+            capturedPiece: PositionUtils.getPieceOnPos(board, p)
+          }
         }
-      });
+        else {
+          const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+          copiedBoard.pieces = copiedBoard.pieces.filter(b => b.position.row !== (p.row - 1) && b.position.column !== p.column);
+
+
+          if (PieceUtils.isPinnedHorizontally(piece.position, copiedBoard)) {
+            return undefined;
+          }
+          else {
+            return {
+              piece: piece,
+              from: piece.position,
+              to: p,
+              isEnPassant,
+              capturedPiece: PositionUtils.getPieceOnPos(board, { row: p.row - 1, column: p.column })
+            }
+          }
+        }
+      })
+      .filter(m => m !== undefined) as Move[];
   }
 
   private canPinnedPieceBeCaptured(pinningMoves: Move[], captureCandidates: Position[]) {
