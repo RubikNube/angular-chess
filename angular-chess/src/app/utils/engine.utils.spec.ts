@@ -83,8 +83,6 @@ describe('EngineUtils', () => {
         const expectedPossibleMoves = expectedMoves
           .sort(TestUtils.sortMoves);
 
-        console.log('actualPossibleMoves', actualPossibleMoves);
-        console.log('expectedPossibleMoves', expectedPossibleMoves);
         expect(actualPossibleMoves).toEqual(expectedPossibleMoves);
       });
     }
