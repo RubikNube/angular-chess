@@ -1,5 +1,8 @@
 import { Board } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
+import BoardUtils from "./board.utils";
+import MoveExecutionUtils from "./move-execution.utils";
+import MoveUtils from "./move.utils";
 import PieceUtils from "./piece.utils";
 
 export default class TestUtils {
@@ -55,5 +58,43 @@ export default class TestUtils {
     expect(expectedBoard?.enPassantSquare).toEqual(actualBoard?.enPassantSquare);
     expect(expectedBoard?.playerToMove).toEqual(actualBoard?.playerToMove);
     expect(PieceUtils.sortPieces(expectedBoard?.pieces)).toEqual(PieceUtils.sortPieces(actualBoard?.pieces));
+  }
+
+  /**
+   * Used to print the move sequences for the test cases.
+   * 
+   * @param moveSequences the move sequences to print
+   * @param initialBoard the initial board
+   * @returns the printed move sequences
+   */
+  public static printMoveSequences(moveSequences: Move[][], initialBoard: Board): string {
+    let fens: string[] = [];
+    for (const element of moveSequences) {
+      let moveSequence: Move[] = element;
+      let latestBoard: Board | undefined = initialBoard;
+      for (const element of moveSequence) {
+        let move = element;
+        if (latestBoard) {
+          let executedMove: Move | undefined = MoveExecutionUtils.executeMove(move, latestBoard);
+          latestBoard = executedMove?.boardAfterMove;
+        }
+      }
+      if (latestBoard) {
+        fens.push(BoardUtils.getFen(latestBoard) + ' ' + TestUtils.printMoveSequence(moveSequence));
+      }
+    }
+
+    fens.sort((a, b) => a.localeCompare(b));
+
+    let printedSequences: string = '';
+    for (let i = 0; i < fens.length; i++) {
+      printedSequences += (i + 1) + ' ' + fens[i] + '\n';
+    }
+
+    return printedSequences;
+  }
+
+  private static printMoveSequence(moveSequence: Move[]): string {
+    return '[' + moveSequence.map((move: Move) => MoveUtils.moveToUci(move)).join(',') + ']';
   }
 }
