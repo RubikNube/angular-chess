@@ -5,27 +5,16 @@ import LoggingUtils, { LogLevel } from "./logging.utils";
 import EvaluationUtils from "./move-evaluation/evaltuation.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import MoveSearchUtils from "./move.search.utils";
 
 export type MoveWithScore = Move & { score?: number };
 
 export default class EngineUtils {
   public static async getEngineMove(board: Board): Promise<Move | undefined> {
     return new Promise<Move | undefined>((resolve, reject) => {
-      let engineMoves: MoveWithScore[] = this.getPossibleMoves(board, board.playerToMove);
-      LoggingUtils.log(LogLevel.DEBUG, () => "Unsorted engine moves: " + JSON.stringify(engineMoves));
+      const bestMove: Move | undefined = MoveSearchUtils.searchBestMove(board, 3, board.playerToMove, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
 
-      // rank moves by score
-      let sortedMoves: Move[] = engineMoves.map(m => {
-        const boardAfterMove = MoveExecutionUtils.executeMove(m, board)?.boardAfterMove;
-        if (boardAfterMove) {
-          m.score = EvaluationUtils.evaluateBoard(boardAfterMove);
-        }
-        return m as MoveWithScore;
-      }).sort((a, b) => board.playerToMove === Color.WHITE ? b.score! - a.score! : a.score! - b.score!);
-
-      LoggingUtils.log(LogLevel.DEBUG, () => "Engine moves: " + JSON.stringify(sortedMoves));
-
-      resolve(sortedMoves[0]);
+      resolve(bestMove);
     });
   }
 
