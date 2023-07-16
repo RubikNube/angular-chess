@@ -5,11 +5,11 @@ import EvaluationUtils from "./move-evaluation/evaltuation.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 
 /**
- * Is used to search for the best move with the minimax algorithm.
+ * Is used to search for the best move with the alpha-beta algorithm.
  */
 export default class MoveSearchUtils {
     /**
-     * Searches for the best move with the minimax algorithm.
+     * Searches for the best move with the alpha-beta algorithm.
      * 
      * @param board the current board
      * @param depth the depth to search
@@ -46,7 +46,7 @@ export default class MoveSearchUtils {
     }
 
     /**
-     * Searches for the best move with the minimax algorithm.
+     * Searches for the best move with the alpha-beta algorithm.
      *  
      * @param board the current board
      * @param depth the depth to search
