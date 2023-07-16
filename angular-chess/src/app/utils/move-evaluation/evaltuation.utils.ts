@@ -22,17 +22,17 @@ export default class EvaluationUtils {
     let evaluation = 0;
 
     const pieceSum: number = this.getPieceValueSum(board, GamePhase.MIDDLEGAME);
-    LoggingUtils.log(LogLevel.DEBUG, `Piece sum: ${pieceSum}`);
+    LoggingUtils.log(LogLevel.DEBUG, () => `Piece sum: ${pieceSum}`);
     const gamePhase: number = Math.max(this.gamePhaseMinEg, Math.min(this.gamePhaseMaxEg, pieceSum));
     const factorMiddleGame: number = (gamePhase - this.gamePhaseMinEg) / this.gamePhaseRange;
     const factorEndGame: number = 1 - factorMiddleGame;
-    LoggingUtils.log(LogLevel.DEBUG, `Game phase: ${gamePhase} - Factor middle game: ${factorMiddleGame} - Factor end game: ${factorEndGame}`);
+    LoggingUtils.log(LogLevel.DEBUG, () => `Game phase: ${gamePhase} - Factor middle game: ${factorMiddleGame} - Factor end game: ${factorEndGame}`);
 
     board.pieces.forEach(piece => {
       const colorFactor = piece.color === Color.WHITE ? 1 : -1;
       evaluation += colorFactor * (this.getRelativePieceValue(piece, factorMiddleGame) + this.getRelativePositionFactor(piece, factorMiddleGame));
     });
-    LoggingUtils.log(LogLevel.DEBUG, `Evaluation: ${evaluation}`);
+    LoggingUtils.log(LogLevel.DEBUG, () => `Evaluation: ${evaluation}`);
     return evaluation;
   }
 

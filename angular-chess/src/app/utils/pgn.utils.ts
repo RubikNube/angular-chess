@@ -204,7 +204,7 @@ export default class PgnUtils {
           return filteredMoves[0];
         }
         else {
-          LoggingUtils.log(LogLevel.ERROR, `getMoveFromString can\'t find a unique move for ${moveString}. Moves found: ${moves}`);
+          LoggingUtils.log(LogLevel.ERROR, () => `getMoveFromString can\'t find a unique move for ${moveString}. Moves found: ${moves}`);
         }
       }
     }

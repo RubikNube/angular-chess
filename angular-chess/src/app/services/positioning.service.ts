@@ -31,7 +31,7 @@ export class PositioningService {
   }
 
   getMousePosition(event: DragEvent): Position {
-    LoggingUtils.log(LogLevel.INFO, `getMousePosition event: ${event}`);
+    LoggingUtils.log(LogLevel.INFO, () => `getMousePosition event: ${event}`);
     const boardElem = document.querySelector('div.board');
     const rect = boardElem?.getBoundingClientRect();
 
@@ -57,7 +57,7 @@ export class PositioningService {
       position = { row: row, column: 9 - column };
     }
 
-    LoggingUtils.log(LogLevel.INFO, "getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
+    LoggingUtils.log(LogLevel.INFO, () => "getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());
 
     return position;
   }

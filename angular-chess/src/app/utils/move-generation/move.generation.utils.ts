@@ -123,7 +123,7 @@ export default class MoveGenerationUtils {
       captureMoves = matchingHandler.getCaptures(piece, board);
     }
     else {
-      LoggingUtils.log(LogLevel.INFO, "getValidMoves: found no matching handler")
+      LoggingUtils.log(LogLevel.INFO, () => "getValidMoves: found no matching handler")
     }
 
     // get all pieces that attack the king

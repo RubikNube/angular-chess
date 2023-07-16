@@ -55,13 +55,13 @@ export class MoveHistoryComponent implements OnInit {
       elementToFocus.focus();
     }
     else {
-      LoggingUtils.log(LogLevel.ERROR, "Couldn't set focus for id " + idOfElement);
+      LoggingUtils.log(LogLevel.ERROR, () => "Couldn't set focus for id " + idOfElement);
     }
   }
 
   public loadBoard(board: Board | undefined): void {
-    LoggingUtils.log(LogLevel.INFO, `selectedMove: ${this.selectedMove}`);
-    LoggingUtils.log(LogLevel.INFO, `loadBoard: ${board}`);
+    LoggingUtils.log(LogLevel.INFO, () => `selectedMove: ${this.selectedMove}`);
+    LoggingUtils.log(LogLevel.INFO, () => `loadBoard: ${board}`);
 
     if (board !== undefined) {
       this.boardService.loadBoard(board);

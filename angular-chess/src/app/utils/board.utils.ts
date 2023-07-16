@@ -84,7 +84,7 @@ export default class BoardUtils {
           pieces.push(newPiece);
           currentPos++;
         } else {
-          LoggingUtils.log(LogLevel.ERROR, "Not a number or a piece char: " + currentChar);
+          LoggingUtils.log(LogLevel.ERROR, () => "Not a number or a piece char: " + currentChar);
         }
       }
     }
@@ -808,7 +808,7 @@ export default class BoardUtils {
     }
 
     pieces.forEach(piece => {
-      LoggingUtils.log(LogLevel.INFO, "piece:" + JSON.stringify(piece));
+      LoggingUtils.log(LogLevel.INFO, () => "piece:" + JSON.stringify(piece));
       rows[piece.position.row - 1].push(piece);
     });
 

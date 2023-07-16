@@ -15,7 +15,7 @@ export class MoveHistoryService {
   public readonly startIndex = -1;
 
   private moveHistory$$: BehaviorSubject<Move[]> = new BehaviorSubject<Move[]>([]);
-  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => LoggingUtils.log(LogLevel.INFO, `moveHistory$ ${moveHistory}`)));
+  private moveHistory$: Observable<Move[]> = this.moveHistory$$.asObservable().pipe(tap(moveHistory => LoggingUtils.log(LogLevel.INFO, () => `moveHistory$ ${moveHistory}`)));
 
   private showMoveHistory$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public showMoveHistory$: Observable<boolean> = this.showMoveHistory$$.asObservable();
@@ -50,7 +50,7 @@ export class MoveHistoryService {
 
     const persistedMoveHistory = this.persistenceService.load('moveHistory');
     if (persistedMoveHistory) {
-      LoggingUtils.log(LogLevel.INFO, `persistedMoveHistory ${persistedMoveHistory}`);
+      LoggingUtils.log(LogLevel.INFO, () => `persistedMoveHistory ${persistedMoveHistory}`);
       this.moveHistory$$.next(persistedMoveHistory as Move[]);
     }
 
@@ -178,7 +178,7 @@ export class MoveHistoryService {
   }
 
   public moveToIndex(selectedMoveIndex: number) {
-    LoggingUtils.log(LogLevel.ERROR, "moveToIndex: " + selectedMoveIndex);
+    LoggingUtils.log(LogLevel.ERROR, () => "moveToIndex: " + selectedMoveIndex);
     this.setSelectedMoveNumber(selectedMoveIndex);
     if (selectedMoveIndex === this.startIndex) {
       this.moveToStartBoard();
@@ -186,7 +186,7 @@ export class MoveHistoryService {
 
     const selectedMove: Move = this.moveHistory$$.getValue()[selectedMoveIndex];
     if (selectedMove === undefined) {
-      LoggingUtils.log(LogLevel.WARN, "selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
+      LoggingUtils.log(LogLevel.WARN, () => "selectedMove is undefined for index " + selectedMoveIndex + " and moveHistory " + JSON.stringify(this.moveHistory$$.getValue()) + "");
       return;
     }
     const selectedPos: Board | undefined = selectedMove.boardAfterMove;

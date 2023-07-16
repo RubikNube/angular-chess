@@ -17,7 +17,7 @@ export class PersistenceService {
    * @param value the value to save 
    */
   public save(key: string, value: any): void {
-    LoggingUtils.log(LogLevel.INFO, `saving key ${key} value ${value}`);
+    LoggingUtils.log(LogLevel.INFO, () => `saving key ${key} value ${value}`);
     localStorage.setItem(key, JSON.stringify(value));
   }
 
@@ -33,7 +33,7 @@ export class PersistenceService {
       return undefined;
     }
     const parsedValue = JSON.parse(value);
-    LoggingUtils.log(LogLevel.INFO, `loading key ${key} value ${parsedValue}`);
+    LoggingUtils.log(LogLevel.INFO, () => `loading key ${key} value ${parsedValue}`);
     return parsedValue;
   }
 }

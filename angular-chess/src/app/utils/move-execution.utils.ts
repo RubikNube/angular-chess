@@ -8,12 +8,12 @@ import PositionUtils from "./position.utils";
 
 export default class MoveExecutionUtils {
   public static executeMove(move: Move, board: Board): Move | undefined {
-    LoggingUtils.log(LogLevel.INFO, "executeMove: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, () => "executeMove: " + JSON.stringify(move));
     const copiedMove: Move = CopyUtils.deepCopyElement(move);
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
 
     if (copiedMove.piece.color !== board.playerToMove) {
-      LoggingUtils.log(LogLevel.WARN, "Not the right player to move. Ignore move.");
+      LoggingUtils.log(LogLevel.WARN, () => "Not the right player to move. Ignore move.");
       return undefined;
     }
 
@@ -97,7 +97,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
-    LoggingUtils.log(LogLevel.INFO, "executeLongCastle: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, () => "executeLongCastle: " + JSON.stringify(move));
 
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
 
@@ -108,7 +108,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
-    LoggingUtils.log(LogLevel.INFO, "executeShortCastle: " + JSON.stringify(move));
+    LoggingUtils.log(LogLevel.INFO, () => "executeShortCastle: " + JSON.stringify(move));
     const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
 
     if (pieceOnSide !== undefined) {

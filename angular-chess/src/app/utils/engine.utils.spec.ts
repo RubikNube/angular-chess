@@ -1,8 +1,13 @@
 import { Board, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
+import CopyUtils from "./copy.utils";
 import EngineUtils, { MoveWithScore } from "./engine.utils";
+import MoveExecutionUtils from "./move-execution.utils";
+import MoveUtils from "./move.utils";
 import TestUtils from "./test.utils";
+
+type TestMove = Move & { boardBeforeMove: Board | undefined };
 
 describe('EngineUtils', () => {
 
@@ -78,8 +83,6 @@ describe('EngineUtils', () => {
         const expectedPossibleMoves = expectedMoves
           .sort(TestUtils.sortMoves);
 
-        console.log('actualPossibleMoves', actualPossibleMoves);
-        console.log('expectedPossibleMoves', expectedPossibleMoves);
         expect(actualPossibleMoves).toEqual(expectedPossibleMoves);
       });
     }
@@ -153,5 +156,104 @@ describe('EngineUtils', () => {
       { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: false, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.KNIGHT } },
       { piece: blackPawn, from: { column: 7, row: 2 }, to: { column: 7, row: 1 }, isCheck: true, promotedPiece: { color: Color.BLACK, position: { column: 7, row: 1 }, type: PieceType.ROOK } },
     ]);
+
+    describe('getPossibleMoves performance test', () => {
+      const maxTime = 2000;
+
+      // see https://www.chessprogramming.org/Perft_Results
+      function testGetPossibleMovesPerformance(startPositionFen: string, depth: number, numberOfPositions: number, maxTime: number) {
+        it(`should generate ${numberOfPositions} positions for "${startPositionFen}" and ${depth} ply in maximal ${maxTime} ms`, () => {
+          const board = BoardUtils.loadBoardFromFen(startPositionFen);
+          const start = new Date().getTime();
+          const possibleNodes = getValidMoveSequences(board, depth);
+          const end = new Date().getTime();
+
+          expect(possibleNodes.length).toBe(numberOfPositions);
+          expect(end - start).toBeLessThan(maxTime);
+        });
+      }
+
+      function getValidMoveSequences(board: Board, depth: number): Move[][] {
+        const possibleMoves: Move[] = EngineUtils.getPossibleMoves(board, board.playerToMove);
+        if (depth === 1) {
+          return possibleMoves.map((move: Move) => [move]);
+        }
+        const validMoveSequences: Move[][] = [];
+        for (let move of possibleMoves) {
+          const newBoard: Board | undefined = getBoardAfterMove(board, move);
+          if (!newBoard) {
+            continue;
+          }
+          const newDepth: number = depth - 1;
+          const newValidMoveSequences: Move[][] = getValidMoveSequences(newBoard, newDepth);
+          for (let newValidMoveSequence of newValidMoveSequences) {
+            validMoveSequences.push([move].concat(newValidMoveSequence));
+          }
+        }
+        return validMoveSequences;
+      }
+
+      function getBoardAfterMove(board: Board, move: Move): Board | undefined {
+        const newBoard: Board = CopyUtils.deepCopyElement(board);
+        let executedMove: Move | undefined = MoveExecutionUtils.executeMove(move, newBoard);
+        return executedMove?.boardAfterMove;
+      }
+
+
+      testGetPossibleMovesPerformance(
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        1,
+        20,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        2,
+        400,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        3,
+        8902,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -',
+        1,
+        48,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -',
+        2,
+        2039,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        '8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ',
+        1,
+        14,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        '8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ',
+        2,
+        191,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1',
+        1,
+        6,
+        maxTime);
+
+      testGetPossibleMovesPerformance(
+        'r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1',
+        2,
+        264,
+        maxTime);
+    });
   });
 });
+
