@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { Color, Result } from '../types/board.t';
+import { COLOR_BLACK, COLOR_WHITE, Color, Result } from '../types/board.t';
 import EngineUtils from '../utils/engine.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveHistoryService } from './move-history.service';
@@ -12,8 +12,8 @@ export class EngineService {
   private isRunning$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isRunning$: Observable<boolean> = this.isRunning$$.asObservable();
 
-  private engineColor$$: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.BLACK);
-  public engineColor$: Observable<Color> = this.engineColor$$.asObservable();
+  private engineColor$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(COLOR_BLACK);
+  public engineColor$: Observable<boolean> = this.engineColor$$.asObservable();
 
   private boardSubcription: Subscription | undefined = undefined;
 
@@ -54,7 +54,7 @@ export class EngineService {
   }
 
   public toggleEngineColor(): void {
-    this.engineColor$$.next(this.engineColor$$.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE);
+    this.engineColor$$.next(this.engineColor$$.getValue() === COLOR_WHITE ? COLOR_BLACK : COLOR_WHITE);
   }
 
   public stopEngine(): void {

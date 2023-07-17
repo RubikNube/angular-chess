@@ -1,4 +1,4 @@
-import { Color } from "../types/board.t";
+import { COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import { Board } from "./../types/board.t";
 import BoardUtils from "./board.utils";
@@ -166,7 +166,7 @@ describe('PgnUtils', () => {
         from: positionE2,
         to: positionE4,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE2,
           type: PieceType.PAWN
         },
@@ -182,7 +182,7 @@ describe('PgnUtils', () => {
         from: positionE2,
         to: positionE3,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE2,
           type: PieceType.PAWN
         },
@@ -198,7 +198,7 @@ describe('PgnUtils', () => {
         from: positionE1,
         to: positionG1,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE1,
           type: PieceType.KING
         },
@@ -215,7 +215,7 @@ describe('PgnUtils', () => {
         from: positionE1,
         to: positionC1,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE1,
           type: PieceType.KING
         },
@@ -232,12 +232,12 @@ describe('PgnUtils', () => {
         from: positionD3,
         to: positionD5,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionD3,
           type: PieceType.QUEEN
         },
         capturedPiece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           type: PieceType.PAWN,
           position: positionD5
         },
@@ -253,12 +253,12 @@ describe('PgnUtils', () => {
         from: positionC3,
         to: positionD5,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionC3,
           type: PieceType.KNIGHT
         },
         capturedPiece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           type: PieceType.PAWN,
           position: positionD5
         },
@@ -274,12 +274,12 @@ describe('PgnUtils', () => {
         from: positionE4,
         to: positionD5,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE4,
           type: PieceType.PAWN
         },
         capturedPiece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           type: PieceType.PAWN,
           position: positionD5
         },
@@ -296,12 +296,12 @@ describe('PgnUtils', () => {
         from: positionE5,
         to: positionF6,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionE5,
           type: PieceType.PAWN
         },
         capturedPiece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           type: PieceType.PAWN,
           position: positionF5
         },
@@ -318,7 +318,7 @@ describe('PgnUtils', () => {
         from: positionB1,
         to: positionC3,
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: positionB1,
           type: PieceType.KNIGHT
         },
@@ -334,12 +334,12 @@ describe('PgnUtils', () => {
         from: positionF2,
         to: positionF1,
         piece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           position: positionF2,
           type: PieceType.PAWN
         },
         promotedPiece: {
-          color: Color.BLACK,
+          color: COLOR_BLACK,
           position: positionF1,
           type: PieceType.QUEEN
         },
@@ -385,19 +385,19 @@ describe('PgnUtils', () => {
     });
 
     it('should return [column:7, row:1] for white "O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O', Color.WHITE)).toEqual({ column: 7, row: 1 });
+      expect(PgnUtils.extractMoveToPosition('O-O', COLOR_WHITE)).toEqual({ column: 7, row: 1 });
     });
 
     it('should return [column:3, row:1] for white "O-O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.WHITE)).toEqual({ column: 3, row: 1 });
+      expect(PgnUtils.extractMoveToPosition('O-O-O', COLOR_WHITE)).toEqual({ column: 3, row: 1 });
     });
 
     it('should return [column:7, row:8] for black "O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O', Color.BLACK)).toEqual({ column: 7, row: 8 });
+      expect(PgnUtils.extractMoveToPosition('O-O', COLOR_BLACK)).toEqual({ column: 7, row: 8 });
     });
 
     it('should return [column:3, row:8] for black "O-O-O"', () => {
-      expect(PgnUtils.extractMoveToPosition('O-O-O', Color.BLACK)).toEqual({ column: 3, row: 8 });
+      expect(PgnUtils.extractMoveToPosition('O-O-O', COLOR_BLACK)).toEqual({ column: 3, row: 8 });
     });
   });
 

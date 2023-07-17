@@ -1,4 +1,4 @@
-import { Color, Position } from '../types/board.t';
+import { COLOR_WHITE, Color, Position } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from './position.utils';
 
@@ -45,31 +45,31 @@ describe('PositionUtils', () => {
       const leftMove: Move = {
         from: { column: 5, row: 1 },
         to: { column: 4, row: 1 },
-        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+        piece: { color: COLOR_WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
       };
 
       const leftUpMove: Move = {
         from: { column: 5, row: 1 },
         to: { column: 4, row: 2 },
-        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+        piece: { color: COLOR_WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
       };
 
       const rightMove: Move = {
         from: { column: 5, row: 1 },
         to: { column: 6, row: 1 },
-        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+        piece: { color: COLOR_WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
       };
 
       const rightUpMove: Move = {
         from: { column: 5, row: 1 },
         to: { column: 6, row: 2 },
-        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+        piece: { color: COLOR_WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
       };
 
       const upMove: Move = {
         from: { column: 5, row: 1 },
         to: { column: 5, row: 2 },
-        piece: { color: Color.WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
+        piece: { color: COLOR_WHITE, type: PieceType.KING, position: { column: 5, row: 1 } }
       };
 
       expect(PositionUtils.filterOutAttackedSquares([leftMove, leftUpMove, rightMove, rightUpMove, upMove], [{ column: 4, row: 2 }, { column: 6, row: 2 }])).toEqual([leftMove, rightMove, upMove]);

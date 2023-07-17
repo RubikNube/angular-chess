@@ -1,5 +1,5 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { Board, CastleRights, Color, Position } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, CastleRights, Color, Position } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
@@ -33,8 +33,8 @@ export default class BoardUtils {
       board.blackCastleRights(blackCastleRights);
     }
     else {
-      const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-      const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+      const whiteCastleRights: CastleRights = { player: COLOR_WHITE, canShortCastle: false, canLongCastle: false };
+      const blackCastleRights: CastleRights = { player: COLOR_BLACK, canShortCastle: false, canLongCastle: false };
 
       board.whiteCastleRights(whiteCastleRights);
       board.blackCastleRights(blackCastleRights);
@@ -76,7 +76,7 @@ export default class BoardUtils {
         }
         else if (currentChar.toUpperCase().match(this.PIECES_MATCHER_CHARS)) {
           const newPiece: Piece = {
-            color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
+            color: currentChar.match("[A-Z]") ? true : false,
             type: this.getPiece(currentChar),
             position: { row: 8 - j, column: currentPos + 1 }
           };
@@ -111,13 +111,13 @@ export default class BoardUtils {
     }
   }
 
-  private static readPlayerToMove(playerChar: string): Color {
-    return playerChar === 'w' ? Color.WHITE : Color.BLACK;
+  private static readPlayerToMove(playerChar: string): boolean {
+    return playerChar === 'w' ? COLOR_WHITE : COLOR_BLACK;
   }
 
   private static readCastleRights(castleFen: string): { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } {
-    const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-    const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
+    const whiteCastleRights: CastleRights = { player: COLOR_WHITE, canShortCastle: false, canLongCastle: false };
+    const blackCastleRights: CastleRights = { player: COLOR_BLACK, canShortCastle: false, canLongCastle: false };
 
     for (let castleChar of castleFen) {
       switch (castleChar) {
@@ -147,7 +147,7 @@ export default class BoardUtils {
     return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
   }
 
-  public static calculateBlockingSquares(board: Board, colorOfPieces: Color): Position[] {
+  public static calculateBlockingSquares(board: Board, colorOfPieces: boolean): Position[] {
     const blockingSquares: Set<Position> = new Set<Position>();
 
     board.pieces
@@ -179,7 +179,7 @@ export default class BoardUtils {
     return p => PositionUtils.isOnBoard(p);
   }
 
-  public static calculateMoveSquares(board: Board, colorOfPieces: Color, includeKingOrPawn?: boolean): Position[] {
+  public static calculateMoveSquares(board: Board, colorOfPieces: boolean, includeKingOrPawn?: boolean): Position[] {
     const attackedSquares: Set<Position> = new Set<Position>();
 
     board.pieces
@@ -433,7 +433,7 @@ export default class BoardUtils {
     return Array.from(attackingMoves.values());
   }
 
-  private static getKing(board: Board, color: Color): Piece {
+  private static getKing(board: Board, color: boolean): Piece {
     const king = board.pieces.find(p => p.color === color && p.type === PieceType.KING);
 
     if (king !== undefined) {
@@ -792,7 +792,7 @@ export default class BoardUtils {
   }
 
   public static getMoveRightFen(board: Board): string {
-    return board.playerToMove === Color.WHITE ? "w" : "b";
+    return board.playerToMove === COLOR_WHITE ? "w" : "b";
   }
 
   public static getPieceFen(board: Board): string {
@@ -854,8 +854,8 @@ export default class BoardUtils {
     }
   }
 
-  public static getCastleRights(player: Color, board: Board): CastleRights {
-    if (player === Color.WHITE) {
+  public static getCastleRights(player: boolean, board: Board): CastleRights {
+    if (player === COLOR_WHITE) {
       return board.whiteCastleRights;
     }
     else {

@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "src/app/types/board.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import PositionUtils from "../position.utils";
@@ -14,7 +14,7 @@ describe('MoveGenerationQueenHandler', () => {
     function isAttackingKing(description: string, fen: string, queenPosition: Position, expected: boolean) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
+        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: COLOR_WHITE };
         const isAttackingKing = handler.isAttackingKing(queen, board);
 
         expect(isAttackingKing).toBe(expected);
@@ -89,7 +89,7 @@ describe('MoveGenerationQueenHandler', () => {
     function getBlockingSquares(description: string, fen: string, queenPosition: Position, expectedBlockingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
+        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: COLOR_WHITE };
         const blockingSquares = PositionUtils.sortPositions(handler.getBlockingSquares(queen, board));
 
         expect(blockingSquares).toEqual(PositionUtils.sortPositions(expectedBlockingSquares));
@@ -150,7 +150,7 @@ describe('MoveGenerationQueenHandler', () => {
     function getAttackingSquares(description: string, fen: string, queenPosition: Position, expectedAttackingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
+        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: COLOR_WHITE };
         const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(queen, board));
 
         expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));

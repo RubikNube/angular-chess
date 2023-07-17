@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "../types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "../types/board.t";
 import { Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import PositionUtils from "./position.utils";
@@ -8,12 +8,12 @@ export default class PieceUtils {
     return a.color === b.color && a.type === b.type && PositionUtils.positionEquals(a.position, b.position);
   }
 
-  public static getOpposedColor(color: Color) {
-    return color === Color.WHITE ? Color.BLACK : Color.WHITE;
+  public static getOpposedColor(color: boolean): boolean {
+    return !color;
   }
 
-  public static getPieceChar(type: PieceType, color: Color): string {
-    if (color === Color.WHITE) {
+  public static getPieceChar(type: PieceType, color: boolean): string {
+    if (color === COLOR_WHITE) {
       switch (type) {
         case PieceType.PAWN:
           return 'p';
@@ -47,7 +47,7 @@ export default class PieceUtils {
     }
   }
 
-  public static getPieceFenChar(type: PieceType, color: Color): string {
+  public static getPieceFenChar(type: PieceType, color: boolean): string {
     let typeChar = "";
 
     switch (type) {
@@ -71,7 +71,7 @@ export default class PieceUtils {
         break;
     }
 
-    return color === Color.WHITE ? typeChar : typeChar.toLowerCase();
+    return color === COLOR_WHITE ? typeChar : typeChar.toLowerCase();
   }
 
   public static getPieceType(pieceName: string) {

@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "../../types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "../../types/board.t";
 import { Piece, PieceType } from "../../types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
 import { PIECE_SQUARE_SCORE } from "./square-tables.t";
@@ -29,7 +29,7 @@ export default class EvaluationUtils {
     LoggingUtils.log(LogLevel.DEBUG, () => `Game phase: ${gamePhase} - Factor middle game: ${factorMiddleGame} - Factor end game: ${factorEndGame}`);
 
     board.pieces.forEach(piece => {
-      const colorFactor = piece.color === Color.WHITE ? 1 : -1;
+      const colorFactor = piece.color === COLOR_WHITE ? 1 : -1;
       evaluation += colorFactor * (this.getRelativePieceValue(piece, factorMiddleGame) + this.getRelativePositionFactor(piece, factorMiddleGame));
     });
     LoggingUtils.log(LogLevel.DEBUG, () => `Evaluation: ${evaluation}`);
@@ -133,7 +133,7 @@ export default class EvaluationUtils {
   }
 
   private static calculateIndexForPiece(piece: Piece) {
-    if (piece.color === Color.WHITE) {
+    if (piece.color === COLOR_WHITE) {
       return EvaluationUtils.calculateIndex(piece.position);
     } else {
       return EvaluationUtils.flipIndex(EvaluationUtils.calculateIndex(piece.position));

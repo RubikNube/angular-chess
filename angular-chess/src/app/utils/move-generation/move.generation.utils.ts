@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "src/app/types/board.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
 import PositionUtils from "../position.utils";
@@ -48,7 +48,7 @@ export default class MoveGenerationUtils {
     return moves.length === 0;
   }
 
-  public static getExecutableMoves(board: Board, dropPos: Position, color: Color): Move[] {
+  public static getExecutableMoves(board: Board, dropPos: Position, color: boolean): Move[] {
     const pieces: Piece[] = board.pieces.filter(p => p.color === color);
 
     const moves: Move[] = [];
@@ -144,7 +144,7 @@ export default class MoveGenerationUtils {
           m.capturedPiece = PositionUtils.getPieceOnPos(board, m.to);
         } else {
           let capturedPiecePos: Position = {
-            row: m.piece.color === Color.WHITE ? m.to.row - 1 : m.to.row + 1,
+            row: m.piece.color === COLOR_WHITE ? m.to.row - 1 : m.to.row + 1,
             column: m.to.column
           }
 
@@ -159,18 +159,18 @@ export default class MoveGenerationUtils {
       });
   }
 
-  private static getKingAttackingPieces(board: Board, colorOfAttackedKing: Color): Piece[] {
+  private static getKingAttackingPieces(board: Board, colorOfAttackedKing: boolean): Piece[] {
     return board.pieces
       .filter(p => p.color !== colorOfAttackedKing)
       .filter(p => this.generationHandlers.find(h => h.canHandle(p))?.isAttackingKing(p, board));
   }
 
-  private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
+  private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: boolean): boolean {
     const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
     return pieceOnPos ? pieceOnPos.color !== color : false;
   }
 
-  public static calculateAttackedSquares(board: Board, colorOfPieces: Color): Position[] {
+  public static calculateAttackedSquares(board: Board, colorOfPieces: boolean): Position[] {
     // get all pieces of the color
     const pieces = board.pieces.filter(p => p.color === colorOfPieces);
     // get all attacked squares of the pieces

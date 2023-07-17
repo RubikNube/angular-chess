@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "../types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
@@ -173,7 +173,7 @@ export default class PgnUtils {
    * @returns The raw move (no promotion included) that represents the given move string if valid, else undefined.
    */
   public static getRawMoveFromString(board: Board, moveString: string): Move | undefined {
-    const playerToMove: Color = board.playerToMove;
+    const playerToMove: boolean = board.playerToMove;
     const dropPosition: Position | undefined = PgnUtils.extractMoveToPosition(moveString, playerToMove);
     const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
 
@@ -232,17 +232,17 @@ export default class PgnUtils {
    * @param playerToMove The player that has the move right.
    * @returns The end position of the move that is represented by the moveString. 
    */
-  public static extractMoveToPosition(moveString: string, playerToMove?: Color): Position | undefined {
+  public static extractMoveToPosition(moveString: string, playerToMove?: boolean): Position | undefined {
     if (moveString === 'O-O') {
       return {
         column: 7,
-        row: playerToMove === Color.WHITE ? 1 : 8
+        row: playerToMove === COLOR_WHITE ? 1 : 8
       }
     }
     else if (moveString === 'O-O-O') {
       return {
         column: 3,
-        row: playerToMove === Color.WHITE ? 1 : 8
+        row: playerToMove === COLOR_WHITE ? 1 : 8
       }
     }
 

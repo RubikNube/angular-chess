@@ -7,7 +7,7 @@ import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
+import { Board, COLOR_WHITE, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
@@ -145,7 +145,7 @@ export class ChessBoardComponent implements OnInit {
     this.lastMove = executableMove;
 
     if (executableMove?.piece.type === PieceType.PAWN) {
-      if (executableMove?.piece.color === Color.WHITE) {
+      if (executableMove?.piece.color === COLOR_WHITE) {
         if (executableMove?.to.row === 8) {
           // pick a piece
           this.overlayPanel?.toggle(e);

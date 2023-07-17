@@ -1,4 +1,4 @@
-import { Board, Color } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
@@ -21,7 +21,7 @@ export default class EngineUtils {
           m.score = EvaluationUtils.evaluateBoard(boardAfterMove);
         }
         return m as MoveWithScore;
-      }).sort((a, b) => board.playerToMove === Color.WHITE ? b.score! - a.score! : a.score! - b.score!);
+      }).sort((a, b) => board.playerToMove === COLOR_WHITE ? b.score! - a.score! : a.score! - b.score!);
 
       LoggingUtils.log(LogLevel.DEBUG, () => "Engine moves: " + JSON.stringify(sortedMoves));
 
@@ -29,7 +29,7 @@ export default class EngineUtils {
     });
   }
 
-  public static getPossibleMoves(board: Board, playerToMove: Color): Move[] {
+  public static getPossibleMoves(board: Board, playerToMove: boolean): Move[] {
     let moves: Move[] = [];
 
     let piecesOfColor: Piece[] = board.pieces.filter(p => p.color === playerToMove);
@@ -47,7 +47,7 @@ export default class EngineUtils {
     let promotionMoves: Move[] = [];
 
     if (move.piece.type === PieceType.PAWN
-      && (move.piece.color === Color.WHITE && move.to.row === 8 || move.piece.color === Color.BLACK && move.to.row === 1)) {
+      && (move.piece.color === COLOR_WHITE && move.to.row === 8 || move.piece.color === COLOR_BLACK && move.to.row === 1)) {
       this.addPromotionMoves(board, move, promotionMoves);
     }
     else {

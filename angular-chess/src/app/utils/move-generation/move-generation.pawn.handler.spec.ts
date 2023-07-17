@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "src/app/types/board.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import PositionUtils from "../position.utils";
@@ -14,7 +14,7 @@ describe('MoveGenerationPawnHandler', () => {
     function isAttackingKing(description: string, fen: string, pawnPosition: Position, expected: boolean) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: Color.WHITE };
+        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: COLOR_WHITE };
         const isAttackingKing = handler.isAttackingKing(pawn, board);
 
         expect(isAttackingKing).toBe(expected);
@@ -47,7 +47,7 @@ describe('MoveGenerationPawnHandler', () => {
     function getBlockingSquares(description: string, fen: string, pawnPosition: Position, expectedBlockingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: Color.WHITE };
+        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: COLOR_WHITE };
         const blockingSquares = PositionUtils.sortPositions(handler.getBlockingSquares(pawn, board));
 
         expect(blockingSquares).toEqual(PositionUtils.sortPositions(expectedBlockingSquares));
@@ -73,7 +73,7 @@ describe('MoveGenerationPawnHandler', () => {
     function getAttackingSquares(description: string, fen: string, pawnPosition: Position, expectedAttackingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: Color.WHITE };
+        const pawn: Piece = { type: PieceType.PAWN, position: pawnPosition, color: COLOR_WHITE };
         const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(pawn, board));
 
         expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));

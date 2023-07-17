@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, COLOR_WHITE, Color, Position } from "src/app/types/board.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import PositionUtils from "../position.utils";
@@ -26,7 +26,7 @@ describe('MoveGenerationKingHandler', () => {
     function getAttackingSquares(description: string, fen: string, kingPosition: Position, expectedAttackingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const king: Piece = { type: PieceType.KING, position: kingPosition, color: Color.WHITE };
+        const king: Piece = { type: PieceType.KING, position: kingPosition, color: COLOR_WHITE };
 
         const actualSquares = handler.getAttackingSquares(king, board).sort(PositionUtils.comparePositions());
         const expectedSquares = expectedAttackingSquares.sort(PositionUtils.comparePositions());

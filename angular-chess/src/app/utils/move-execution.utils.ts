@@ -1,5 +1,5 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { Board, Color, Result } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, Color, Result } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
@@ -23,12 +23,12 @@ export default class MoveExecutionUtils {
 
     if (copiedMove.capturedPiece === undefined) { // move
       if (copiedMove.piece.type === PieceType.PAWN) {
-        if (copiedMove.piece.color === Color.WHITE && copiedMove.to.row === 4) {
+        if (copiedMove.piece.color === COLOR_WHITE && copiedMove.to.row === 4) {
           boardBuilder.enPassantSquare({ row: 3, column: copiedMove.from.column });
 
           return this.finishMove(copiedMove, boardBuilder);
         }
-        else if (copiedMove.piece.color === Color.BLACK && copiedMove.to.row === 5) {
+        else if (copiedMove.piece.color === COLOR_BLACK && copiedMove.to.row === 5) {
           boardBuilder.enPassantSquare({ row: 6, column: copiedMove.from.column });
 
           return this.finishMove(copiedMove, boardBuilder);
@@ -79,7 +79,7 @@ export default class MoveExecutionUtils {
       move.isMate = MoveGenerationUtils.isMate(boardBuilder.build());
 
       if (move.isMate) {
-        boardBuilder.result(move.piece.color === Color.WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
+        boardBuilder.result(move.piece.color === COLOR_WHITE ? Result.WHITE_WIN : Result.BLACK_WIN);
       }
     }
 

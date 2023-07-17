@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { Board, Color } from '../types/board.t';
+import { Board, Color, COLOR_WHITE } from '../types/board.t';
 import { FullMove, Move } from '../types/pieces.t';
 import CopyUtils from '../utils/copy.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
@@ -107,7 +107,7 @@ export class MoveHistoryService {
       const moveMap: Map<number, FullMove> = new Map<number, FullMove>();
 
       const firstMove = moveHistory[0];
-      const startingColor: Color = firstMove?.piece.color;
+      const startingColor: boolean = firstMove?.piece.color;
 
 
       for (let index = 0; index < moveHistory.length; index++) {
@@ -123,7 +123,7 @@ export class MoveHistoryService {
           }
         }
 
-        if (move.piece.color === Color.WHITE) {
+        if (move.piece.color === COLOR_WHITE) {
           fullMove.whiteMove = move;
         }
         else {

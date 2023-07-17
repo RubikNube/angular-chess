@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { Board, CastleRights, Color, HighlightColor, Position, Result } from '../types/board.t';
+import { Board, CastleRights, Color, COLOR_BLACK, COLOR_WHITE, HighlightColor, Position, Result } from '../types/board.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
@@ -20,9 +20,9 @@ const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 export class ChessBoardService {
   private initialBoard: Board = {
     pieces: [],
-    whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
-    blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
-    playerToMove: Color.WHITE,
+    whiteCastleRights: { player: COLOR_WHITE, canLongCastle: true, canShortCastle: true },
+    blackCastleRights: { player: COLOR_BLACK, canShortCastle: true, canLongCastle: true },
+    playerToMove: COLOR_WHITE,
     result: Result.UNKNOWN,
     moveCount: 1
   };
@@ -30,7 +30,7 @@ export class ChessBoardService {
   private board$: Observable<Board> = this.board$$.asObservable();
 
   public getPieces$: Observable<Piece[]> = this.board$$.pipe(map(board => board.pieces));
-  public activePlayer$: Observable<Color> = this.board$$.pipe(map(board => board.playerToMove));
+  public activePlayer$: Observable<boolean> = this.board$$.pipe(map(board => board.playerToMove));
 
   private fen$$: BehaviorSubject<string> = new BehaviorSubject("");
 
@@ -116,7 +116,7 @@ export class ChessBoardService {
   public setCastleRights(castleRights: CastleRights): void {
     let currentBoard: Board = this.board$$.getValue();
 
-    if (castleRights.player === Color.WHITE) {
+    if (castleRights.player === COLOR_WHITE) {
       currentBoard.whiteCastleRights = castleRights;
     }
     else {
@@ -126,8 +126,8 @@ export class ChessBoardService {
     this.board$$.next(currentBoard);
   }
 
-  public getCastleRights(player: Color): CastleRights {
-    if (player === Color.WHITE) {
+  public getCastleRights(player: boolean): CastleRights {
+    if (player === COLOR_WHITE) {
       return this.board$$.getValue().whiteCastleRights;
     }
     else {
@@ -135,8 +135,8 @@ export class ChessBoardService {
     }
   }
 
-  public getCastleRights$(player: Color): Observable<CastleRights> {
-    if (player === Color.WHITE) {
+  public getCastleRights$(player: boolean): Observable<CastleRights> {
+    if (player === COLOR_WHITE) {
       return this.board$.pipe(map(b => {
         return b.whiteCastleRights;
       }));
@@ -151,20 +151,20 @@ export class ChessBoardService {
   public togglePlayerToMove(): void {
     LoggingUtils.log(LogLevel.INFO, () => "togglePlayerToMove:");
     let currentBoard: Board = this.board$$.getValue();
-    let currentPlayerToMove: Color = currentBoard.playerToMove;
+    let currentPlayerToMove: boolean = currentBoard.playerToMove;
 
-    currentBoard.playerToMove = currentPlayerToMove === Color.WHITE ? Color.BLACK : Color.WHITE
+    currentBoard.playerToMove = currentPlayerToMove === COLOR_WHITE ? COLOR_BLACK : COLOR_WHITE
 
     this.board$$.next(currentBoard);
   }
 
-  public getPlayerToMove$(): Observable<Color> {
+  public getPlayerToMove$(): Observable<boolean> {
     return this.board$.pipe(map(b => {
       return b.playerToMove;
     }));
   }
 
-  public getPlayerToMove(): Color {
+  public getPlayerToMove(): boolean {
     return this.board$$.getValue().playerToMove;
   }
 

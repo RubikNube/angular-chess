@@ -1,4 +1,4 @@
-import { Board, Color, Position } from 'src/app/types/board.t';
+import { Board, COLOR_WHITE, Color, Position } from 'src/app/types/board.t';
 import { Piece, PieceType } from 'src/app/types/pieces.t';
 import BoardUtils from '../board.utils';
 import PositionUtils from '../position.utils';
@@ -14,7 +14,7 @@ describe('MoveGenerationBishopHandler', () => {
     function isAttackingKing(description: string, fen: string, bishopPosition: Position, expected: boolean) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: Color.WHITE };
+        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: COLOR_WHITE };
         const isAttackingKing = handler.isAttackingKing(bishop, board);
 
         expect(isAttackingKing).toBe(expected);
@@ -75,7 +75,7 @@ describe('MoveGenerationBishopHandler', () => {
     function getBlockingSquares(description: string, fen: string, bishopPosition: Position, expectedBlockingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: Color.WHITE };
+        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: COLOR_WHITE };
         const blockingSquares = PositionUtils.sortPositions(handler.getBlockingSquares(bishop, board));
 
         expect(blockingSquares).toEqual(PositionUtils.sortPositions(expectedBlockingSquares));
@@ -115,7 +115,7 @@ describe('MoveGenerationBishopHandler', () => {
     function getAttackingSquares(description: string, fen: string, bishopPosition: Position, expectedAttackingSquares: Position[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
-        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: Color.WHITE };
+        const bishop: Piece = { type: PieceType.BISHOP, position: bishopPosition, color: COLOR_WHITE };
         const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(bishop, board));
 
         expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));

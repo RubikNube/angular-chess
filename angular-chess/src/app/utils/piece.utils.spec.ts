@@ -1,4 +1,4 @@
-import { Board, Color, Position } from '../types/board.t';
+import { Board, COLOR_BLACK, COLOR_WHITE, Color, Position } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
@@ -6,19 +6,19 @@ import PositionUtils from './position.utils';
 
 describe('PieceUtils', () => {
   const whiteKing55: Piece = {
-    color: Color.WHITE,
+    color: COLOR_WHITE,
     position: { row: 5, column: 5 },
     type: PieceType.KING
   };
 
   const whiteKing55OtherInstance: Piece = {
-    color: Color.WHITE,
+    color: COLOR_WHITE,
     position: { row: 5, column: 5 },
     type: PieceType.KING
   };
 
   const blackKing55: Piece = {
-    color: Color.BLACK,
+    color: COLOR_BLACK,
     position: { row: 5, column: 5 },
     type: PieceType.KING
   };

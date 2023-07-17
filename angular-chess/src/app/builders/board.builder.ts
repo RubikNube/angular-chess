@@ -1,4 +1,4 @@
-import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, CastleRights, Color, Position, Result } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";
@@ -15,9 +15,9 @@ export class BoardBuilder {
     else {
       this._board = {
         pieces: [],
-        whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
-        blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
-        playerToMove: Color.WHITE,
+        whiteCastleRights: { player: COLOR_WHITE, canLongCastle: true, canShortCastle: true },
+        blackCastleRights: { player: COLOR_BLACK, canShortCastle: true, canLongCastle: true },
+        playerToMove: COLOR_WHITE,
         result: Result.UNKNOWN,
         moveCount: 0
       };
@@ -80,7 +80,7 @@ export class BoardBuilder {
   }
 
   public setCastleRights(castleRights: CastleRights): BoardBuilder {
-    return castleRights.player === Color.WHITE ? this.whiteCastleRights(castleRights) : this.blackCastleRights(castleRights);
+    return castleRights.player === COLOR_WHITE ? this.whiteCastleRights(castleRights) : this.blackCastleRights(castleRights);
   }
 
   public moveCount(moveCount: number): BoardBuilder {
@@ -98,13 +98,13 @@ export class BoardBuilder {
     return this;
   }
 
-  public playerToMove(playerToMove: Color): BoardBuilder {
+  public playerToMove(playerToMove: boolean): BoardBuilder {
     this._board.playerToMove = playerToMove;
     return this;
   }
 
   public togglePlayerToMove(): BoardBuilder {
-    return this.playerToMove(this._board.playerToMove === Color.WHITE ? Color.BLACK : Color.WHITE);
+    return this.playerToMove(this._board.playerToMove === COLOR_WHITE ? COLOR_BLACK : COLOR_WHITE);
   }
 
   public result(result: Result): BoardBuilder {

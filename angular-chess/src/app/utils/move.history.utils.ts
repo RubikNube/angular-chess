@@ -1,13 +1,13 @@
-import { Color } from "../types/board.t";
+import { COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
 
 export default class MoveHistoryUtils {
 
-  public static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number): number {
-    if (startingColor === Color.WHITE) {
+  public static getMoveCount(startingColor: boolean, moveColor: boolean, moveHistoryIndex: number): number {
+    if (startingColor === COLOR_WHITE) {
       return Math.floor(moveHistoryIndex / 2) + 1;
     }
     else {
-      return Math.floor(moveHistoryIndex / 2) + (moveColor === Color.BLACK ? 1 : 2);
+      return Math.floor(moveHistoryIndex / 2) + (moveColor === COLOR_BLACK ? 1 : 2);
     }
   }
 }

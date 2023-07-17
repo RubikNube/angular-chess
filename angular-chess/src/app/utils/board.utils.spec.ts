@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-import { Board, Color } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 
@@ -12,21 +12,21 @@ describe('BoardUtils', () => {
   describe('isProtected', () => {
     it('should return true if piece is protected by own piece', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/1b6/8/8/8/8/6q1/4K3 w - - 0 1");
-      let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
+      let queen: Piece = { type: PieceType.QUEEN, color: COLOR_BLACK, position: { column: 7, row: 2 } };
 
       expect(BoardUtils.isProtected(board, queen)).toBeTruthy();
     });
 
     it('should return true if bishop is protected by own king', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4r3/8/8/4k3/4B3/4K3/8/8 b - - 5 1");
-      let bishop: Piece = { type: PieceType.BISHOP, color: Color.WHITE, position: { column: 5, row: 4 } };
+      let bishop: Piece = { type: PieceType.BISHOP, color: COLOR_WHITE, position: { column: 5, row: 4 } };
 
       expect(BoardUtils.isProtected(board, bishop)).toBeTruthy();
     });
 
     it('should return false if piece is not protected by own piece', () => {
       let board: Board = BoardUtils.loadBoardFromFen("4k3/8/8/8/8/8/6q1/4K3 w - - 0 1");
-      let queen: Piece = { type: PieceType.QUEEN, color: Color.BLACK, position: { column: 7, row: 2 } };
+      let queen: Piece = { type: PieceType.QUEEN, color: COLOR_BLACK, position: { column: 7, row: 2 } };
 
       expect(BoardUtils.isProtected(board, queen)).toBeFalsy();
     });
@@ -36,7 +36,7 @@ describe('BoardUtils', () => {
     it('should return correct FEN for single white king', () => {
       const king: Piece = {
         type: PieceType.KING,
-        color: Color.WHITE,
+        color: COLOR_WHITE,
         position: {
           row: 1,
           column: 5
@@ -211,7 +211,7 @@ describe('BoardUtils', () => {
       const initFen = "rnb1kbnr/ppp1pppp/8/8/8/5N2/PPPq1PPP/RNBQKB1R w KQkq - 0 1";
       const board: Board = BoardUtils.loadBoardFromFen(initFen);
       let attackingQueen: Piece = {
-        color: Color.BLACK,
+        color: COLOR_BLACK,
         type: PieceType.QUEEN,
         position: { row: 2, column: 4 }
       }

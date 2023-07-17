@@ -1,4 +1,4 @@
-import { Board, Color } from "../types/board.t";
+import { Board, COLOR_WHITE, Color } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import MoveExecutionUtils from "./move-execution.utils";
@@ -12,12 +12,12 @@ describe('MoveExecutionUtils', () => {
         from: { row: 7, column: 7 },
         to: { column: 7, row: 8, },
         piece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: { row: 7, column: 7 },
           type: PieceType.PAWN
         },
         promotedPiece: {
-          color: Color.WHITE,
+          color: COLOR_WHITE,
           position: { row: 7, column: 8 },
           type: PieceType.QUEEN
         },

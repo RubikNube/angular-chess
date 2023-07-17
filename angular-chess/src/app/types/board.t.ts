@@ -1,19 +1,22 @@
 import { Piece } from "./pieces.t";
 
+export const COLOR_WHITE = true
+export const COLOR_BLACK = false
+
 export interface Board {
   pieces: Piece[];
   whiteCastleRights: CastleRights;
   blackCastleRights: CastleRights;
   moveCount: number;
   enPassantSquare?: Position;
-  playerToMove: Color;
+  playerToMove: boolean;
   result?: Result;
   plyCount?: number;
 }
 
 export enum Color {
-  WHITE = "WHITE",
-  BLACK = "BLACK"
+  WHITE = "W",
+  BLACK = "B"
 }
 
 export type Position = {
@@ -27,22 +30,22 @@ export type Square = {
 }
 
 export enum HighlightColor {
-  NONE = "NONE",
-  YELLOW = "YELLOW",
-  GREEN = "GREEN",
-  RED = "RED",
-  BLUE = "BLUE"
+  NONE = "N",
+  YELLOW = "Y",
+  GREEN = "G",
+  RED = "R",
+  BLUE = "B"
 }
 
 export type CastleRights = {
-  player: Color,
+  player: boolean,
   canShortCastle: boolean,
   canLongCastle: boolean
 }
 
 export enum Result {
-  UNKNOWN = "UNKNOWN",
-  REMIS = "REMIS",
-  WHITE_WIN = "WHITE_WIN",
-  BLACK_WIN = "BLACK_WIN"
+  UNKNOWN = "U",
+  REMIS = "R",
+  WHITE_WIN = "W",
+  BLACK_WIN = "B"
 }
