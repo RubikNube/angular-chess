@@ -1,4 +1,4 @@
-import { COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
+import { COLOR_BLACK, COLOR_WHITE } from "../types/board.t";
 
 export default class MoveHistoryUtils {
 

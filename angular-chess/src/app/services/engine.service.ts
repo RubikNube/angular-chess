@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { COLOR_BLACK, COLOR_WHITE, Color, Result } from '../types/board.t';
+import { COLOR_BLACK, COLOR_WHITE, Result } from '../types/board.t';
 import EngineUtils from '../utils/engine.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveHistoryService } from './move-history.service';

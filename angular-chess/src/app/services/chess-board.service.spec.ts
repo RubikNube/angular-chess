@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { COLOR_BLACK, COLOR_WHITE, Color } from '../types/board.t';
+import { COLOR_BLACK, COLOR_WHITE } from '../types/board.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
 

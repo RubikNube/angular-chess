@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-import { Board, COLOR_BLACK, COLOR_WHITE, Color } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE } from "../types/board.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 

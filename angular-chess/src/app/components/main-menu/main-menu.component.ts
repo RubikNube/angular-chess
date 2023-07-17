@@ -7,7 +7,7 @@ import { ChessBoardService } from 'src/app/services/chess-board.service';
 import { EngineService } from 'src/app/services/engine.service';
 import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { PositioningService } from 'src/app/services/positioning.service';
-import { COLOR_BLACK, COLOR_WHITE, Color } from 'src/app/types/board.t';
+import { COLOR_BLACK, COLOR_WHITE } from 'src/app/types/board.t';
 import BoardUtils from 'src/app/utils/board.utils';
 import { ImportFenComponent } from './import-fen/import-fen.component';
 import { ImportPgnComponent } from './import-pgn/import-pgn.component';

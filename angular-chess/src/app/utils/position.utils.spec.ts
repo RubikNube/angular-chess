@@ -1,4 +1,4 @@
-import { COLOR_WHITE, Color, Position } from '../types/board.t';
+import { COLOR_WHITE, Position } from '../types/board.t';
 import { Move, PieceType } from '../types/pieces.t';
 import PositionUtils from './position.utils';
 

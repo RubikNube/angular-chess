@@ -1,4 +1,4 @@
-import { Board, COLOR_WHITE, Color, Position } from "../types/board.t";
+import { Board, COLOR_WHITE, Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";

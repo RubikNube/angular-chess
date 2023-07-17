@@ -14,11 +14,6 @@ export interface Board {
   plyCount?: number;
 }
 
-export enum Color {
-  WHITE = "W",
-  BLACK = "B"
-}
-
 export type Position = {
   row: number;
   column: number

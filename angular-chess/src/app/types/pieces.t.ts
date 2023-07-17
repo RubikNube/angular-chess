@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "./board.t";
+import { Board, Position } from "./board.t";
 
 export type Piece = {
   type: PieceType;

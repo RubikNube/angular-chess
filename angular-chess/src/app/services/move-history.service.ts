@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { Board, Color, COLOR_WHITE } from '../types/board.t';
+import { Board, COLOR_WHITE } from '../types/board.t';
 import { FullMove, Move } from '../types/pieces.t';
 import CopyUtils from '../utils/copy.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';

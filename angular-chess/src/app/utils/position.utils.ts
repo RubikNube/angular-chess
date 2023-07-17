@@ -1,4 +1,4 @@
-import { Board, Color, Position } from "../types/board.t";
+import { Board, COLOR_WHITE, Position } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 
 export default class PositionUtils {
@@ -6,8 +6,8 @@ export default class PositionUtils {
     return a.row === b.row && a.column === b.column;
   }
 
-  public static getRelativePosition(position: Position, perspective: Color): Position {
-    if (perspective === Color.WHITE) {
+  public static getRelativePosition(position: Position, perspective: boolean): Position {
+    if (perspective === COLOR_WHITE) {
       return position;
     }
     else {

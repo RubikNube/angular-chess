@@ -1,4 +1,4 @@
-import { Board, COLOR_WHITE, Color } from "../types/board.t";
+import { Board, COLOR_WHITE } from "../types/board.t";
 import BoardUtils from "./board.utils";
 import MoveSearchUtils from "./move.search.utils";
 

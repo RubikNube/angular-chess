@@ -1,4 +1,4 @@
-import { Board, COLOR_WHITE, Color, Position } from "../../types/board.t";
+import { Board, COLOR_WHITE, Position } from "../../types/board.t";
 import { Piece, PieceType } from "../../types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
 import { PIECE_SQUARE_SCORE } from "./square-tables.t";

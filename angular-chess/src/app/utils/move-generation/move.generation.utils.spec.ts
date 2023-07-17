@@ -1,4 +1,4 @@
-import { Board, COLOR_BLACK, COLOR_WHITE, Color, Position } from 'src/app/types/board.t';
+import { Board, COLOR_BLACK, COLOR_WHITE, Position } from 'src/app/types/board.t';
 import { Move, Piece, PieceType } from 'src/app/types/pieces.t';
 import BoardUtils from '../board.utils';
 import MoveGenerationUtils from './move.generation.utils';

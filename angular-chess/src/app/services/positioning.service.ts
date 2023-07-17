@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { COLOR_BLACK, COLOR_WHITE, Position } from '../types/board.t';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import PositionUtils from '../utils/position.utils';
 import { PersistenceService } from './persistence.service';
@@ -9,8 +9,8 @@ import { PersistenceService } from './persistence.service';
   providedIn: 'root'
 })
 export class PositioningService {
-  perspectiveSource: BehaviorSubject<Color> = new BehaviorSubject<Color>(Color.WHITE);
-  perspective$: Observable<Color> = this.perspectiveSource.asObservable();
+  perspectiveSource: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(COLOR_WHITE);
+  perspective$: Observable<boolean> = this.perspectiveSource.asObservable();
 
   constructor(private persistenceService: PersistenceService) {
     const persistedPerspective = this.persistenceService.load('perspective');
@@ -21,7 +21,7 @@ export class PositioningService {
 
 
   public switchPerspective(): void {
-    const newPerspective = this.perspectiveSource.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE;
+    const newPerspective = !this.perspectiveSource.getValue();
     this.persistenceService.save('perspective', newPerspective);
     this.perspectiveSource.next(newPerspective);
   }
@@ -50,7 +50,7 @@ export class PositioningService {
 
     let position: Position;
 
-    if (this.getPerspective() === Color.WHITE) {
+    if (this.getPerspective() === COLOR_WHITE) {
       position = { row: 9 - row, column: column };
     }
     else {
@@ -62,7 +62,7 @@ export class PositioningService {
     return position;
   }
 
-  private getPerspective(): Color {
+  private getPerspective(): boolean {
     return this.perspectiveSource.getValue();
   }
 }

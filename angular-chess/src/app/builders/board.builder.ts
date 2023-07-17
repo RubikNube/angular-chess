@@ -1,4 +1,4 @@
-import { Board, COLOR_BLACK, COLOR_WHITE, CastleRights, Color, Position, Result } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, CastleRights, Position, Result } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";

@@ -47,7 +47,7 @@ export class ChessFieldComponent {
   }
 
   public getPieceChar(): string | undefined {
-    return this.piece ? PieceUtils.getPieceChar(this.piece.type, Color.BLACK) : undefined;
+    return this.piece ? PieceUtils.getPieceChar(this.piece.type.BLACK) : undefined;
   }
 
   public getSquareRepresentation(columnIndex: number, rowIndex: number): string {

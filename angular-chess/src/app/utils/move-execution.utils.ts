@@ -1,5 +1,5 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { Board, COLOR_BLACK, COLOR_WHITE, Color, Result } from "../types/board.t";
+import { Board, COLOR_BLACK, COLOR_WHITE, Result } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
