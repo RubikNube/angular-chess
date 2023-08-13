@@ -302,7 +302,7 @@ export default class PgnUtils {
 
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
-      const moveString = MoveUtils.getMoveRepresentation(move);
+      const moveString = MoveUtils.getSimpleMoveRepresentation(move);
       pgn += `${i + 1}. ${moveString} `;
     }
 

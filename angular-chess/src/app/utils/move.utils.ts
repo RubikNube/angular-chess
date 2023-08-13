@@ -1,6 +1,11 @@
-import { Move } from "../types/pieces.t";
+import { Move, PieceType } from "../types/pieces.t";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
+
+export enum MoveRepresentationConfig {
+  INCLUDE_FROM_COLUMN,
+  INCLUDE_FROM_ROW
+}
 
 export default class MoveUtils {
   public static moveToUci(move: Move): string {
@@ -10,6 +15,49 @@ export default class MoveUtils {
     }
     return uci;
   }
+
+  public static getSimpleMoveRepresentation(move: Move | undefined, represenationConfig?: MoveRepresentationConfig): string {
+    if (move === undefined) {
+      return "";
+    }
+
+    if (move?.isShortCastle) {
+      return "O-O";
+    } else if (move?.isLongCastle) {
+      return "O-O-O";
+    }
+
+    if (move.capturedPiece !== undefined) {
+      if (move.piece.type === PieceType.PAWN) {
+        return PositionUtils.getRowString(move.from) + "x" + PositionUtils.getCoordinate(move.to);
+      } else {
+        return this.getEnglishPieceChar(move.piece.type) + "x" + PositionUtils.getCoordinate(move.to);
+      }
+    }
+
+    const toRepresentation = move.to ? PositionUtils.getCoordinate(move.to) : "";
+
+
+    return this.getEnglishPieceChar(move.piece.type) + toRepresentation;
+  }
+
+  private static getEnglishPieceChar(type: PieceType): string {
+    switch (type) {
+      case PieceType.KING:
+        return "K";
+      case PieceType.QUEEN:
+        return "Q";
+      case PieceType.ROOK:
+        return "R";
+      case PieceType.BISHOP:
+        return "B";
+      case PieceType.KNIGHT:
+        return "N";
+      default:
+        return "";
+    }
+  }
+
 
   public static getMoveRepresentation(move: Move): string {
     if (move === undefined) {
