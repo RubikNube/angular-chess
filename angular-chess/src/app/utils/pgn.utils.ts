@@ -5,6 +5,7 @@ import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import MoveUtils from "./move.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
@@ -289,6 +290,23 @@ export default class PgnUtils {
     else {
       return {};
     }
+  }
+
+/**
+ * @param moves the moves from which the pgn should be extracted
+ * @returns the pgn string for the given moves
+ */
+
+  public static extractPgnFromMoves(moves: Move[]): string {
+    let pgn = '';
+
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      const moveString = MoveUtils.getMoveRepresentation(move);
+      pgn += `${i + 1}. ${moveString} `;
+    }
+
+    return pgn;
   }
 };
 

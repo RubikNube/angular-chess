@@ -5,6 +5,7 @@ import { MoveHistoryService } from 'src/app/services/move-history.service';
 import { Board } from 'src/app/types/board.t';
 import { FullMove, Move } from 'src/app/types/pieces.t';
 import LoggingUtils, { LogLevel } from 'src/app/utils/logging.utils';
+import MoveUtils from 'src/app/utils/move.utils';
 import PieceUtils from 'src/app/utils/piece.utils';
 import PositionUtils from 'src/app/utils/position.utils';
 
@@ -15,6 +16,7 @@ import PositionUtils from 'src/app/utils/position.utils';
 })
 export class MoveHistoryComponent implements OnInit {
   public math = Math;
+  public moveUtils=MoveUtils;
 
   fullMoveHistory: FullMove[] = [];
   public selectedMove: FullMove = { count: 0 };
@@ -66,55 +68,5 @@ export class MoveHistoryComponent implements OnInit {
     if (board !== undefined) {
       this.boardService.loadBoard(board);
     }
-  }
-
-  public getMoveRepresentation(move: Move): string {
-    if (move === undefined) {
-      return "";
-    }
-    else if (move?.isShortCastle) {
-      return "O-O";
-    } else if (move?.isLongCastle) {
-      return "O-O-O";
-    } else {
-      return PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move);
-    }
-  }
-
-  public getPromotionRepresentation(move: Move | undefined): string {
-    if (move === undefined) {
-      return "";
-    }
-
-    return move.promotedPiece ? "=" + PieceUtils.getPieceChar(move.promotedPiece.type, move.promotedPiece.color) : "";
-  }
-
-  public getPieceChar(move: Move): string {
-    if (move === undefined) {
-      return "";
-    }
-
-    if (move?.isLongCastle || move?.isShortCastle) {
-      return "";
-    }
-    else {
-      return PieceUtils.getPieceChar(move.piece.type, move.piece.color);
-    }
-  }
-
-  public getCheckOrMateRepresentation(move: Move | undefined): string {
-    if (move === undefined) {
-      return "";
-    }
-
-    return move.isCheck ? move.isMate ? "#" : " +" : "";
-  }
-
-  private getMoveDelimiter(move: Move): string {
-    return move.capturedPiece === undefined ? "-" : "x";
-  }
-
-  private getEnPassantRepresentation(move: Move): string {
-    return move.isEnPassant ? " e.p" : "";
   }
 }

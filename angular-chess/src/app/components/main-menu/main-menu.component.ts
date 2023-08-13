@@ -70,6 +70,7 @@ export class MainMenuComponent {
           { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportFenDialog() },
           { label: 'Copy FEN To Clipboard', icon: PrimeIcons.UPLOAD, command: () => this.copyCurrentFenToClipboard() },
           { label: 'Import PGN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportPgnDialog() },
+          { label: 'Export PGN', icon: PrimeIcons.DOWNLOAD, command: () => this.copyGameToClipboard() },
           { label: 'Reset Board', icon: PrimeIcons.REFRESH, command: () => this.resetBoard() }
         ]
       },
@@ -110,6 +111,13 @@ export class MainMenuComponent {
         this.hideHistoryItem.visible = false;
       }
     });
+  }
+
+  private copyGameToClipboard(): void {
+    const currentPgn = this.moveHistoryService.getPgn();
+    this.clipboard.copy(currentPgn);
+
+    this.showInfo(`Copied '${currentPgn}'`)
   }
 
   private resetBoard(): void {
