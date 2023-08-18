@@ -1,3 +1,4 @@
+import { Position } from "../types/board.t";
 import { Move, PieceType } from "../types/pieces.t";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
@@ -29,16 +30,26 @@ export default class MoveUtils {
 
     if (move.capturedPiece !== undefined) {
       if (move.piece.type === PieceType.PAWN) {
-        return PositionUtils.getRowString(move.from) + "x" + PositionUtils.getCoordinate(move.to);
+        return PositionUtils.getColumnString(move.from) + "x" + PositionUtils.getCoordinate(move.to);
       } else {
-        return this.getEnglishPieceChar(move.piece.type) + "x" + PositionUtils.getCoordinate(move.to);
+        return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + "x" + PositionUtils.getCoordinate(move.to);
       }
     }
 
     const toRepresentation = move.to ? PositionUtils.getCoordinate(move.to) : "";
 
 
-    return this.getEnglishPieceChar(move.piece.type) + toRepresentation;
+    return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + toRepresentation;
+  }
+
+  private static getFromRepresentation(fromProsition: Position, represenationConfig?: MoveRepresentationConfig): string {
+    if (represenationConfig === undefined) {
+      return '';
+    } else if (represenationConfig === MoveRepresentationConfig.INCLUDE_FROM_COLUMN) {
+      return PositionUtils.getColumnString(fromProsition) + '';
+    } else {
+      return fromProsition.row + '';
+    }
   }
 
   private static getEnglishPieceChar(type: PieceType): string {

@@ -1,6 +1,6 @@
 import { Color } from "../types/board.t";
 import { PieceType } from "../types/pieces.t";
-import MoveUtils from "./move.utils";
+import MoveUtils, { MoveRepresentationConfig } from "./move.utils";
 
 describe('MoveUtils', () => {
   describe('getSimpleMoveRepresentation', () => {
@@ -51,6 +51,26 @@ describe('MoveUtils', () => {
       expect(moveRepr).toEqual("Nc3");
     });
 
+    it('should return "Nbc3" for "Nb1-c3" with include from column', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 1, column: 2 },
+        to: { row: 3, column: 3 },
+        piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: { row: 1, column: 2 } }
+      }, MoveRepresentationConfig.INCLUDE_FROM_COLUMN);
+
+      expect(moveRepr).toEqual("Nbc3");
+    });
+
+    it('should return "N1c3" for "Nb1-c3" with include from row', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 1, column: 2 },
+        to: { row: 3, column: 3 },
+        piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: { row: 1, column: 2 } }
+      }, MoveRepresentationConfig.INCLUDE_FROM_ROW);
+
+      expect(moveRepr).toEqual("N1c3");
+    });
+
     it('should return "Nxc3" for "Nb1xc3"', () => {
       const moveRepr = MoveUtils.getSimpleMoveRepresentation({
         from: { row: 1, column: 2 },
@@ -60,6 +80,28 @@ describe('MoveUtils', () => {
       });
 
       expect(moveRepr).toEqual("Nxc3");
+    });
+
+    it('should return "Nbxc3" for "Nb1xc3"  with include from column', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 1, column: 2 },
+        to: { row: 3, column: 3 },
+        piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: { row: 1, column: 2 } },
+        capturedPiece: { type: PieceType.PAWN, color: Color.BLACK, position: { row: 3, column: 3 } }
+      }, MoveRepresentationConfig.INCLUDE_FROM_COLUMN);
+
+      expect(moveRepr).toEqual("Nbxc3");
+    });
+
+    it('should return "N1xc3" for "Nb1xc3"  with include from row', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 1, column: 2 },
+        to: { row: 3, column: 3 },
+        piece: { type: PieceType.KNIGHT, color: Color.WHITE, position: { row: 1, column: 2 } },
+        capturedPiece: { type: PieceType.PAWN, color: Color.BLACK, position: { row: 3, column: 3 } }
+      }, MoveRepresentationConfig.INCLUDE_FROM_ROW);
+
+      expect(moveRepr).toEqual("N1xc3");
     });
 
     it('should return "Qa8" for "Qa1-a8"', () => {
