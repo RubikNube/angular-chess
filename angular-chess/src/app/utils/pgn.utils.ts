@@ -313,18 +313,16 @@ export default class PgnUtils {
 
   private static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number): string {
     if (moveColor === Color.WHITE) {
-      if(moveHistoryIndex===0&&startingColor===Color.BLACK){
+      if (moveHistoryIndex === 0 && startingColor === Color.BLACK) {
         return '... '
       }
-      else{
-        return MoveHistoryUtils.getMoveCount(startingColor, moveColor, moveHistoryIndex)+'.';
+      else {
+        return MoveHistoryUtils.getMoveCount(startingColor, moveColor, moveHistoryIndex) + '.';
       }
-
     }
     else {
       return '';
     }
-
   }
 };
 
