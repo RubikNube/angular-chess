@@ -5,6 +5,7 @@ import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import MoveHistoryUtils from "./move.history.utils";
 import MoveUtils from "./move.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
@@ -292,10 +293,10 @@ export default class PgnUtils {
     }
   }
 
-/**
- * @param moves the moves from which the pgn should be extracted
- * @returns the pgn string for the given moves
- */
+  /**
+   * @param moves the moves from which the pgn should be extracted
+   * @returns the pgn string for the given moves
+   */
 
   public static extractPgnFromMoves(moves: Move[]): string {
     let pgn = '';
@@ -303,10 +304,27 @@ export default class PgnUtils {
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       const moveString = MoveUtils.getSimpleMoveRepresentation(move);
-      pgn += `${i + 1}. ${moveString} `;
+      const moveCount = PgnUtils.getMoveCount(moves[0].piece.color, move.piece.color, i);
+      pgn += `${moveCount} ${moveString} `;
     }
 
     return pgn;
+  }
+
+  private static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number): string {
+    if (moveColor === Color.WHITE) {
+      if(moveHistoryIndex===0&&startingColor===Color.BLACK){
+        return '... '
+      }
+      else{
+        return MoveHistoryUtils.getMoveCount(startingColor, moveColor, moveHistoryIndex)+'.';
+      }
+
+    }
+    else {
+      return '';
+    }
+
   }
 };
 
