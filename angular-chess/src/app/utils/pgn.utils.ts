@@ -305,7 +305,7 @@ export default class PgnUtils {
       const move = moves[i];
       const moveString = MoveUtils.getSimpleMoveRepresentation(move);
       const moveCount = PgnUtils.getMoveCount(moves[0].piece.color, move.piece.color, i);
-      pgn += `${moveCount} ${moveString} `;
+      pgn += `${moveCount}${moveString} `;
     }
 
     return pgn;
