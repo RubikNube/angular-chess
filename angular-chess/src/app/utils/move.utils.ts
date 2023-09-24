@@ -39,7 +39,7 @@ export default class MoveUtils {
     const toRepresentation = move.to ? PositionUtils.getCoordinate(move.to) : "";
 
 
-    return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + toRepresentation;
+    return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + toRepresentation + this.getCheckOrMateRepresentation(move);
   }
 
   private static getFromRepresentation(fromProsition: Position, represenationConfig?: MoveRepresentationConfig): string {
@@ -109,7 +109,11 @@ export default class MoveUtils {
       return "";
     }
 
-    return move.isCheck ? move.isMate ? "#" : " +" : "";
+    let checkOrMateRepresentation = "";
+    if (move.isCheck) {
+      checkOrMateRepresentation = move.isMate ? "#" : "+";
+    }
+    return checkOrMateRepresentation;
   }
 
   private static getMoveDelimiter(move: Move): string {

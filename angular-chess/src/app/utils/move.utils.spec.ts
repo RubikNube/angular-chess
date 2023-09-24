@@ -14,6 +14,29 @@ describe('MoveUtils', () => {
       expect(moveRepr).toEqual("e4");
     });
 
+    it('should return "e4+" for "e2-e4+"', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 2, column: 5 },
+        to: { row: 4, column: 5 },
+        piece: { type: PieceType.PAWN, color: Color.WHITE, position: { row: 2, column: 5 } },
+        isCheck: true
+      });
+
+      expect(moveRepr).toEqual("e4+");
+    });
+
+    it('should return "e4#" for "e2-e4#"', () => {
+      const moveRepr = MoveUtils.getSimpleMoveRepresentation({
+        from: { row: 2, column: 5 },
+        to: { row: 4, column: 5 },
+        piece: { type: PieceType.PAWN, color: Color.WHITE, position: { row: 2, column: 5 } },
+        isCheck: true,
+        isMate: true
+      });
+
+      expect(moveRepr).toEqual("e4#");
+    });
+
     it('should return "exd5" for "exd5"', () => {
       const moveRepr = MoveUtils.getSimpleMoveRepresentation({
         from: { row: 4, column: 5 },

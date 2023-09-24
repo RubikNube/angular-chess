@@ -297,7 +297,6 @@ export default class PgnUtils {
    * @param moves the moves from which the pgn should be extracted
    * @returns the pgn string for the given moves
    */
-
   public static extractPgnFromMoves(moves: Move[]): string {
     let pgn = '';
 
