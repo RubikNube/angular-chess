@@ -30,9 +30,9 @@ export default class MoveUtils {
 
     if (move.capturedPiece !== undefined) {
       if (move.piece.type === PieceType.PAWN) {
-        return PositionUtils.getColumnString(move.from) + "x" + PositionUtils.getCoordinate(move.to);
+        return PositionUtils.getColumnString(move.from) + "x" + PositionUtils.getCoordinate(move.to) + this.getCheckOrMateRepresentation(move);
       } else {
-        return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + "x" + PositionUtils.getCoordinate(move.to);
+        return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + "x" + PositionUtils.getCoordinate(move.to) + this.getCheckOrMateRepresentation(move);
       }
     }
 
