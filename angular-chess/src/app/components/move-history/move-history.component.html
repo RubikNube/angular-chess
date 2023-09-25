@@ -31,26 +31,26 @@
 
         <td>{{fullMove?.count}}</td>
         <td>
-          <div class="chess-motif">{{getPieceChar(fullMove?.whiteMove)}}</div>
-          {{getMoveRepresentation(fullMove?.whiteMove)}}
+          <div class="chess-motif">{{moveUtils.getPieceChar(fullMove?.whiteMove)}}</div>
+          {{moveUtils.getMoveRepresentation(fullMove?.whiteMove)}}
           <div
             *ngIf="fullMove?.whiteMove?.promotedPiece"
             class="chess-motif"
           >
-            {{getPromotionRepresentation(fullMove?.whiteMove)}}
+            {{moveUtils.getPromotionRepresentation(fullMove?.whiteMove)}}
           </div>
-          {{getCheckOrMateRepresentation(fullMove?.whiteMove)}}
+          {{moveUtils.getCheckOrMateRepresentation(fullMove?.whiteMove)}}
         </td>
         <td>
-          <div class="chess-motif">{{getPieceChar(fullMove?.blackMove)}}</div>
-          {{getMoveRepresentation(fullMove?.blackMove)}}
+          <div class="chess-motif">{{moveUtils.getPieceChar(fullMove?.blackMove)}}</div>
+          {{moveUtils.getMoveRepresentation(fullMove?.blackMove)}}
           <div
             *ngIf="fullMove?.blackMove?.promotedPiece"
             class="chess-motif"
           >
-            {{getPromotionRepresentation(fullMove?.blackMove)}}
+            {{moveUtils.getPromotionRepresentation(fullMove?.blackMove)}}
           </div>
-          {{getCheckOrMateRepresentation(fullMove?.blackMove)}}
+          {{moveUtils.getCheckOrMateRepresentation(fullMove?.blackMove)}}
         </td>
       </tr>
     </ng-template>

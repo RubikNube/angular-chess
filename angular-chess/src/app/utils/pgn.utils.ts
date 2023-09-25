@@ -5,6 +5,8 @@ import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
+import MoveHistoryUtils from "./move.history.utils";
+import MoveUtils, { MoveRepresentationConfig } from "./move.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
 
@@ -48,6 +50,9 @@ export default class PgnUtils {
     const moves: Move[] = [];
 
     let currentBoard: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+
+    // remove line breaks
+    pgn = pgn.replace(/\n/g, ' ');
 
     const moveGroups = this.getMoveGroups(pgn);
 
@@ -288,6 +293,67 @@ export default class PgnUtils {
     }
     else {
       return {};
+    }
+  }
+
+  /**
+   * @param moves the moves from which the pgn should be extracted
+   * @returns the pgn string for the given moves
+   */
+  public static extractPgnFromMoves(moves: Move[]): string {
+    let pgn = '';
+
+    let boardBeforeMove: Board = BoardUtils.loadBoardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w');
+
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      const representationConfig: MoveRepresentationConfig | undefined = this.getMoveRepresentationConfig(move, boardBeforeMove);
+      boardBeforeMove = CopyUtils.deepCopyElement(move.boardAfterMove);
+      const moveString = MoveUtils.getSimpleMoveRepresentation(move, representationConfig);
+      const moveCount = PgnUtils.getMoveCount(moves[0].piece.color, move.piece.color, i);
+      pgn += `${moveCount}${moveString} `;
+    }
+
+    const pgnWithLineBreaks = pgn
+      .replace(/(.{1,80})(\s+|$)/g, "$1\n") // insert line breaks after every 80 characters, don't break words
+      .replace(/\s+$/g, '');   // remove whitespace at the end
+
+    return pgnWithLineBreaks;
+  }
+
+  private static getMoveRepresentationConfig(move: Move, boardBeforeMove: Board): MoveRepresentationConfig | undefined {
+    // return undefined if only one piece of a given type can move to the move to position
+    const executableMoves = MoveGenerationUtils.getExecutableMoves(boardBeforeMove, move.to, move.piece.color)
+      .filter(executableMove => executableMove.piece.type === move.piece.type);
+    if (executableMoves.length === 1) {
+      return undefined;
+    }
+    // return MoveRepresentationConfig.INCLUDE_FROM_COLUMN if only one piece can move to the move to position from the same column
+    const executableMovesFromColumn = executableMoves.filter(executableMove => executableMove.from.column === move.from.column);
+    if (executableMovesFromColumn.length === 1) {
+      return MoveRepresentationConfig.INCLUDE_FROM_COLUMN;
+    }
+
+    // return MoveRepresentationConfig.INCLUDE_FROM_ROW if only one piece can move to the move to position from the same row
+    const executableMovesFromRow = executableMoves.filter(executableMove => executableMove.from.row === move.from.row);
+    if (executableMovesFromRow.length === 1) {
+      return MoveRepresentationConfig.INCLUDE_FROM_ROW;
+    }
+
+    return undefined;
+  }
+
+  private static getMoveCount(startingColor: Color, moveColor: Color, moveHistoryIndex: number): string {
+    if (moveColor === Color.WHITE) {
+      if (moveHistoryIndex === 0 && startingColor === Color.BLACK) {
+        return '... '
+      }
+      else {
+        return MoveHistoryUtils.getMoveCount(startingColor, moveColor, moveHistoryIndex) + '. ';
+      }
+    }
+    else {
+      return '';
     }
   }
 };

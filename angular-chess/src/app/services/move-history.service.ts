@@ -7,6 +7,7 @@ import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveHistoryUtils from '../utils/move.history.utils';
 import { MoveHistoryKeyHandler } from './move-history.key-handler';
 import { PersistenceService } from './persistence.service';
+import PgnUtils from '../utils/pgn.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -193,7 +194,6 @@ export class MoveHistoryService {
 
     if (selectedPos) {
       this.boardToLoad$$.next(selectedPos);
-      // this.setFocusToNewMove("fullMove_" + (Math.floor(selectedMoveIndex / 2) + 1));
     }
   }
 
@@ -201,7 +201,6 @@ export class MoveHistoryService {
     const startingBoard = this.getStartingBoard();
     this.setSelectedMoveNumber(this.startIndex);
     this.boardToLoad$$.next(startingBoard);
-    // this.setFocusToNewMove("fullMove_1");
   }
 
   public play(): void {
@@ -233,5 +232,9 @@ export class MoveHistoryService {
 
   public resetMoveHistoryChangedByUser(): void {
     this.hasMoveHistoryChangedByUser$$.next(false);
+  }
+
+  public getPgn(): string {
+    return PgnUtils.extractPgnFromMoves(this.moveHistory$$.getValue());
   }
 }

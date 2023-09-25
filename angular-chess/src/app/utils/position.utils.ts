@@ -34,7 +34,11 @@ export default class PositionUtils {
   }
 
   public static getCoordinate(position: Position): string {
-    return String.fromCharCode(96 + position.column) + position.row;
+    return this.getColumnString(position) + position.row;
+  }
+
+  public static getColumnString(position: Position): string {
+    return String.fromCharCode(96 + position.column);
   }
 
   public static getPositionFromCoordinate(coordinate: string): Position | undefined {
