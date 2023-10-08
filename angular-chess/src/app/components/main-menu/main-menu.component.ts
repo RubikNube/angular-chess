@@ -70,7 +70,7 @@ export class MainMenuComponent {
           { label: 'Import FEN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportFenDialog() },
           { label: 'Copy FEN To Clipboard', icon: PrimeIcons.UPLOAD, command: () => this.copyCurrentFenToClipboard() },
           { label: 'Import PGN', icon: PrimeIcons.DOWNLOAD, command: () => this.showImportPgnDialog() },
-          { label: 'Export PGN', icon: PrimeIcons.DOWNLOAD, command: () => this.copyGameToClipboard() },
+          { label: 'Export PGN', icon: PrimeIcons.UPLOAD, command: () => this.copyGameToClipboard() },
           { label: 'Reset Board', icon: PrimeIcons.REFRESH, command: () => this.resetBoard() }
         ]
       },
@@ -117,7 +117,7 @@ export class MainMenuComponent {
     const currentPgn = this.moveHistoryService.getPgn();
     this.clipboard.copy(currentPgn);
 
-    this.showInfo(`Copied '${currentPgn}'`)
+    this.showInfo(`Copied '${currentPgn}'`, 'Copy PGN')
   }
 
   private resetBoard(): void {
@@ -146,10 +146,10 @@ export class MainMenuComponent {
     const currentFen = BoardUtils.getFen(this.boardService.getBoard());
     this.clipboard.copy(currentFen);
 
-    this.showInfo(`Copied '${currentFen}'`)
+    this.showInfo(`Copied '${currentFen}'`, 'Copy FEN')
   }
 
-  private showInfo(message: string) {
-    this.messageService.add({ key: 'tc', severity: 'info', summary: 'Copy FEN', detail: message });
+  private showInfo(message: string, summary: string) {
+    this.messageService.add({ key: 'tc', severity: 'info', summary, detail: message });
   }
 }
