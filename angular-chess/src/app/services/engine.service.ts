@@ -19,39 +19,36 @@ export class EngineService {
 
   constructor(private boardService: ChessBoardService,
     private moveHistoryService: MoveHistoryService) {
-    this.isRunning$.subscribe(isRunning => {
-      if (isRunning) {
-        this.boardSubcription = this.boardService.getBoard$().subscribe(board => {
-          if (board) {
-            if (board.playerToMove === this.engineColor$$.getValue()) {
-              EngineUtils.getEngineMove(board).then(move => {
-                if (move) {
-                  this.boardService.executeMove(move, board);
-                }
-              });
+      this.isRunning$.subscribe(isRunning => {
+        if (isRunning) {
+          this.boardSubcription = this.boardService.getBoard$().subscribe(board => {
+            if (!board || board.playerToMove !== this.engineColor$$.getValue()) {
+              return;
             }
-          }
-        });
-      }
-      else {
-        if (this.boardSubcription) {
+
+            EngineUtils.getEngineMove(board).then(move => {
+              if (move) {
+                this.boardService.executeMove(move, board);
+              }
+            });
+          });
+        } else if (this.boardSubcription) {
           this.boardSubcription.unsubscribe();
         }
-      }
-    });
+      });
 
-    this.boardService.getResult$().subscribe(result => {
-      if (result && result !== Result.UNKNOWN) {
-        this.isRunning$$.next(false);
-      }
-    });
+      this.boardService.getResult$().subscribe(result => {
+        if (result && result !== Result.UNKNOWN) {
+          this.isRunning$$.next(false);
+        }
+      });
 
-    this.moveHistoryService.hasMoveHistoryChangedByUser$.subscribe(hasMoveHistoryChangedByUser => {
-      if (hasMoveHistoryChangedByUser) {
-        this.isRunning$$.next(false);
-      }
-    });
-  }
+      this.moveHistoryService.hasMoveHistoryChangedByUser$.subscribe(hasMoveHistoryChangedByUser => {
+        if (hasMoveHistoryChangedByUser) {
+          this.isRunning$$.next(false);
+        }
+      });
+    }
 
   public toggleEngineColor(): void {
     this.engineColor$$.next(this.engineColor$$.getValue() === Color.WHITE ? Color.BLACK : Color.WHITE);
