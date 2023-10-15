@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { BoardThemeConfig } from 'src/app/services/board-theming.service';
+import { Observable, combineLatest, map } from 'rxjs';
+import { BoardThemeConfig, BoardThemingService } from 'src/app/services/board-theming.service';
 import { Color, HighlightColor, Square } from 'src/app/types/board.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -42,6 +43,8 @@ export class ChessFieldComponent {
   @Output()
   public readonly dragEnd: EventEmitter<DragEvent> = new EventEmitter();
 
+  constructor(public themingSerive: BoardThemingService) { }
+
   public isFieldDark(): boolean {
     return (this.columnIndex + this.rowIndex) % 2 === 0;
   }
@@ -52,5 +55,20 @@ export class ChessFieldComponent {
 
   public getSquareRepresentation(columnIndex: number, rowIndex: number): string {
     return PositionUtils.getSquareRepresentation(columnIndex, rowIndex);
+  }
+
+  public getSquareColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isFieldDark() ? selectedTheme?.darkMode?.darkField : selectedTheme?.darkMode?.lightField;
+        } else {
+          return this.isFieldDark() ? selectedTheme?.lightMode?.darkField : selectedTheme?.lightMode?.lightField;
+        }
+      })
+    );
   }
 }

@@ -3,8 +3,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { PersistenceService } from './persistence.service';
 
 export interface BoardThemeConfig {
+  lightMode: ModeConfig;
+  darkMode: ModeConfig;
+}
+
+export interface ModeConfig {
   darkField: string;
   lightField: string;
+  darkPiece: string;
+  lightPiece: string;
 }
 
 @Injectable({
@@ -12,18 +19,33 @@ export interface BoardThemeConfig {
 })
 export class BoardThemingService {
   private readonly woodTheme: BoardThemeConfig = {
-    darkField: 'url(./assets/board_field_dark.png)',
-    lightField: 'url(./assets/board_field_light.png)'
+    lightMode: {
+      darkField: 'url(./assets/board_field_dark.png)',
+      lightField: 'url(./assets/board_field_light.png)',
+      darkPiece: 'black',
+      lightPiece: 'white'
+    },
+    darkMode: {
+      darkField: 'url(./assets/board_field_dark.png)',
+      lightField: 'url(./assets/board_field_light.png)',
+      darkPiece: 'black',
+      lightPiece: 'white'
+    }
   };
 
   private readonly brownTheme: BoardThemeConfig = {
-    darkField: '#882d17',
-    lightField: '#c19a6b',
-  };
-
-  private readonly darkModeTheme: BoardThemeConfig = {
-    darkField: '#252850',
-    lightField: '#87ceff',
+    lightMode: {
+      darkField: '#882d17',
+      lightField: '#c19a6b',
+      darkPiece: 'black',
+      lightPiece: 'white'
+    },
+    darkMode: {
+      darkField: '#252850',
+      lightField: '#87ceff',
+      darkPiece: 'black',
+      lightPiece: 'white'
+    }
   };
 
   private readonly selectedTheme$$: BehaviorSubject<BoardThemeConfig> = new BehaviorSubject(this.woodTheme);
@@ -50,15 +72,9 @@ export class BoardThemingService {
   public toggleDarkMode(): void {
     if (this.isDarkModeActive$$.getValue()) {
       this.isDarkModeActive$$.next(false);
-      // set board theme to brown
-      this.persistenceService.save('selectedTheme', this.brownTheme);
-      this.selectedTheme$$.next(this.brownTheme);
     }
     else {
       this.isDarkModeActive$$.next(true);
-      // set board theme to dark mode
-      this.persistenceService.save('selectedTheme', this.darkModeTheme);
-      this.selectedTheme$$.next(this.darkModeTheme);
     }
   }
 }
