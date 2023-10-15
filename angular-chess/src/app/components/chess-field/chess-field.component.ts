@@ -71,4 +71,23 @@ export class ChessFieldComponent {
       })
     );
   }
+
+  public getPieceColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isPieceBlack() ? selectedTheme?.darkMode?.darkPiece : selectedTheme?.darkMode?.lightPiece;
+        } else {
+          return this.isPieceBlack() ? selectedTheme?.lightMode?.darkPiece : selectedTheme?.lightMode?.lightPiece;
+        }
+      })
+    );
+  }
+
+  public isPieceBlack(): boolean {
+    return this.piece?.color === Color.BLACK;
+  }
 }

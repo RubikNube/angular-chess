@@ -28,8 +28,8 @@ export class BoardThemingService {
     darkMode: {
       darkField: 'url(./assets/board_field_dark.png)',
       lightField: 'url(./assets/board_field_light.png)',
-      darkPiece: 'black',
-      lightPiece: 'white'
+      darkPiece: '#C3602D',
+      lightPiece: '#DCDCAA'
     }
   };
 
@@ -41,10 +41,10 @@ export class BoardThemingService {
       lightPiece: 'white'
     },
     darkMode: {
-      darkField: '#252850',
-      lightField: '#87ceff',
-      darkPiece: 'black',
-      lightPiece: 'white'
+      darkField: '#181818',
+      lightField: '#37373D',
+      darkPiece: '#C3602D',
+      lightPiece: '#DCDCAA'
     }
   };
 

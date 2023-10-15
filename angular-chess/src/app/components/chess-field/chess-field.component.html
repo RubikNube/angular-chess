@@ -16,8 +16,9 @@
     class="field">
     <div
       *ngIf="piece"
-      class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
+      class="piece color-{{ square?.highlight }}"
       [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
+      [style.color]="getPieceColor()|async"
       pDraggable="piece"
       [pDraggableDisabled]="disabled || piece.color !== activePlayer"
       (onDragStart)="dragStart.emit($event)"
