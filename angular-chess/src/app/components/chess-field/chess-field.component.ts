@@ -72,6 +72,21 @@ export class ChessFieldComponent {
     );
   }
 
+  public getSquareNumberColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isFieldDark() ? selectedTheme?.darkMode?.darkNumber : selectedTheme?.darkMode?.lightNumber;
+        } else {
+          return this.isFieldDark() ? selectedTheme?.lightMode?.darkNumber : selectedTheme?.lightMode?.lightNumber;
+        }
+      })
+    );
+  }
+
   public getPieceColor(): Observable<string | undefined> {
     return combineLatest([
       this.themingSerive.isDarkModeActive$,

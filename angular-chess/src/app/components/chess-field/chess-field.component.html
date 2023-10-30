@@ -5,8 +5,7 @@
   [style.background]="getSquareColor()|async">
   <div
     class="field-number"
-    [class.dark-field-number]="isFieldDark()"
-    [class.light-field-number]="!isFieldDark()">
+    [style.color]="getSquareNumberColor()|async">
     {{getSquareRepresentation(columnIndex,rowIndex)}}
   </div>
 

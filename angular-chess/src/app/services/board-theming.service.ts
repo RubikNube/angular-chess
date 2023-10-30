@@ -12,6 +12,8 @@ export interface ModeConfig {
   lightField: string;
   darkPiece: string;
   lightPiece: string;
+  darkNumber: string;
+  lightNumber: string;
 }
 
 @Injectable({
@@ -23,13 +25,17 @@ export class BoardThemingService {
       darkField: 'url(./assets/board_field_dark.png)',
       lightField: 'url(./assets/board_field_light.png)',
       darkPiece: 'black',
-      lightPiece: 'white'
+      lightPiece: 'white',
+      darkNumber: '#c19a6b',
+      lightNumber: '#300e05'
     },
     darkMode: {
       darkField: 'url(./assets/board_field_dark.png)',
       lightField: 'url(./assets/board_field_light.png)',
       darkPiece: '#C3602D',
-      lightPiece: '#DCDCAA'
+      lightPiece: '#DCDCAA',
+      darkNumber: '#c19a6b',
+      lightNumber: '#300e05'
     }
   };
 
@@ -38,13 +44,17 @@ export class BoardThemingService {
       darkField: '#882d17',
       lightField: '#c19a6b',
       darkPiece: 'black',
-      lightPiece: 'white'
+      lightPiece: 'white',
+      darkNumber: '#c19a6b',
+      lightNumber: '#300e05'
     },
     darkMode: {
       darkField: '#181818',
       lightField: '#37373D',
       darkPiece: '#C3602D',
-      lightPiece: '#DCDCAA'
+      lightPiece: '#DCDCAA',
+      darkNumber: '#5e5ed1',
+      lightNumber: '#5e5ed1'
     }
   };
 
