@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PersistenceService } from './persistence.service';
+import { DOCUMENT } from '@angular/common';
 
 export interface BoardThemeConfig {
   lightMode: ModeConfig;
@@ -65,7 +66,9 @@ export class BoardThemingService {
   private readonly isDarkModeActive$$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public readonly isDarkModeActive$: Observable<boolean> = this.isDarkModeActive$$.asObservable();
 
-  private constructor(private persistenceService: PersistenceService) {
+  private constructor(
+    @Inject(DOCUMENT) private document: Document,
+    private persistenceService: PersistenceService) {
     const persistedTheme = this.persistenceService.load('selectedTheme');
     if (persistedTheme) {
       this.selectedTheme$$.next(persistedTheme);
@@ -80,11 +83,19 @@ export class BoardThemingService {
   }
 
   public toggleDarkMode(): void {
+    let themeLink = this.document.getElementById('app-theme') as HTMLLinkElement;
+
     if (this.isDarkModeActive$$.getValue()) {
       this.isDarkModeActive$$.next(false);
+      if (themeLink) {
+        themeLink.href = 'md-light-indigo.css';
+      }
     }
     else {
       this.isDarkModeActive$$.next(true);
+      if (themeLink) {
+        themeLink.href = 'md-dark-indigo.css';
+      }
     }
   }
 }
