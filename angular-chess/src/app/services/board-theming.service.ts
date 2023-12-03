@@ -31,12 +31,12 @@ export class BoardThemingService {
       lightNumber: '#300e05'
     },
     darkMode: {
-      darkField: 'url(./assets/board_field_dark.png)',
-      lightField: 'url(./assets/board_field_light.png)',
-      darkPiece: '#C3602D',
+      darkField: 'url(./assets/dm_board_field_dark.png)',
+      lightField: 'url(./assets/dm_board_field_light.png)',
+      darkPiece: '#edad17',
       lightPiece: '#DCDCAA',
-      darkNumber: '#c19a6b',
-      lightNumber: '#300e05'
+      darkNumber: '#DCDCAA',
+      lightNumber: '#DCDCAA'
     }
   };
 
