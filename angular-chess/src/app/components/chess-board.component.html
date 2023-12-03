@@ -31,7 +31,9 @@
 
 <div
   *ngIf="boardService.activePlayer$ | async as playerColor"
-  class="playerToMove playerToMove-color--{{ playerColor }}"
+  class="playerToMove"
+  [style.color]="getColorForPlayer(playerColor)"
+  [style.background-color]="getBackgroundColorForPlayer(playerColor)"
 >
   It is your turn: {{ playerColor }}
 </div>

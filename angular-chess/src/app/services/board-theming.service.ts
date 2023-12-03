@@ -15,6 +15,7 @@ export interface ModeConfig {
   lightPiece: string;
   darkNumber: string;
   lightNumber: string;
+  colorIndicator: string;
 }
 
 @Injectable({
@@ -28,7 +29,8 @@ export class BoardThemingService {
       darkPiece: 'black',
       lightPiece: 'white',
       darkNumber: '#c19a6b',
-      lightNumber: '#300e05'
+      lightNumber: '#300e05',
+      colorIndicator: '#882d17',
     },
     darkMode: {
       darkField: 'url(./assets/dm_board_field_dark.png)',
@@ -36,7 +38,8 @@ export class BoardThemingService {
       darkPiece: '#edad17',
       lightPiece: '#DCDCAA',
       darkNumber: '#DCDCAA',
-      lightNumber: '#DCDCAA'
+      lightNumber: '#DCDCAA',
+      colorIndicator: '#181818'
     }
   };
 
@@ -47,7 +50,8 @@ export class BoardThemingService {
       darkPiece: 'black',
       lightPiece: 'white',
       darkNumber: '#c19a6b',
-      lightNumber: '#300e05'
+      lightNumber: '#300e05',
+      colorIndicator: '#882d17'
     },
     darkMode: {
       darkField: '#181818',
@@ -55,7 +59,8 @@ export class BoardThemingService {
       darkPiece: '#C3602D',
       lightPiece: '#DCDCAA',
       darkNumber: '#5e5ed1',
-      lightNumber: '#5e5ed1'
+      lightNumber: '#5e5ed1',
+      colorIndicator: '#181818'
     }
   };
 
@@ -97,5 +102,13 @@ export class BoardThemingService {
         themeLink.href = 'md-dark-indigo.css';
       }
     }
+  }
+
+  public getDarkModeActive(): boolean {
+    return this.isDarkModeActive$$.getValue();
+  }
+
+  public getSelectedTheme(): BoardThemeConfig {
+    return this.selectedTheme$$.getValue();
   }
 }
