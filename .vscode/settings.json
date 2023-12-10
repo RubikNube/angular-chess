@@ -6,7 +6,7 @@
   "html.format.wrapAttributes": "force-expand-multiline",
   "[typescript]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": true
+      "source.organizeImports": "explicit"
     }
   }
 }
