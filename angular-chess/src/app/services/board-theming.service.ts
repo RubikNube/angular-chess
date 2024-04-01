@@ -69,10 +69,14 @@ export class BoardThemingService {
     private persistenceService: PersistenceService,
     private http: HttpClient) {
     const persistedTheme: NamedTheme = this.persistenceService.load('selectedTheme');
-    this.loadAvailableThemes(persistedTheme);
-    if (persistedTheme) {
+    // check if persisted theme can be cast to a NamedTheme
+    if (persistedTheme && persistedTheme.name && persistedTheme.modes) {
+      this.loadAvailableThemes(persistedTheme);
+      // calculate the index of the persisted theme
+      this.actualThemeIndex = this.availableThemes.findIndex(theme => theme.name === persistedTheme.name);
       this.selectedTheme$$.next(persistedTheme);
     } else {
+      this.loadAvailableThemes(this.defaultTheme);
       this.selectedTheme$$.next(this.availableThemes[0]);
     }
   }
