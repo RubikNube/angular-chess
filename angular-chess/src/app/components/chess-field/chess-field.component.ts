@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable, combineLatest, map } from 'rxjs';
-import { BoardThemeConfig, BoardThemingService } from 'src/app/services/board-theming.service';
+import { BoardThemingService, NamedTheme } from 'src/app/services/board-theming.service';
 import { Color, HighlightColor, Square } from 'src/app/types/board.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -35,7 +35,7 @@ export class ChessFieldComponent {
   public square: Square | undefined | null = undefined;
 
   @Input()
-  public boardTheme: BoardThemeConfig | undefined | null;
+  public boardTheme: NamedTheme | undefined | null;
 
   @Output()
   public dragStart: EventEmitter<DragEvent> = new EventEmitter();
@@ -64,9 +64,9 @@ export class ChessFieldComponent {
     ]).pipe(
       map(([isDarkModeActive, selectedTheme]) => {
         if (isDarkModeActive) {
-          return this.isFieldDark() ? selectedTheme?.darkMode?.darkField : selectedTheme?.darkMode?.lightField;
+          return this.isFieldDark() ? selectedTheme?.modes.darkMode?.darkField : selectedTheme?.modes.darkMode?.lightField;
         } else {
-          return this.isFieldDark() ? selectedTheme?.lightMode?.darkField : selectedTheme?.lightMode?.lightField;
+          return this.isFieldDark() ? selectedTheme?.modes.lightMode?.darkField : selectedTheme?.modes.lightMode?.lightField;
         }
       })
     );
@@ -79,9 +79,9 @@ export class ChessFieldComponent {
     ]).pipe(
       map(([isDarkModeActive, selectedTheme]) => {
         if (isDarkModeActive) {
-          return this.isFieldDark() ? selectedTheme?.darkMode?.darkNumber : selectedTheme?.darkMode?.lightNumber;
+          return this.isFieldDark() ? selectedTheme?.modes.darkMode?.darkNumber : selectedTheme?.modes.darkMode?.lightNumber;
         } else {
-          return this.isFieldDark() ? selectedTheme?.lightMode?.darkNumber : selectedTheme?.lightMode?.lightNumber;
+          return this.isFieldDark() ? selectedTheme?.modes.lightMode?.darkNumber : selectedTheme?.modes.lightMode?.lightNumber;
         }
       })
     );
@@ -94,9 +94,9 @@ export class ChessFieldComponent {
     ]).pipe(
       map(([isDarkModeActive, selectedTheme]) => {
         if (isDarkModeActive) {
-          return this.isPieceBlack() ? selectedTheme?.darkMode?.darkPiece : selectedTheme?.darkMode?.lightPiece;
+          return this.isPieceBlack() ? selectedTheme?.modes.darkMode?.darkPiece : selectedTheme?.modes.darkMode?.lightPiece;
         } else {
-          return this.isPieceBlack() ? selectedTheme?.lightMode?.darkPiece : selectedTheme?.lightMode?.lightPiece;
+          return this.isPieceBlack() ? selectedTheme?.modes.lightMode?.darkPiece : selectedTheme?.modes.lightMode?.lightPiece;
         }
       })
     );

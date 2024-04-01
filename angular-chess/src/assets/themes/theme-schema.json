@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "modes": {
+        "type": "object",
+        "properties": {
+          "lightMode": {
+            "type": "object",
+            "properties": {
+              "darkField": {
+                "type": "string"
+              },
+              "lightField": {
+                "type": "string"
+              },
+              "darkPiece": {
+                "type": "string"
+              },
+              "lightPiece": {
+                "type": "string"
+              },
+              "darkNumber": {
+                "type": "string"
+              },
+              "lightNumber": {
+                "type": "string"
+              },
+              "colorIndicator": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "darkField",
+              "lightField",
+              "darkPiece",
+              "lightPiece",
+              "darkNumber",
+              "lightNumber",
+              "colorIndicator"
+            ]
+          },
+          "darkMode": {
+            "type": "object",
+            "properties": {
+              "darkField": {
+                "type": "string"
+              },
+              "lightField": {
+                "type": "string"
+              },
+              "darkPiece": {
+                "type": "string"
+              },
+              "lightPiece": {
+                "type": "string"
+              },
+              "darkNumber": {
+                "type": "string"
+              },
+              "lightNumber": {
+                "type": "string"
+              },
+              "colorIndicator": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "darkField",
+              "lightField",
+              "darkPiece",
+              "lightPiece",
+              "darkNumber",
+              "lightNumber",
+              "colorIndicator"
+            ]
+          }
+        },
+        "required": [
+          "lightMode",
+          "darkMode"
+        ]
+      }
+    },
+    "required": [
+      "name",
+      "modes"
+    ]
+  }
+}

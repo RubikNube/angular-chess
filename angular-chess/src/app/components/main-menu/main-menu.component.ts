@@ -37,13 +37,13 @@ export class MainMenuComponent {
   };
 
   private readonly activateDarkMode: MenuItem = {
-    label: 'Turn on dark mode',
+    label: 'Dark Mode: Off',
     icon: PrimeIcons.MOON,
     command: () => this.themingService.toggleDarkMode()
   };
 
   private readonly deactivateDarkMode: MenuItem = {
-    label: 'Turn off dark mode',
+    label: 'Dark Mode: On',
     icon: PrimeIcons.SUN,
     command: () => this.themingService.toggleDarkMode()
   };

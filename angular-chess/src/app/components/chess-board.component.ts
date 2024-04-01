@@ -195,24 +195,4 @@ export class ChessBoardComponent implements OnInit {
 
     this.overlayPanel?.hide();
   }
-
-  public getColorForPlayer(color: Color): string {
-    const selectedTheme = this.themingService.getSelectedTheme();
-    if (this.themingService.getDarkModeActive()) {
-      return color === Color.WHITE ? selectedTheme.darkMode.lightPiece : selectedTheme.darkMode.darkPiece;
-    }
-    else {
-      return color === Color.WHITE ? selectedTheme.lightMode.lightPiece : selectedTheme.lightMode.darkPiece;
-    }
-  }
-
-  public getBackgroundColorForPlayer(color: Color): string {
-    const selectedTheme = this.themingService.getSelectedTheme();
-    if (this.themingService.getDarkModeActive()) {
-      return selectedTheme.darkMode.colorIndicator;
-    }
-    else {
-      return selectedTheme.lightMode.colorIndicator;
-    }
-  }
 }
