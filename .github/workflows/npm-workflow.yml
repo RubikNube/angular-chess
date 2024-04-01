@@ -18,10 +18,10 @@ jobs:
       - name: Switch to angular project
         run: cd angular-chess/
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 21.x
         uses: actions/setup-node@v2
         with:
-          node-version: "16.x"
+          node-version: "21.x"
 
       - name: Install dependencies
         run: |
