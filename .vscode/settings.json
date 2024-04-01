@@ -8,5 +8,13 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     }
-  }
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/theme-config.json"
+      ],
+      "url": "./angular-chess/src/assets/themes/theme-schema.json"
+    }
+  ]
 }

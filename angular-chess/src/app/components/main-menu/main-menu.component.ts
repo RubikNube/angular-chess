@@ -36,6 +36,18 @@ export class MainMenuComponent {
     command: () => this.moveHistoryService.hideMoveHistory()
   };
 
+  private readonly activateDarkMode: MenuItem = {
+    label: 'Dark Mode: Off',
+    icon: PrimeIcons.MOON,
+    command: () => this.themingService.toggleDarkMode()
+  };
+
+  private readonly deactivateDarkMode: MenuItem = {
+    label: 'Dark Mode: On',
+    icon: PrimeIcons.SUN,
+    command: () => this.themingService.toggleDarkMode()
+  };
+
   private viewItems: MenuItem[] = [{
     label: 'Switch Board',
     icon: PrimeIcons.SYNC,
@@ -45,6 +57,8 @@ export class MainMenuComponent {
     icon: PrimeIcons.MICROSOFT,
     command: () => this.themingService.toggleTheme()
   },
+  this.activateDarkMode,
+  this.deactivateDarkMode,
   this.showHistoryItem,
   this.hideHistoryItem];
 
@@ -99,6 +113,11 @@ export class MainMenuComponent {
     this.engineService.engineColor$.subscribe(engineColor => {
       toggleEngineWhite.visible = engineColor === Color.WHITE;
       toggleEngineBlack.visible = engineColor === Color.BLACK;
+    });
+
+    this.themingService.isDarkModeActive$.subscribe(isDarkModeActive => {
+      this.activateDarkMode.visible = !isDarkModeActive;
+      this.deactivateDarkMode.visible = isDarkModeActive;
     });
 
     this.moveHistoryService.showMoveHistory$.subscribe(showHistory => {

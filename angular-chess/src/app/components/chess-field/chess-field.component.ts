@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { BoardThemeConfig } from 'src/app/services/board-theming.service';
+import { Observable, combineLatest, map } from 'rxjs';
+import { BoardThemingService, NamedTheme } from 'src/app/services/board-theming.service';
 import { Color, HighlightColor, Square } from 'src/app/types/board.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -34,13 +35,15 @@ export class ChessFieldComponent {
   public square: Square | undefined | null = undefined;
 
   @Input()
-  public boardTheme: BoardThemeConfig | undefined | null;
+  public boardTheme: NamedTheme | undefined | null;
 
   @Output()
   public dragStart: EventEmitter<DragEvent> = new EventEmitter();
 
   @Output()
   public readonly dragEnd: EventEmitter<DragEvent> = new EventEmitter();
+
+  constructor(public themingSerive: BoardThemingService) { }
 
   public isFieldDark(): boolean {
     return (this.columnIndex + this.rowIndex) % 2 === 0;
@@ -52,5 +55,54 @@ export class ChessFieldComponent {
 
   public getSquareRepresentation(columnIndex: number, rowIndex: number): string {
     return PositionUtils.getSquareRepresentation(columnIndex, rowIndex);
+  }
+
+  public getSquareColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isFieldDark() ? selectedTheme?.modes.darkMode?.darkField : selectedTheme?.modes.darkMode?.lightField;
+        } else {
+          return this.isFieldDark() ? selectedTheme?.modes.lightMode?.darkField : selectedTheme?.modes.lightMode?.lightField;
+        }
+      })
+    );
+  }
+
+  public getSquareNumberColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isFieldDark() ? selectedTheme?.modes.darkMode?.darkNumber : selectedTheme?.modes.darkMode?.lightNumber;
+        } else {
+          return this.isFieldDark() ? selectedTheme?.modes.lightMode?.darkNumber : selectedTheme?.modes.lightMode?.lightNumber;
+        }
+      })
+    );
+  }
+
+  public getPieceColor(): Observable<string | undefined> {
+    return combineLatest([
+      this.themingSerive.isDarkModeActive$,
+      this.themingSerive.selectedTheme$
+    ]).pipe(
+      map(([isDarkModeActive, selectedTheme]) => {
+        if (isDarkModeActive) {
+          return this.isPieceBlack() ? selectedTheme?.modes.darkMode?.darkPiece : selectedTheme?.modes.darkMode?.lightPiece;
+        } else {
+          return this.isPieceBlack() ? selectedTheme?.modes.lightMode?.darkPiece : selectedTheme?.modes.lightMode?.lightPiece;
+        }
+      })
+    );
+  }
+
+  public isPieceBlack(): boolean {
+    return this.piece?.color === Color.BLACK;
   }
 }

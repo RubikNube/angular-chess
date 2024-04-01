@@ -2,36 +2,30 @@
   [style.grid-column]="columnIndex"
   [style.grid-row]="rowIndex"
   class="field"
-  [style.background]="
-    isFieldDark() ? boardTheme?.darkField : boardTheme?.lightField
-  "
->
+  [style.background]="getSquareColor()|async">
   <div
     class="field-number"
-    [class.dark-field-number]="isFieldDark()"
-    [class.light-field-number]="!isFieldDark()"
-  >
+    [style.color]="getSquareNumberColor()|async">
     {{getSquareRepresentation(columnIndex,rowIndex)}}
   </div>
 
   <div
     [style.grid-column]="columnIndex"
     [style.grid-row]="rowIndex"
-    class="field"
-  >
+    class="field">
     <div
       *ngIf="piece"
-      class="piece piece-{{ piece.color }} color-{{ square?.highlight }}"
+      class="piece color-{{ square?.highlight }}"
       [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
+      [style.color]="getPieceColor()|async"
       pDraggable="piece"
       [pDraggableDisabled]="disabled || piece.color !== activePlayer"
       (onDragStart)="dragStart.emit($event)"
-      (onDragEnd)="dragEnd.emit($event)"
-    >
+      (onDragEnd)="dragEnd.emit($event)">
       {{ getPieceChar() }}
     </div>
     <div
       *ngIf="piece===undefined"
-      class="square color-{{ square?.highlight }}"
-    ></div>
+      class="square color-{{ square?.highlight }}"></div>
   </div>
+</div>
