@@ -42,7 +42,7 @@ export class EngineService {
     });
 
     this.boardService.getResult$().subscribe(result => {
-      if (result && result !== Result.UNKNOWN) {
+      if (result !== Result.UNKNOWN) {
         this.isRunning$$.next(false);
       }
     });

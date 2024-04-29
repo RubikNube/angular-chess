@@ -10,6 +10,7 @@ import { PositioningService } from '../services/positioning.service';
 import { Board, HighlightColor, Position, Result, SquareWithHighlight } from '../types/board.t';
 import { Color } from '../types/compressed.types.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
+import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
@@ -22,6 +23,7 @@ import PositionUtils from '../utils/position.utils';
   providers: [MessageService]
 })
 export class ChessBoardComponent implements OnInit {
+  public BoardUtils = BoardUtils;
   public readonly numbersOneToEight: number[] = [...Array(8)].map((_, i) => i + 1);
   public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
 
@@ -95,14 +97,14 @@ export class ChessBoardComponent implements OnInit {
     }
 
     switch (result) {
-      case Result.UNKNOWN:
-        return "*";
       case Result.REMIS:
         return "Remis";
       case Result.WHITE_WIN:
         return "White wins";
       case Result.BLACK_WIN:
         return "Black wins";
+      default:
+        return "*";
     }
   }
 

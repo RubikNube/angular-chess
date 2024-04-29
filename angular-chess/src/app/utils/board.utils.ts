@@ -984,4 +984,8 @@ export default class BoardUtils {
       return undefined;
     }
   }
+
+  public static getColorRepresentation(color: Color): string {
+    return color === Color.WHITE ? "WHITE" : "BLACK";
+  }
 }

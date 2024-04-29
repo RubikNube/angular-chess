@@ -30,7 +30,7 @@
   class="playerToMove"
   [style.color]="this.themingService.getColorForPlayer(playerColor)"
   [style.background-color]="this.themingService.getBackgroundColorForPlayer(playerColor)">
-  It is your turn: {{ playerColor }}
+  It is your turn: {{ BoardUtils.getColorRepresentation(playerColor) }}
 </div>
 
 <p-toast position="top-center"></p-toast>

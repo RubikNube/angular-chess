@@ -37,8 +37,8 @@ export type CastleRights = {
 }
 
 export enum Result {
-  UNKNOWN = "UNKNOWN",
-  REMIS = "REMIS",
-  WHITE_WIN = "WHITE_WIN",
-  BLACK_WIN = "BLACK_WIN"
+  UNKNOWN,
+  REMIS,
+  WHITE_WIN,
+  BLACK_WIN
 }
