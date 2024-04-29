@@ -7,7 +7,7 @@ import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, HighlightColor, Position, Result, Square } from '../types/board.t';
+import { Board, HighlightColor, Position, Result, SquareWithHighlight } from '../types/board.t';
 import { Color } from '../types/compressed.types.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
@@ -115,14 +115,14 @@ export class ChessBoardComponent implements OnInit {
 
   private updateHighlightingSquares(currentBoard: Board): void {
     if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
-      const validSquares: Square[] = MoveGenerationUtils.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
+      const validSquares: SquareWithHighlight[] = MoveGenerationUtils.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
         return {
           position: move.to,
           highlight: HighlightColor.GREEN
         }
       });
 
-      const getValidCaptures: Square[] = MoveGenerationUtils.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
+      const getValidCaptures: SquareWithHighlight[] = MoveGenerationUtils.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED
@@ -169,8 +169,8 @@ export class ChessBoardComponent implements OnInit {
     else {
       this.clearAllButLastMoveSquare();
       const lastMove: Move = this.moveHistoryService.getLastMove();
-      const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
-      const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
+      const fromSquare: SquareWithHighlight = { position: lastMove.from, highlight: HighlightColor.BLUE };
+      const toSquare: SquareWithHighlight = { position: lastMove.to, highlight: HighlightColor.BLUE };
       this.highlightingService.addSquares(fromSquare, toSquare);
     }
   }

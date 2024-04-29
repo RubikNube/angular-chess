@@ -17,7 +17,7 @@ export type Position = {
   column: number
 }
 
-export type Square = {
+export type SquareWithHighlight = {
   highlight: HighlightColor;
   position: Position
 }

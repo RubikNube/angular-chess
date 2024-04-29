@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable, combineLatest, map } from 'rxjs';
 import { BoardThemingService, NamedTheme } from 'src/app/services/board-theming.service';
-import { HighlightColor, Square } from 'src/app/types/board.t';
+import { HighlightColor, SquareWithHighlight } from 'src/app/types/board.t';
 import { Color } from 'src/app/types/compressed.types.t';
 import { Piece } from 'src/app/types/pieces.t';
 import PieceUtils from 'src/app/utils/piece.utils';
@@ -33,7 +33,7 @@ export class ChessFieldComponent {
   public disabled: boolean | null = false;
 
   @Input()
-  public square: Square | undefined | null = undefined;
+  public square: SquareWithHighlight | undefined | null = undefined;
 
   @Input()
   public boardTheme: NamedTheme | undefined | null;

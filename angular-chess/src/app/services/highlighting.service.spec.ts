@@ -1,33 +1,33 @@
 import { TestBed } from '@angular/core/testing';
 import { TestScheduler } from 'rxjs/testing';
-import { HighlightColor, Square } from '../types/board.t';
+import { HighlightColor, SquareWithHighlight } from '../types/board.t';
 import { HighlightingService } from './highlighting.service';
 
 
 describe('HighlightingService', () => {
   let service: HighlightingService;
   let testScheduler: TestScheduler;
-  const redSquare1: Square = {
+  const redSquare1: SquareWithHighlight = {
     position: { column: 1, row: 1 },
     highlight: HighlightColor.RED
   };
-  const redSquare2: Square = {
+  const redSquare2: SquareWithHighlight = {
     position: { column: 1, row: 2 },
     highlight: HighlightColor.RED
   };
-  const blueSquare1: Square = {
+  const blueSquare1: SquareWithHighlight = {
     position: { column: 2, row: 1 },
     highlight: HighlightColor.BLUE
   };
-  const blueSquare2: Square = {
+  const blueSquare2: SquareWithHighlight = {
     position: { column: 2, row: 2 },
     highlight: HighlightColor.BLUE
   };
-  const greenSquare1: Square = {
+  const greenSquare1: SquareWithHighlight = {
     position: { column: 3, row: 1 },
     highlight: HighlightColor.GREEN
   };
-  const greenSquare2: Square = {
+  const greenSquare2: SquareWithHighlight = {
     position: { column: 3, row: 2 },
     highlight: HighlightColor.GREEN
   };
