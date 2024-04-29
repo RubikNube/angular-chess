@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { Position } from '../types/board.t';
+import { Color } from '../types/compressed.types.t';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import PositionUtils from '../utils/position.utils';
 import { PersistenceService } from './persistence.service';

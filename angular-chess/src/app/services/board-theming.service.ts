@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color } from '../types/board.t';
+import { Color } from '../types/compressed.types.t';
 import { PersistenceService } from './persistence.service';
 
 export interface NamedTheme {

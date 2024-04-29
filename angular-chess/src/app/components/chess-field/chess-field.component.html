@@ -15,7 +15,7 @@
     class="field">
     <div
       *ngIf="piece"
-      class="piece color-{{ square?.highlight }}"
+      class="piece color-{{ getHighlightColorRepresentation(square?.highlight) }}"
       [style.cursor]="piece.color === activePlayer ? 'grab' : 'default'"
       [style.color]="getPieceColor()|async"
       pDraggable="piece"
@@ -26,6 +26,6 @@
     </div>
     <div
       *ngIf="piece===undefined"
-      class="square color-{{ square?.highlight }}"></div>
+      class="square color-{{ getHighlightColorRepresentation(square?.highlight) }}"></div>
   </div>
 </div>

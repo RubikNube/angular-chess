@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { Board, Color } from '../types/board.t';
+import { Board } from '../types/board.t';
+import { Color } from '../types/compressed.types.t';
 import { FullMove, Move } from '../types/pieces.t';
 import CopyUtils from '../utils/copy.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveHistoryUtils from '../utils/move.history.utils';
+import PgnUtils from '../utils/pgn.utils';
 import { MoveHistoryKeyHandler } from './move-history.key-handler';
 import { PersistenceService } from './persistence.service';
-import PgnUtils from '../utils/pgn.utils';
 
 @Injectable({
   providedIn: 'root'

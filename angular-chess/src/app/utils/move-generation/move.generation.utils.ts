@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, Position } from "src/app/types/board.t";
+import { Color } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
 import PositionUtils from "../position.utils";

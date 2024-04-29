@@ -1,4 +1,4 @@
-import { Color } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, PieceType } from "../types/pieces.t";
 import { Board } from "./../types/board.t";
 import BoardUtils from "./board.utils";
@@ -20,7 +20,7 @@ describe('PgnUtils', () => {
 11.Bf4 b5 12.a4 Bb7 13.Re1 Nd5 14.Bg3 Kc8 15.axb5 cxb5 16.Qd3 Bc6
 17.Bf5 exf5 18.Rxe7 Bxe7 19.c4 1-0`;
 
-const gameOnePgn= `1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 c5 5. Nf3 Nc6 6. e3 O-O 7. Bd3 d5 8. a3
+  const gameOnePgn = `1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 c5 5. Nf3 Nc6 6. e3 O-O 7. Bd3 d5 8. a3
 Bxc3+ 9. bxc3 b6 10. O-O Ba6 11. cxd5 Bxd3 12. Qxd3 Qxd5 13. Re1 c4 14. Qc2 Ne4
 15. Nd2 f5 16. f3 Nxd2 17. Bxd2 Na5 18. e4 Qd7 19. exf5 exf5 20. Re5 Nb3 21.
 Rae1 Nxd2 22. Qxd2 Rae8 23. Qe2 Rxe5 24. Qxc4+ Qd5 25. Qf1 Rxe1 26. Qxe1 Kf7 27.

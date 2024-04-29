@@ -1,10 +1,10 @@
-import { Board, Color } from "../types/board.t";
+import { Board } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
 import EngineUtils, { MoveWithScore } from "./engine.utils";
 import MoveExecutionUtils from "./move-execution.utils";
-import MoveUtils from "./move.utils";
 import TestUtils from "./test.utils";
 
 type TestMove = Move & { boardBeforeMove: Board | undefined };

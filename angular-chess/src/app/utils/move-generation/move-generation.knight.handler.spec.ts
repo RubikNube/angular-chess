@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, Position } from "src/app/types/board.t";
+import { Color } from "src/app/types/compressed.types.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import PositionUtils from "../position.utils";
@@ -95,7 +96,7 @@ describe('MoveGenerationKnightHandler', () => {
       { column: 1, row: 8 },
       [
         { column: 3, row: 7 },
-        { column: 2, row: 6 }        
+        { column: 2, row: 6 }
       ]
     );
   });

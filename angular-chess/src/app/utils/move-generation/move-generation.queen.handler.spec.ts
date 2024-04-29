@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board, Position } from "src/app/types/board.t";
+import { Color } from "src/app/types/compressed.types.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import PositionUtils from "../position.utils";
@@ -162,12 +163,12 @@ describe('MoveGenerationQueenHandler', () => {
       '8/8/4k3/8/3Q4/8/8/4K3 w - - 0 1',
       { column: 4, row: 4 },
       [
-        { column: 1, row: 1 }, 
-        { column: 2, row: 2 }, 
-        { column: 3, row: 3 }, 
-        { column: 5, row: 5 }, 
-        { column: 6, row: 6 }, 
-        { column: 7, row: 7 }, 
+        { column: 1, row: 1 },
+        { column: 2, row: 2 },
+        { column: 3, row: 3 },
+        { column: 5, row: 5 },
+        { column: 6, row: 6 },
+        { column: 7, row: 7 },
         { column: 8, row: 8 },
         { column: 1, row: 7 },
         { column: 2, row: 6 },
@@ -188,7 +189,7 @@ describe('MoveGenerationQueenHandler', () => {
         { column: 4, row: 5 },
         { column: 4, row: 6 },
         { column: 4, row: 7 },
-        { column: 4, row: 8 }        
+        { column: 4, row: 8 }
       ]
     );
 
@@ -197,12 +198,12 @@ describe('MoveGenerationQueenHandler', () => {
       '8/8/5k2/8/3Q4/8/8/4K3 w - - 0 1',
       { column: 4, row: 4 },
       [
-        { column: 1, row: 1 }, 
-        { column: 2, row: 2 }, 
-        { column: 3, row: 3 }, 
-        { column: 5, row: 5 }, 
-        { column: 6, row: 6 }, 
-        { column: 7, row: 7 }, 
+        { column: 1, row: 1 },
+        { column: 2, row: 2 },
+        { column: 3, row: 3 },
+        { column: 5, row: 5 },
+        { column: 6, row: 6 },
+        { column: 7, row: 7 },
         { column: 8, row: 8 },
         { column: 1, row: 7 },
         { column: 2, row: 6 },
@@ -223,7 +224,7 @@ describe('MoveGenerationQueenHandler', () => {
         { column: 4, row: 5 },
         { column: 4, row: 6 },
         { column: 4, row: 7 },
-        { column: 4, row: 8 }        
+        { column: 4, row: 8 }
       ]
     );
 
@@ -232,11 +233,11 @@ describe('MoveGenerationQueenHandler', () => {
       '8/6k1/5n2/8/3Q4/8/8/4K3 w - - 0 1',
       { column: 4, row: 4 },
       [
-        { column: 1, row: 1 }, 
-        { column: 2, row: 2 }, 
-        { column: 3, row: 3 }, 
-        { column: 5, row: 5 }, 
-        { column: 6, row: 6 }, 
+        { column: 1, row: 1 },
+        { column: 2, row: 2 },
+        { column: 3, row: 3 },
+        { column: 5, row: 5 },
+        { column: 6, row: 6 },
         { column: 1, row: 7 },
         { column: 2, row: 6 },
         { column: 3, row: 5 },
@@ -256,7 +257,7 @@ describe('MoveGenerationQueenHandler', () => {
         { column: 4, row: 5 },
         { column: 4, row: 6 },
         { column: 4, row: 7 },
-        { column: 4, row: 8 }        
+        { column: 4, row: 8 }
       ]
     );
   });

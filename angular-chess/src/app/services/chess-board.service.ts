@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { Board, CastleRights, Color, HighlightColor, Position, Result } from '../types/board.t';
+import { Board, CastleRights, HighlightColor, Position, Result } from '../types/board.t';
+import { Color } from '../types/compressed.types.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';

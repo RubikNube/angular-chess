@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "./board.t";
+import { Board, Position } from "./board.t";
+import { Color } from "./compressed.types.t";
 
 export type Piece = {
   type: PieceType;

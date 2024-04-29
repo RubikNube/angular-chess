@@ -1,4 +1,5 @@
-import { Board, Color } from "../types/board.t";
+import { Board } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import MoveExecutionUtils from "./move-execution.utils";
@@ -26,9 +27,9 @@ describe('MoveExecutionUtils', () => {
 
       const board: Board = BoardUtils.loadBoardFromFen('8/6P1/8/2k5/8/2K5/8/8 w - - 0 1');
       const executedMove: Move | undefined = MoveExecutionUtils.executeMove(moveToExecute, board);
-      const expectedBoardAfterMove:Board=BoardUtils.loadBoardFromFen('6Q1/8/8/2k5/8/2K5/8/8 b - - 0 1');
+      const expectedBoardAfterMove: Board = BoardUtils.loadBoardFromFen('6Q1/8/8/2k5/8/2K5/8/8 b - - 0 1');
 
-      TestUtils.checkBoards(executedMove?.boardAfterMove, expectedBoardAfterMove);    
+      TestUtils.checkBoards(executedMove?.boardAfterMove, expectedBoardAfterMove);
     });
   });
 });

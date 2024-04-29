@@ -1,4 +1,4 @@
-import { Color } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import MoveHistoryUtils from "./move.history.utils";
 
 describe('MoveHistoryUtils', () => {

@@ -1,4 +1,5 @@
-import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
+import { Board, CastleRights, Position, Result } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";

@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "../../types/board.t";
+import { Color } from "src/app/types/compressed.types.t";
+import { Board, Position } from "../../types/board.t";
 import { Piece, PieceType } from "../../types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
 import { PIECE_SQUARE_SCORE } from "./square-tables.t";

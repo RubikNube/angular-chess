@@ -1,3 +1,4 @@
+import { Color } from "./compressed.types.t";
 import { Piece } from "./pieces.t";
 
 export interface Board {
@@ -11,11 +12,6 @@ export interface Board {
   plyCount?: number;
 }
 
-export enum Color {
-  WHITE = "WHITE",
-  BLACK = "BLACK"
-}
-
 export type Position = {
   row: number;
   column: number
@@ -27,11 +23,11 @@ export type Square = {
 }
 
 export enum HighlightColor {
-  NONE = "NONE",
-  YELLOW = "YELLOW",
-  GREEN = "GREEN",
-  RED = "RED",
-  BLUE = "BLUE"
+  NONE,
+  YELLOW,
+  GREEN,
+  RED,
+  BLUE
 }
 
 export type CastleRights = {
