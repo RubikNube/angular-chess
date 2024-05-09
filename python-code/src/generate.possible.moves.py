@@ -6,13 +6,13 @@ import os
 
 
 def main(argv):
-    engine_path = ''
-    start_fen = ''
+    engine_path = ""
+    start_fen = ""
     depth = 0
     opts, args = getopt.getopt(argv, "he:f:d:", ["engine=", "fen=", "depth="])
     for opt, arg in opts:
-        if opt == '-h':
-            print('generate.possible.moves.py -e- <engine_path> -o <fen>')
+        if opt == "-h":
+            print("generate.possible.moves.py -e- <engine_path> -f <fen>")
             sys.exit()
         elif opt in ("-e", "--engine"):
             engine_path = str(arg)
@@ -37,14 +37,15 @@ def main(argv):
         for move in move_sequence:
             # execute the move on the copied board
             copied_board.push(move)
-        node_fens.append(copied_board.fen()+' ' +
-                         show_move_sequence(move_sequence))
+        node_fens.append(copied_board.fen() + " " + show_move_sequence(move_sequence))
 
+    # sort the fens alphabetically
     node_fens.sort()
+
     i = 0
     for fen in node_fens:
         i += 1
-        print(str(i)+' '+fen)
+        print(str(i) + " " + fen)
 
     engine.quit()
 
@@ -58,15 +59,16 @@ def generate_valid_move_sequences(board, depth, moves=[]):
         for move in valid_moves:
             board.push(move)
             move_sequences += generate_valid_move_sequences(
-                board, depth - 1, moves + [move])
+                board, depth - 1, moves + [move]
+            )
             board.pop()
         return move_sequences
 
 
 def show_move_sequence(move_sequence):
     """Returns a string representation of the move sequence."""
-    return '['+','.join([str(move) for move in move_sequence])+']'
+    return "[" + ",".join([str(move) for move in move_sequence]) + "]"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

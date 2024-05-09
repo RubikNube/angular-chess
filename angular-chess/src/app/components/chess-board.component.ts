@@ -7,12 +7,14 @@ import { ChessBoardService } from '../services/chess-board.service';
 import { HighlightingService } from '../services/highlighting.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
-import { Board, Color, HighlightColor, Position, Result, Square } from '../types/board.t';
+import { Board, HighlightColor, Result, SquareWithHighlight } from '../types/board.t';
+import { Color, Square } from '../types/compressed.types.t';
 import { Move, Piece, PieceType } from '../types/pieces.t';
+import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
 import PieceUtils from '../utils/piece.utils';
-import PositionUtils from '../utils/position.utils';
+import SquareUtils from '../utils/square.utils';
 
 @Component({
   selector: 'app-chess-board',
@@ -21,6 +23,7 @@ import PositionUtils from '../utils/position.utils';
   providers: [MessageService]
 })
 export class ChessBoardComponent implements OnInit {
+  public BoardUtils = BoardUtils;
   public readonly numbersOneToEight: number[] = [...Array(8)].map((_, i) => i + 1);
   public readonly numbersOneToEightDesc = [...this.numbersOneToEight].sort((a, b) => b - a);
 
@@ -28,7 +31,7 @@ export class ChessBoardComponent implements OnInit {
   public isDragDisabled$: Observable<boolean>;
   public playerPerspectiveRows$: Observable<number[]> | undefined;
   public playerPerspectiveColumns$: Observable<number[]> | undefined;
-  private dragPos: Position = { row: 0, column: 0 };
+  private dragPos: Square = Square.SQ_NONE;
   private grabbedPiece: Piece | undefined = undefined;
   public selectedPromotionPiece: PieceType | undefined;
   public possiblePromotionPieces: PieceType[] = [
@@ -41,6 +44,7 @@ export class ChessBoardComponent implements OnInit {
 
   @ViewChild("op")
   public overlayPanel: OverlayPanel | undefined;
+  public SquareUtils = SquareUtils;
 
   constructor(
     public boardService: ChessBoardService,
@@ -94,34 +98,34 @@ export class ChessBoardComponent implements OnInit {
     }
 
     switch (result) {
-      case Result.UNKNOWN:
-        return "*";
       case Result.REMIS:
         return "Remis";
       case Result.WHITE_WIN:
         return "White wins";
       case Result.BLACK_WIN:
         return "Black wins";
+      default:
+        return "*";
     }
   }
 
   public dragStart(event: DragEvent): void {
     this.dragPos = this.positioningService.getMousePosition(event);
     const currentBoard: Board = this.boardService.getBoard();
-    this.grabbedPiece = PositionUtils.getPieceOnPos(currentBoard, this.dragPos);
+    this.grabbedPiece = SquareUtils.getPieceOnPos(currentBoard, this.dragPos);
     this.updateHighlightingSquares(currentBoard);
   }
 
   private updateHighlightingSquares(currentBoard: Board): void {
     if (this.grabbedPiece !== undefined && this.grabbedPiece.color === currentBoard.playerToMove) {
-      const validSquares: Square[] = MoveGenerationUtils.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
+      const validSquares: SquareWithHighlight[] = MoveGenerationUtils.getValidMoves(currentBoard, this.grabbedPiece, false).map(move => {
         return {
           position: move.to,
           highlight: HighlightColor.GREEN
         }
       });
 
-      const getValidCaptures: Square[] = MoveGenerationUtils.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
+      const getValidCaptures: SquareWithHighlight[] = MoveGenerationUtils.getValidCaptures(currentBoard, this.grabbedPiece).map(m => {
         return {
           position: m.to,
           highlight: HighlightColor.RED
@@ -139,21 +143,22 @@ export class ChessBoardComponent implements OnInit {
       return;
     }
 
-    let dropPos: Position = this.positioningService.getMousePosition(e);
+    let dropPos: Square = this.positioningService.getMousePosition(e);
     let currentBoard: Board = this.boardService.getBoard();
     let executableMove: Move | undefined = MoveGenerationUtils.getExecutableMove(currentBoard, this.grabbedPiece, dropPos);
     this.lastMove = executableMove;
 
     if (executableMove?.piece.type === PieceType.PAWN) {
+      const toPosition = SquareUtils.convertSquareToPosition(executableMove.to);
       if (executableMove?.piece.color === Color.WHITE) {
-        if (executableMove?.to.row === 8) {
+        if (toPosition.row === 8) {
           // pick a piece
           this.overlayPanel?.toggle(e);
           return;
         }
       }
       else {
-        if (executableMove?.to.row === 1) {
+        if (toPosition.row === 1) {
           // pick a piece
           this.overlayPanel?.toggle(e);
           return;
@@ -168,8 +173,8 @@ export class ChessBoardComponent implements OnInit {
     else {
       this.clearAllButLastMoveSquare();
       const lastMove: Move = this.moveHistoryService.getLastMove();
-      const fromSquare: Square = { position: lastMove.from, highlight: HighlightColor.BLUE };
-      const toSquare: Square = { position: lastMove.to, highlight: HighlightColor.BLUE };
+      const fromSquare: SquareWithHighlight = { position: lastMove.from, highlight: HighlightColor.BLUE };
+      const toSquare: SquareWithHighlight = { position: lastMove.to, highlight: HighlightColor.BLUE };
       this.highlightingService.addSquares(fromSquare, toSquare);
     }
   }

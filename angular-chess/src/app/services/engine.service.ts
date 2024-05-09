@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { Color, Result } from '../types/board.t';
+import { Result } from '../types/board.t';
+import { Color } from '../types/compressed.types.t';
 import EngineUtils from '../utils/engine.utils';
 import { ChessBoardService } from './chess-board.service';
 import { MoveHistoryService } from './move-history.service';
@@ -41,7 +42,7 @@ export class EngineService {
     });
 
     this.boardService.getResult$().subscribe(result => {
-      if (result && result !== Result.UNKNOWN) {
+      if (result !== Result.UNKNOWN) {
         this.isRunning$$.next(false);
       }
     });

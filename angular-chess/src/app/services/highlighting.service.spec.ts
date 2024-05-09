@@ -1,34 +1,35 @@
 import { TestBed } from '@angular/core/testing';
 import { TestScheduler } from 'rxjs/testing';
-import { HighlightColor, Square } from '../types/board.t';
+import { HighlightColor, SquareWithHighlight } from '../types/board.t';
+import { Square } from '../types/compressed.types.t';
 import { HighlightingService } from './highlighting.service';
 
 
 describe('HighlightingService', () => {
   let service: HighlightingService;
   let testScheduler: TestScheduler;
-  const redSquare1: Square = {
-    position: { column: 1, row: 1 },
+  const redSquare1: SquareWithHighlight = {
+    position: Square.SQ_A1,
     highlight: HighlightColor.RED
   };
-  const redSquare2: Square = {
-    position: { column: 1, row: 2 },
+  const redSquare2: SquareWithHighlight = {
+    position: Square.SQ_A2,
     highlight: HighlightColor.RED
   };
-  const blueSquare1: Square = {
-    position: { column: 2, row: 1 },
+  const blueSquare1: SquareWithHighlight = {
+    position: Square.SQ_B1,
     highlight: HighlightColor.BLUE
   };
-  const blueSquare2: Square = {
-    position: { column: 2, row: 2 },
+  const blueSquare2: SquareWithHighlight = {
+    position: Square.SQ_B2,
     highlight: HighlightColor.BLUE
   };
-  const greenSquare1: Square = {
-    position: { column: 3, row: 1 },
+  const greenSquare1: SquareWithHighlight = {
+    position: Square.SQ_C1,
     highlight: HighlightColor.GREEN
   };
-  const greenSquare2: Square = {
-    position: { column: 3, row: 2 },
+  const greenSquare2: SquareWithHighlight = {
+    position: Square.SQ_C2,
     highlight: HighlightColor.GREEN
   };
 
@@ -72,8 +73,8 @@ describe('HighlightingService', () => {
   describe('clearSquaresByColor', () => {
     it('should remove squares with given position', () => {
       testScheduler.run((runHelper) => {
-        const redPos1 = { column: 1, row: 1 };
-        const bluePos1 = { column: 2, row: 1 };
+        const redPos1 = Square.SQ_A1;
+        const bluePos1 = Square.SQ_B1;
         service.clearSquaresByPosition(redPos1, bluePos1);
 
         const expected = "a--";

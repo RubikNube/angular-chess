@@ -1,6 +1,8 @@
-import { Board, Color, Position } from "../../types/board.t";
+import { Color, Square } from "src/app/types/compressed.types.t";
+import { Board } from "../../types/board.t";
 import { Piece, PieceType } from "../../types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
+import SquareUtils from "../square.utils";
 import { PIECE_SQUARE_SCORE } from "./square-tables.t";
 
 enum GamePhase {
@@ -144,8 +146,8 @@ export default class EvaluationUtils {
    * Returns the index for a given position. The square a8 will be 0, the square h1 will be 63.
    *  
    * */
-  public static calculateIndex(position: Position) {
-    return 63 - (((position.row - 1) * 8) + (8 - position.column));
+  public static calculateIndex(position: Square): number {
+    return SquareUtils.getRelativeSquare(position, Color.BLACK);
   }
 
   /**

@@ -1,11 +1,11 @@
-import { Board, Color } from "../types/board.t";
+import { Board } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
-import LoggingUtils, { LogLevel } from "./logging.utils";
-import EvaluationUtils from "./move-evaluation/evaltuation.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import MoveSearchUtils from "./move.search.utils";
+import SquareUtils from "./square.utils";
 
 export type MoveWithScore = Move & { score?: number };
 
@@ -36,7 +36,7 @@ export default class EngineUtils {
     let promotionMoves: Move[] = [];
 
     if (move.piece.type === PieceType.PAWN
-      && (move.piece.color === Color.WHITE && move.to.row === 8 || move.piece.color === Color.BLACK && move.to.row === 1)) {
+      && (move.piece.color === Color.WHITE && SquareUtils.rankOf(move.to) === 7 || move.piece.color === Color.BLACK && SquareUtils.rankOf(move.to) === 0)) {
       this.addPromotionMoves(board, move, promotionMoves);
     }
     else {

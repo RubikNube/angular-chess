@@ -1,4 +1,5 @@
-import { Board, Color, Position } from '../types/board.t';
+import { Board } from '../types/board.t';
+import { Color, Square } from '../types/compressed.types.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import BoardUtils from './board.utils';
 import PieceUtils from './piece.utils';
@@ -7,19 +8,19 @@ import PositionUtils from './position.utils';
 describe('PieceUtils', () => {
   const whiteKing55: Piece = {
     color: Color.WHITE,
-    position: { row: 5, column: 5 },
+    position: Square.SQ_E5,
     type: PieceType.KING
   };
 
   const whiteKing55OtherInstance: Piece = {
     color: Color.WHITE,
-    position: { row: 5, column: 5 },
+    position: Square.SQ_E5,
     type: PieceType.KING
   };
 
   const blackKing55: Piece = {
     color: Color.BLACK,
-    position: { row: 5, column: 5 },
+    position: Square.SQ_E5,
     type: PieceType.KING
   };
 
@@ -78,28 +79,28 @@ describe('PieceUtils', () => {
   describe('isPinnedDiagonally', () => {
     it('should return true if piece is pinned diagonally by a lower right bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3k4/4n3/8/8/7B/8/8/3K4 b - - 0 1");
-      let piecePosition: Position = { column: 5, row: 7 };
+      let piecePosition: Square = Square.SQ_E7;
 
       expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a lower left bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3k4/2n5/8/B7/8/8/8/3K4 b - - 0 1");
-      let piecePosition: Position = { column: 3, row: 7 };
+      let piecePosition: Square = Square.SQ_C7;
 
       expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a upper right bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/6B1/8/4n3/3k4/8/8/3K4 b - - 0 1");
-      let piecePosition: Position = { column: 5, row: 5 };
+      let piecePosition: Square = Square.SQ_E5;
 
       expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned diagonally by a upper left bishop.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/B7/8/2n5/3k4/8/8/3K4 b - - 0 1");
-      let piecePosition: Position = { column: 3, row: 5 };
+      let piecePosition: Square = Square.SQ_C5;
 
       expect(PieceUtils.isPinnedDiagonally(piecePosition, board)).toBeTruthy();
     });
@@ -108,14 +109,14 @@ describe('PieceUtils', () => {
   describe('isPinnedHorizontally', () => {
     it('should return true if piece is pinned horizontally by a rook from the right side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/3K1P1r/8 w - - 0 1");
-      let piecePosition: Position = { column: 6, row: 2 };
+      let piecePosition: Square = Square.SQ_F2;
 
       expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned horizontally by a rook from the left side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/3k4/8/8/8/8/r1P1K3/8 w - - 0 1");
-      let piecePosition: Position = { column: 3, row: 2 };
+      let piecePosition: Square = Square.SQ_C2;
 
       expect(PieceUtils.isPinnedHorizontally(piecePosition, board)).toBeTruthy();
     });
@@ -124,14 +125,14 @@ describe('PieceUtils', () => {
   describe('isPinnedVertically', () => {
     it('should return true if piece is pinned vertically by a rook from the top side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("3r4/8/3B4/8/3K2k1/8/8/8 w - - 0 1");
-      let piecePosition: Position = { column: 4, row: 6 };
+      let piecePosition: Square = Square.SQ_D6;
 
       expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTruthy();
     });
 
     it('should return true if piece is pinned vertically by a rook from the bottom side.', () => {
       let board: Board = BoardUtils.loadBoardFromFen("8/8/3K4/8/1k1B4/8/3r4/8 w - - 0 1");
-      let piecePosition: Position = { column: 4, row: 4 };
+      let piecePosition: Square = Square.SQ_D4;
 
       expect(PieceUtils.isPinnedVertically(piecePosition, board)).toBeTruthy();
     });

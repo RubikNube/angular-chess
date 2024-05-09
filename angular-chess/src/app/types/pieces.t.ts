@@ -1,9 +1,10 @@
-import { Board, Color, Position } from "./board.t";
+import { Board } from "./board.t";
+import { Color, Square } from "./compressed.types.t";
 
 export type Piece = {
   type: PieceType;
   color: Color;
-  position: Position;
+  position: Square;
 }
 
 export enum PieceType {
@@ -17,8 +18,8 @@ export enum PieceType {
 
 export type Move = {
   piece: Piece;
-  from: Position;
-  to: Position;
+  from: Square;
+  to: Square;
   capturedPiece?: Piece;
   isEnPassant?: boolean;
   isShortCastle?: boolean;

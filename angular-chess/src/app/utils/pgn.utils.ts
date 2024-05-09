@@ -1,4 +1,5 @@
-import { Board, Color, Position } from "../types/board.t";
+import { Board } from "../types/board.t";
+import { Color, Square } from "../types/compressed.types.t";
 import { Move, PieceType } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
@@ -9,6 +10,7 @@ import MoveHistoryUtils from "./move.history.utils";
 import MoveUtils, { MoveRepresentationConfig } from "./move.utils";
 import PieceUtils from "./piece.utils";
 import PositionUtils from "./position.utils";
+import SquareUtils from "./square.utils";
 
 export type MoveGroup = {
   whiteMoveString?: string;
@@ -179,7 +181,7 @@ export default class PgnUtils {
    */
   public static getRawMoveFromString(board: Board, moveString: string): Move | undefined {
     const playerToMove: Color = board.playerToMove;
-    const dropPosition: Position | undefined = PgnUtils.extractMoveToPosition(moveString, playerToMove);
+    const dropPosition: Square | undefined = PgnUtils.extractMoveToPosition(moveString, playerToMove);
     const pieceType: PieceType | undefined = PieceUtils.getPieceTypeFromMoveString(moveString);
 
     if (pieceType && dropPosition) {
@@ -194,11 +196,12 @@ export default class PgnUtils {
         let fromPos = this.extractMoveFromPosition(moveString);
 
         const filteredMoves: Move[] = moves.filter(move => {
+          const moveFromPos = SquareUtils.convertSquareToPosition(move.from);
           if (fromPos.column) {
-            return fromPos.column === move.from.column;
+            return fromPos.column === moveFromPos.column;
           }
           else if (fromPos.row) {
-            return fromPos.row === move.from.row;
+            return fromPos.row === moveFromPos.row;
           }
           else {
             return false;
@@ -237,23 +240,23 @@ export default class PgnUtils {
    * @param playerToMove The player that has the move right.
    * @returns The end position of the move that is represented by the moveString. 
    */
-  public static extractMoveToPosition(moveString: string, playerToMove?: Color): Position | undefined {
+  public static extractMoveToPosition(moveString: string, playerToMove?: Color): Square | undefined {
     if (moveString === 'O-O') {
-      return {
+      return SquareUtils.convertPositionToSquare({
         column: 7,
         row: playerToMove === Color.WHITE ? 1 : 8
-      }
+      });
     }
     else if (moveString === 'O-O-O') {
-      return {
+      return SquareUtils.convertPositionToSquare({
         column: 3,
         row: playerToMove === Color.WHITE ? 1 : 8
-      }
+      });
     }
 
     let coordinate = moveString.match(new RegExp(this.coordinateRegEx, 'gm'));
     if (coordinate) {
-      return PositionUtils.getPositionFromCoordinate(coordinate[0]);;
+      return SquareUtils.convertPositionToSquare(PositionUtils.getPositionFromCoordinate(coordinate[0]));
     }
 
     return undefined;
@@ -329,13 +332,14 @@ export default class PgnUtils {
       return undefined;
     }
     // return MoveRepresentationConfig.INCLUDE_FROM_COLUMN if only one piece can move to the move to position from the same column
-    const executableMovesFromColumn = executableMoves.filter(executableMove => executableMove.from.column === move.from.column);
+    const executableMovesFromColumn = executableMoves.filter(executableMove => SquareUtils.fileOf(executableMove.from) === SquareUtils.fileOf(move.from));
     if (executableMovesFromColumn.length === 1) {
       return MoveRepresentationConfig.INCLUDE_FROM_COLUMN;
     }
 
     // return MoveRepresentationConfig.INCLUDE_FROM_ROW if only one piece can move to the move to position from the same row
-    const executableMovesFromRow = executableMoves.filter(executableMove => executableMove.from.row === move.from.row);
+
+    const executableMovesFromRow = executableMoves.filter(executableMove => SquareUtils.rankOf(executableMove.from) == SquareUtils.rankOf(move.from));
     if (executableMovesFromRow.length === 1) {
       return MoveRepresentationConfig.INCLUDE_FROM_ROW;
     }

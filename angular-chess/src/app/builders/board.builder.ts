@@ -1,8 +1,9 @@
-import { Board, CastleRights, Color, Position, Result } from "../types/board.t";
+import { Board, CastleRights, Result } from "../types/board.t";
+import { Color, Square } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";
-import PositionUtils from "../utils/position.utils";
+import SquareUtils from "../utils/square.utils";
 
 /** A builder that is responsible for creating the board.*/
 export class BoardBuilder {
@@ -30,7 +31,7 @@ export class BoardBuilder {
   }
 
   public removePiece(pieceToRemove: Piece): BoardBuilder {
-    this._board.pieces = this._board.pieces.filter(piece => !PositionUtils.positionEquals(piece.position, pieceToRemove.position));
+    this._board.pieces = this._board.pieces.filter(piece => !SquareUtils.squareEquals(piece.position, pieceToRemove.position));
     return this;
   }
 
@@ -88,7 +89,7 @@ export class BoardBuilder {
     return this;
   }
 
-  public enPassantSquare(enPassantSquare: Position | undefined): BoardBuilder {
+  public enPassantSquare(enPassantSquare: Square | undefined): BoardBuilder {
     this._board.enPassantSquare = enPassantSquare;
     return this;
   }

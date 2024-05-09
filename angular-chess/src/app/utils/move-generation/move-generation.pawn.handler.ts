@@ -1,9 +1,10 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board } from "src/app/types/board.t";
+import { Color, Direction, Rank, Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationPawnHandler implements MoveGenerationHandler {
@@ -19,27 +20,34 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     }
 
     if (piece.color === Color.WHITE) {
-      if (piece.position.row === 2) {
-        return BoardUtils.getFreeFrontSquares(board, piece, 2)
-          .map(PositionUtils.positionToMoveFunction(piece));
+      if (SquareUtils.rankOf(piece.position) === Rank.RANK_2) {
+        return BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH, 2)
+          .map(SquareUtils.positionToMoveFunction(piece));
       }
       else {
-        return BoardUtils.getFreeFrontSquares(board, piece, 1)
-          .map(PositionUtils.positionToMoveFunction(piece));
+        return BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH, 1)
+          .map(SquareUtils.positionToMoveFunction(piece));
       }
     }
     else {
-      if (piece.position.row === 7) {
-        return BoardUtils.getFreeBackSquares(board, piece, 2)
-          .map(PositionUtils.positionToMoveFunction(piece));
+      if (SquareUtils.rankOf(piece.position) === Rank.RANK_7) {
+        return BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH, 2)
+          .map(SquareUtils.positionToMoveFunction(piece));
       }
       else {
-        return BoardUtils.getFreeBackSquares(board, piece, 1)
-          .map(PositionUtils.positionToMoveFunction(piece));
+        return BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH, 1)
+          .map(SquareUtils.positionToMoveFunction(piece));
       }
     }
   }
 
+  /**
+   * Retrieves the capture moves for a given piece on the board.
+   * 
+   * @param piece - The piece for which to generate capture moves.
+   * @param board - The current state of the chess board.
+   * @returns An array of capture moves for the piece.
+   */
   public getCaptures(piece: Piece, board: Board): Move[] {
     if (PieceUtils.isPinnedHorizontally(piece.position, board) ||
       PieceUtils.isPinnedVertically(piece.position, board)) {
@@ -47,7 +55,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
     }
     const captureCandidates = MoveGenerationPawnHandler.getCaptureCandidates(piece);
 
-    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const lowerToUpperDiagonal: Square[] = SquareUtils.getLowerToUpperDiagonal(piece.position);
     const pinningCapturesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, lowerToUpperDiagonal);
     if (pinningCapturesOnLowerToUpperDiagonal) {
       if (this.canPinnedPieceBeCaptured(pinningCapturesOnLowerToUpperDiagonal, captureCandidates)) {
@@ -58,7 +66,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
       }
     }
 
-    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const upperToLowerDiagonal: Square[] = SquareUtils.getUpperToLowerDiagonal(piece.position);
 
     const pinningCapturesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, upperToLowerDiagonal);
     if (pinningCapturesOnUpperToLowerDiagonal) {
@@ -80,12 +88,12 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
             from: piece.position,
             to: p,
             isEnPassant,
-            capturedPiece: PositionUtils.getPieceOnPos(board, p)
+            capturedPiece: SquareUtils.getPieceOnPos(board, p)
           }
         }
         else {
           const copiedBoard: Board = CopyUtils.deepCopyElement(board);
-          copiedBoard.pieces = copiedBoard.pieces.filter(b => b.position.row !== (p.row - 1) && b.position.column !== p.column);
+          copiedBoard.pieces = copiedBoard.pieces.filter(b => SquareUtils.rankOf(b.position) !== (SquareUtils.rankOf(p) - 1) && SquareUtils.fileOf(b.position) !== SquareUtils.fileOf(p));
 
 
           if (PieceUtils.isPinnedHorizontally(piece.position, copiedBoard)) {
@@ -97,7 +105,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
               from: piece.position,
               to: p,
               isEnPassant,
-              capturedPiece: PositionUtils.getPieceOnPos(board, { row: p.row - 1, column: p.column })
+              capturedPiece: SquareUtils.getPieceOnPos(board, SquareUtils.convertPositionToSquare({ row: SquareUtils.rankOf(p) - 1, column: SquareUtils.fileOf(p) }))
             }
           }
         }
@@ -105,38 +113,42 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
       .filter(m => m !== undefined) as Move[];
   }
 
-  private canPinnedPieceBeCaptured(pinningMoves: Move[], captureCandidates: Position[]) {
-    return pinningMoves.length > 0 && PositionUtils.includes(captureCandidates, pinningMoves[0].to);
+  private canPinnedPieceBeCaptured(pinningMoves: Move[], captureCandidates: Square[]) {
+    return pinningMoves.length > 0 && SquareUtils.includes(captureCandidates, pinningMoves[0].to);
   }
 
-  public static getCaptureCandidates(piece: Piece): Position[] {
+  /**
+   * Returns an array of squares representing the capture candidates for the given piece.
+   * 
+   * @param piece - The piece for which to generate capture candidates.
+   * @returns An array of squares representing the capture candidates.
+   */
+  public static getCaptureCandidates(piece: Piece): Square[] {
+    const captureCandidates: Square[] = [];
     if (piece.color === Color.WHITE) {
-      // left upper field
-      const leftUpperField: Position = {
-        row: piece.position.row + 1,
-        column: piece.position.column - 1
-      };
-
-      // right upper field
-      const rightUpperField: Position = {
-        row: piece.position.row + 1,
-        column: piece.position.column + 1
-      };
-      return [leftUpperField, rightUpperField];
+      this.addCaptureCandidate(captureCandidates, piece.position, Direction.NORTH_EAST);
+      this.addCaptureCandidate(captureCandidates, piece.position, Direction.NORTH_WEST);
     }
     else {
-      // left lower field
-      const leftUpperField: Position = {
-        row: piece.position.row - 1,
-        column: piece.position.column - 1
-      };
+      this.addCaptureCandidate(captureCandidates, piece.position, Direction.SOUTH_EAST);
+      this.addCaptureCandidate(captureCandidates, piece.position, Direction.SOUTH_WEST);
+    }
+    return captureCandidates;
+  }
 
-      // right lower field
-      const rightUpperField: Position = {
-        row: piece.position.row - 1,
-        column: piece.position.column + 1
-      };
-      return [leftUpperField, rightUpperField];
+  /**
+   * Adds a capture candidate to the given array of capture candidates.
+   * A capture candidate is a square that can be captured by a pawn in a specific direction.
+   *
+   * @param captureCandidates - The array of capture candidates to add the candidate to.
+   * @param startingSquare - The starting square of the pawn.
+   * @param direction - The direction in which the pawn is moving.
+   */
+  private static addCaptureCandidate(captureCandidates: Square[], startingSquare: Square, direction: Direction): void {
+    const candidate = SquareUtils.getSquareInDirection(startingSquare, direction);
+
+    if (BoardUtils.getDistanceOfSquares(startingSquare, candidate) === 1) {
+      captureCandidates.push(candidate);
     }
   }
 
@@ -148,15 +160,22 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
 
     const captureCandidates = MoveGenerationPawnHandler.getCaptureCandidates(piece);
 
-    return PositionUtils.includes(captureCandidates, kingPos);
+    return SquareUtils.includes(captureCandidates, kingPos);
   }
 
-  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+  public getBlockingSquares(piece: Piece, board: Board): Square[] {
     return [];
   }
 
-  public getAttackingSquares(piece: Piece, board: Board): Position[] {
-    return MoveGenerationPawnHandler.getCaptureCandidates(piece)
-      .filter(p => PositionUtils.isOnBoard(p));
+  /**
+   * Returns an array of squares that the given pawn can attack on the board.
+   * 
+   * @param pawn - The pawn piece.
+   * @param board - The chess board.
+   * @returns An array of squares that the pawn can attack.
+   */
+  public getAttackingSquares(pawn: Piece, board: Board): Square[] {
+    return MoveGenerationPawnHandler.getCaptureCandidates(pawn)
+      .filter(square => SquareUtils.isOnBoard(square) && BoardUtils.getDistanceOfSquares(pawn.position, square) === 1);
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Color, Position } from '../types/board.t';
+import { Color, Square } from '../types/compressed.types.t';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
-import PositionUtils from '../utils/position.utils';
+import SquareUtils from '../utils/square.utils';
 import { PersistenceService } from './persistence.service';
 
 @Injectable({
@@ -26,11 +26,11 @@ export class PositioningService {
     this.perspectiveSource.next(newPerspective);
   }
 
-  public getUiPosition(position: Position): Position {
-    return PositionUtils.getRelativePosition(position, this.perspectiveSource.getValue());
+  public getUiPosition(position: Square): Square {
+    return SquareUtils.getRelativeSquare(position, this.perspectiveSource.getValue());
   }
 
-  getMousePosition(event: DragEvent): Position {
+  getMousePosition(event: DragEvent): Square {
     LoggingUtils.log(LogLevel.INFO, () => `getMousePosition event: ${event}`);
     const boardElem = document.querySelector('div.board');
     const rect = boardElem?.getBoundingClientRect();
@@ -48,13 +48,13 @@ export class PositioningService {
     // get column
     const column = Math.ceil(d_x / squareLength);
 
-    let position: Position;
+    let position: Square;
 
     if (this.getPerspective() === Color.WHITE) {
-      position = { row: 9 - row, column: column };
+      position = SquareUtils.convertPositionToSquare({ row: 9 - row, column: column });
     }
     else {
-      position = { row: row, column: 9 - column };
+      position = SquareUtils.convertPositionToSquare({ row: row, column: 9 - column });
     }
 
     LoggingUtils.log(LogLevel.INFO, () => "getMousePosition: " + JSON.stringify(position) + ", this.getPerspective(): " + this.getPerspective());

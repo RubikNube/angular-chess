@@ -1,8 +1,9 @@
-import { Board, Position } from "src/app/types/board.t";
+import { Board } from "src/app/types/board.t";
+import { Direction, Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationQueenHandler implements MoveGenerationHandler {
@@ -11,25 +12,25 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getMoves(piece: Piece, board: Board): Move[] {
-    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalSquares: Square[] = SquareUtils.getHorizontalSquares(piece.position);
     const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
     if (horizontalPinningMoves) {
       return horizontalPinningMoves;
     }
 
-    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalSquares: Square[] = SquareUtils.getVerticalSquares(piece.position);
     const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedMoves(piece, board, verticalSquares);
     if (verticalPinningMoves) {
       return verticalPinningMoves;
     }
 
-    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const lowerToUpperDiagonal: Square[] = SquareUtils.getLowerToUpperDiagonal(piece.position);
     const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, lowerToUpperDiagonal);
     if (pinningMovesOnLowerToUpperDiagonal) {
       return pinningMovesOnLowerToUpperDiagonal;
     }
 
-    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const upperToLowerDiagonal: Square[] = SquareUtils.getUpperToLowerDiagonal(piece.position);
     const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedMoves(piece, board, upperToLowerDiagonal);
     if (pinningMovesOnUpperToLowerDiagonal) {
       return pinningMovesOnUpperToLowerDiagonal;
@@ -47,47 +48,38 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   private getFreeSquares(board: Board, piece: Piece) {
-    const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
-    const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
-    const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
-    const rightSquares: Position[] = BoardUtils.getFreeRightSquares(board, piece, 8 - piece.position.column);
-    const frontLeftSquares: Position[] = BoardUtils.getFreeFrontLeftSquares(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-    const frontRightSquares: Position[] = BoardUtils.getFreeFrontRightSquares(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-    const backLeftSquares: Position[] = BoardUtils.getFreeBackLeftSquares(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-    const backRightSquares: Position[] = BoardUtils.getFreeBackRightSquares(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
-
     return [
-      ...frontSquares,
-      ...backSquares,
-      ...leftSquares,
-      ...rightSquares,
-      ...frontLeftSquares,
-      ...frontRightSquares,
-      ...backLeftSquares,
-      ...backRightSquares
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.WEST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.EAST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH_WEST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH_EAST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH_WEST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH_EAST)
     ];
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
-    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalSquares: Square[] = SquareUtils.getHorizontalSquares(piece.position);
     const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedCaptures(piece, board, horizontalSquares);
     if (horizontalPinningMoves) {
       return horizontalPinningMoves;
     }
 
-    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalSquares: Square[] = SquareUtils.getVerticalSquares(piece.position);
     const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedCaptures(piece, board, verticalSquares);
     if (verticalPinningMoves) {
       return verticalPinningMoves;
     }
 
-    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const upperToLowerDiagonal: Square[] = SquareUtils.getUpperToLowerDiagonal(piece.position);
     const pinningMovesOnLowerToUpperDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, upperToLowerDiagonal);
     if (pinningMovesOnLowerToUpperDiagonal) {
       return pinningMovesOnLowerToUpperDiagonal;
     }
 
-    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
+    const lowerToUpperDiagonal: Square[] = SquareUtils.getLowerToUpperDiagonal(piece.position);
     const pinningMovesOnUpperToLowerDiagonal: Move[] | undefined = BoardUtils.getDiagonalPartiallyPinnedCaptures(piece, board, lowerToUpperDiagonal);
     if (pinningMovesOnUpperToLowerDiagonal) {
       return pinningMovesOnUpperToLowerDiagonal;
@@ -95,28 +87,19 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
 
     const fieldsToMove = this.getOccupiedSquares(board, piece);
 
-    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
+    return fieldsToMove.map(SquareUtils.positionToMoveFunction(piece));
   }
 
   private getOccupiedSquares(board: Board, piece: Piece) {
-    const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
-    const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
-    const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
-    const rightSquares: Position[] = BoardUtils.getOccupiedRightSquare(board, piece, 8 - piece.position.column);
-    const frontLeftSquares: Position[] = BoardUtils.getOccupiedFrontLeftSquare(board, piece, Math.min(8 - piece.position.row, piece.position.column - 1));
-    const frontRightSquares: Position[] = BoardUtils.getOccupiedFrontRightSquare(board, piece, Math.min(8 - piece.position.row, 8 - piece.position.column));
-    const backLeftSquares: Position[] = BoardUtils.getOccupiedBackLeftSquare(board, piece, Math.min(piece.position.row - 1, piece.position.column - 1));
-    const backRightSquares: Position[] = BoardUtils.getOccupiedBackRightSquare(board, piece, Math.min(piece.position.row - 1, 8 - piece.position.column));
-
     const fieldsToMove = [
-      ...frontSquares,
-      ...backSquares,
-      ...leftSquares,
-      ...rightSquares,
-      ...frontLeftSquares,
-      ...frontRightSquares,
-      ...backLeftSquares,
-      ...backRightSquares
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.NORTH),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.NORTH_EAST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.EAST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.SOUTH_EAST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.SOUTH),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.SOUTH_WEST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.WEST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.NORTH_WEST),
     ];
     return fieldsToMove;
   }
@@ -128,10 +111,10 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
     }
     const occupiedSquares = this.getOccupiedSquares(board, piece);
 
-    return PositionUtils.includes(occupiedSquares, kingPos);
+    return SquareUtils.includes(occupiedSquares, kingPos);
   }
 
-  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+  public getBlockingSquares(piece: Piece, board: Board): Square[] {
     // get horizontal squares between king and rook
     const kingPos = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
     if (!kingPos) {
@@ -139,23 +122,23 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
     }
 
     // are king and rook on the same row?
-    if (kingPos.row === piece.position.row) {
+    if (SquareUtils.rankOf(kingPos) === SquareUtils.rankOf(piece.position)) {
       // get squares between king and rook
-      return PositionUtils.getHorizontalPositionsBetween(piece.position, kingPos);
+      return SquareUtils.getHorizontalSquaresBetween(piece.position, kingPos);
     }
 
     // are king and rook on the same column?
-    if (kingPos.column === piece.position.column) {
+    if (SquareUtils.fileOf(kingPos) === SquareUtils.fileOf(piece.position)) {
       // get squares between king and rook
-      return PositionUtils.getVerticalPositionsBetween(piece.position, kingPos);
+      return SquareUtils.getVerticalSquaresBetween(piece.position, kingPos);
     }
 
-    return PositionUtils.getDiagonalPositionsBetween(piece.position, kingPos);
+    return SquareUtils.getDiagonalSquaresBetween(piece.position, kingPos);
   }
 
-  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+  public getAttackingSquares(piece: Piece, board: Board): Square[] {
     const copiedBoard: Board = CopyUtils.deepCopyElement(board);
-    copiedBoard.pieces= copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
+    copiedBoard.pieces = copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
 
     return [...this.getFreeSquares(copiedBoard, piece), ...this.getOccupiedSquares(copiedBoard, piece)];
   }

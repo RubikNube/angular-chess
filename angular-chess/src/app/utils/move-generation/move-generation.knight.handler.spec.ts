@@ -1,7 +1,8 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board } from "src/app/types/board.t";
+import { Color, Square } from "src/app/types/compressed.types.t";
 import { Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationKnightHandler } from "./move-generation.knight.handler";
 
 describe('MoveGenerationKnightHandler', () => {
@@ -11,7 +12,7 @@ describe('MoveGenerationKnightHandler', () => {
   });
 
   describe('isAttackingKing', () => {
-    function isAttackingKing(description: string, fen: string, knightPosition: Position, expected: boolean) {
+    function isAttackingKing(description: string, fen: string, knightPosition: Square, expected: boolean) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const knight: Piece = { type: PieceType.KNIGHT, position: knightPosition, color: Color.WHITE };
@@ -24,78 +25,79 @@ describe('MoveGenerationKnightHandler', () => {
     isAttackingKing(
       'should return true if knight is attacking king from bottom right',
       '8/8/6k1/4N3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return false if knight is not attacking king',
       '8/6k1/8/4N3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       false
     );
   });
 
   describe('getBlockingSquares', () => {
-    function getBlockingSquares(description: string, fen: string, knightPosition: Position, expectedBlockingSquares: Position[]) {
+    function getBlockingSquares(description: string, fen: string, knightPosition: Square, expectedBlockingSquares: Square[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const knight: Piece = { type: PieceType.KNIGHT, position: knightPosition, color: Color.WHITE };
-        const blockingSquares = PositionUtils.sortPositions(handler.getBlockingSquares(knight, board));
+        const blockingSquares = SquareUtils.sortSquares(handler.getBlockingSquares(knight, board));
 
-        expect(blockingSquares).toEqual(PositionUtils.sortPositions(expectedBlockingSquares));
+        expect(blockingSquares).toEqual(SquareUtils.sortSquares(expectedBlockingSquares));
       });
     }
 
     getBlockingSquares(
       'should return empty array if knight is not attacking king',
       '8/6k1/8/4N3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       []
     );
 
     getBlockingSquares(
       'should return empty array if knight is attacking king',
       '8/8/6k1/4N3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       []
     );
   });
 
   describe('getAttackingSquares', () => {
-    function getAttackingSquares(description: string, fen: string, knightPosition: Position, expectedAttackingSquares: Position[]) {
+    function getAttackingSquares(description: string, fen: string, knightPosition: Square, expectedAttackingSquares: Square[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const knight: Piece = { type: PieceType.KNIGHT, position: knightPosition, color: Color.WHITE };
-        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(knight, board));
+        const actualSquares = handler.getAttackingSquares(knight, board).sort(SquareUtils.compareSquares());
+        const expectedSquares = expectedAttackingSquares.sort(SquareUtils.compareSquares());
 
-        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+        expect(actualSquares).withContext(`Expected ${expectedSquares} but got ${actualSquares}.`).toEqual(expectedSquares);
       });
     }
 
     getAttackingSquares(
       'should return all squares where the knight can jump to',
       '8/6k1/8/4N3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       [
-        { column: 3, row: 4 },
-        { column: 3, row: 6 },
-        { column: 4, row: 3 },
-        { column: 4, row: 7 },
-        { column: 6, row: 3 },
-        { column: 6, row: 7 },
-        { column: 7, row: 4 },
-        { column: 7, row: 6 }
+        Square.SQ_C4,
+        Square.SQ_C6,
+        Square.SQ_D3,
+        Square.SQ_D7,
+        Square.SQ_F3,
+        Square.SQ_F7,
+        Square.SQ_G4,
+        Square.SQ_G6
       ]
     );
 
     getAttackingSquares(
       'should return only the squares on the board where the knight can jump to',
       'N7/6k1/8/8/8/8/8/2K5 w - - 0 1',
-      { column: 1, row: 8 },
+      Square.SQ_A8,
       [
-        { column: 3, row: 7 },
-        { column: 2, row: 6 }        
+        Square.SQ_C7,
+        Square.SQ_B6
       ]
     );
   });

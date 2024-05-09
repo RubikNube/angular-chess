@@ -1,5 +1,7 @@
-import { Board, Color, Position } from "../types/board.t";
+import { Board } from "../types/board.t";
+import { Color } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
+import SquareUtils, { Position } from "./square.utils";
 
 export default class PositionUtils {
   public static positionEquals(a: Position, b: Position) {
@@ -57,8 +59,9 @@ export default class PositionUtils {
 
   public static getPieceOnPos(board: Board, pos: Position): Piece | undefined {
     return board.pieces.find(p => {
-      return p.position.row === pos.row
-        && p.position.column === pos.column;
+      const piecePos = SquareUtils.convertSquareToPosition(p.position);
+      return piecePos.row === pos.row
+        && piecePos.column === pos.column;
     });
   }
 
@@ -72,9 +75,10 @@ export default class PositionUtils {
     for (let r: number = -1; r <= 1; r++) {
       for (let c: number = -1; c <= 1; c++) {
         if (!(r == 0 && c == 0)) {
+          const piecePos = SquareUtils.convertSquareToPosition(piece.position);
           const field: Position = {
-            row: piece.position.row + r,
-            column: piece.position.column + c
+            row: piecePos.row + r,
+            column: piecePos.column + c
           }
 
           fieldsToMove.push(field);
@@ -90,15 +94,9 @@ export default class PositionUtils {
       return {
         piece: piece,
         from: piece.position,
-        to: p
+        to: SquareUtils.convertPositionToSquare(p)
       };
     };
-  }
-
-  public static filterOutAttackedSquares(moves: Move[], attackedSquares: Position[]): Move[] {
-    return moves.filter(move => {
-      return !PositionUtils.includes(attackedSquares, move.to);
-    });
   }
 
   public static getSquareRepresentation(column: number, row: number): string {

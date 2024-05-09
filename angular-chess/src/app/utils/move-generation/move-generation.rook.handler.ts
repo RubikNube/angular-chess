@@ -1,9 +1,10 @@
-import { Board, Position } from "src/app/types/board.t";
+import { Board } from "src/app/types/board.t";
+import { Direction, Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 
 export class MoveGenerationRookHandler implements MoveGenerationHandler {
@@ -17,13 +18,13 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       return [];
     }
 
-    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalSquares: Square[] = SquareUtils.getHorizontalSquares(piece.position);
     const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedMoves(piece, board, horizontalSquares);
     if (horizontalPinningMoves) {
       return horizontalPinningMoves;
     }
 
-    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalSquares: Square[] = SquareUtils.getVerticalSquares(piece.position);
     const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedMoves(piece, board, verticalSquares);
     if (verticalPinningMoves) {
       return verticalPinningMoves;
@@ -31,22 +32,16 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
 
     const fieldsToMove = this.getFreeSquares(board, piece);
 
-    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece))
+    return fieldsToMove.map(SquareUtils.positionToMoveFunction(piece))
   }
 
   private getFreeSquares(board: Board, piece: Piece) {
-    const frontSquares: Position[] = BoardUtils.getFreeFrontSquares(board, piece, 8 - piece.position.row);
-    const backSquares: Position[] = BoardUtils.getFreeBackSquares(board, piece, piece.position.row - 1);
-    const leftSquares: Position[] = BoardUtils.getFreeLeftSquares(board, piece, piece.position.column - 1);
-    const rightSquares: Position[] = BoardUtils.getFreeRightSquares(board, piece, 8 - piece.position.column);
-
-    const fieldsToMove = [
-      ...frontSquares,
-      ...backSquares,
-      ...leftSquares,
-      ...rightSquares
+    return [
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.NORTH),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.SOUTH),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.WEST),
+      ...BoardUtils.getFreeSquaresInDirection(board, piece, Direction.EAST)
     ];
-    return fieldsToMove;
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
@@ -55,13 +50,13 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
       return [];
     }
 
-    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const horizontalSquares: Square[] = SquareUtils.getHorizontalSquares(piece.position);
     const horizontalPinningMoves: Move[] | undefined = BoardUtils.getHorizontalPartiallyPinnedCaptures(piece, board, horizontalSquares);
     if (horizontalPinningMoves) {
       return horizontalPinningMoves;
     }
 
-    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const verticalSquares: Square[] = SquareUtils.getVerticalSquares(piece.position);
     const verticalPinningMoves: Move[] | undefined = BoardUtils.getVerticalPartiallyPinnedCaptures(piece, board, verticalSquares);
     if (verticalPinningMoves) {
       return verticalPinningMoves;
@@ -69,22 +64,16 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
 
     const fieldsToMove = this.getOccupiedSquares(board, piece);
 
-    return fieldsToMove.map(PositionUtils.positionToMoveFunction(piece));
+    return fieldsToMove.map(SquareUtils.positionToMoveFunction(piece));
   }
 
-  private getOccupiedSquares(board: Board, piece: Piece) {
-    const frontSquares: Position[] = BoardUtils.getOccupiedFrontSquare(board, piece, 8 - piece.position.row);
-    const backSquares: Position[] = BoardUtils.getOccupiedBackSquare(board, piece, piece.position.row - 1);
-    const leftSquares: Position[] = BoardUtils.getOccupiedLeftSquare(board, piece, piece.position.column - 1);
-    const rightSquares: Position[] = BoardUtils.getOccupiedRightSquare(board, piece, 8 - piece.position.column);
-
-    const fieldsToMove = [
-      ...frontSquares,
-      ...backSquares,
-      ...leftSquares,
-      ...rightSquares
+  public getOccupiedSquares(board: Board, piece: Piece) {
+    return [
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.NORTH),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.SOUTH),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.WEST),
+      ...BoardUtils.getOccupiedSquareInDirection(board, piece, Direction.EAST)
     ];
-    return fieldsToMove;
   }
 
   public isAttackingKing(piece: Piece, board: Board): boolean {
@@ -94,10 +83,10 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
     }
     const occupiedSquares = this.getOccupiedSquares(board, piece);
 
-    return PositionUtils.includes(occupiedSquares, kingPos);
+    return SquareUtils.includes(occupiedSquares, kingPos);
   }
 
-  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+  public getBlockingSquares(piece: Piece, board: Board): Square[] {
     // get horizontal squares between king and rook
     const kingPos = board.pieces.find(p => p.type === PieceType.KING && p.color !== piece.color)?.position;
     if (!kingPos) {
@@ -105,24 +94,26 @@ export class MoveGenerationRookHandler implements MoveGenerationHandler {
     }
 
     // are king and rook on the same row?
-    if (kingPos.row === piece.position.row) {
+    if (SquareUtils.rankOf(kingPos) === SquareUtils.rankOf(piece.position)) {
       // get squares between king and rook
-      return PositionUtils.getHorizontalPositionsBetween(piece.position, kingPos);
+      return SquareUtils.getHorizontalSquaresBetween(piece.position, kingPos);
     }
 
     // are king and rook on the same column?
-    if (kingPos.column === piece.position.column) {
+    if (SquareUtils.fileOf(kingPos) === SquareUtils.fileOf(piece.position)) {
       // get squares between king and rook
-      return PositionUtils.getVerticalPositionsBetween(piece.position, kingPos);
+      return SquareUtils.getVerticalSquaresBetween(piece.position, kingPos);
     }
 
     return [];
   }
 
-  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+  public getAttackingSquares(piece: Piece, board: Board): Square[] {
     const copiedBoard: Board = CopyUtils.deepCopyElement(board);
-    copiedBoard.pieces= copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
+    copiedBoard.pieces = copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
 
-    return [...this.getFreeSquares(copiedBoard, piece), ...this.getOccupiedSquares(copiedBoard, piece)];
+    const freeSquares = this.getFreeSquares(copiedBoard, piece);
+    const occupiedSquares = this.getOccupiedSquares(copiedBoard, piece);
+    return [...freeSquares, ...occupiedSquares];
   }
 }

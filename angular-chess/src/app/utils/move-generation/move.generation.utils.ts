@@ -1,7 +1,8 @@
-import { Board, Color, Position } from "src/app/types/board.t";
+import { Board } from "src/app/types/board.t";
+import { Color, Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import LoggingUtils, { LogLevel } from "../logging.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationBishopHandler } from "./move-generation.bishop.handler";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import { MoveGenerationKingHandler } from "./move-generation.king.handler";
@@ -48,7 +49,15 @@ export default class MoveGenerationUtils {
     return moves.length === 0;
   }
 
-  public static getExecutableMoves(board: Board, dropPos: Position, color: Color): Move[] {
+  /**
+   * Retrieves the executable moves for a given board, drop position, and color.
+   * 
+   * @param board The chess board.
+   * @param dropPos The position where the piece is dropped.
+   * @param color The color of the pieces to consider.
+   * @returns An array of executable moves.
+   */
+  public static getExecutableMoves(board: Board, dropPos: Square, color: Color): Move[] {
     const pieces: Piece[] = board.pieces.filter(p => p.color === color);
 
     const moves: Move[] = [];
@@ -63,13 +72,13 @@ export default class MoveGenerationUtils {
     return moves;
   }
 
-  public static getExecutableMove(board: Board, piece: Piece, dropPos: Position): Move | undefined {
-    let move = this.getValidMoves(board, piece, true).find(m => PositionUtils.positionEquals(m.to, dropPos));
+  public static getExecutableMove(board: Board, piece: Piece, dropPos: Square): Move | undefined {
+    let move = this.getValidMoves(board, piece, true).find(m => SquareUtils.squareEquals(m.to, dropPos));
     if (move !== undefined) {
       return move;
     }
     else {
-      return this.getValidCaptures(board, piece).find(m => PositionUtils.positionEquals(m.to, dropPos));
+      return this.getValidCaptures(board, piece).find(m => SquareUtils.squareEquals(m.to, dropPos));
     }
   }
 
@@ -90,7 +99,7 @@ export default class MoveGenerationUtils {
 
         if (blockingSquares !== undefined) {
           // can piece move to a blocking square?
-          moves = moves.filter(m => blockingSquares.find(s => PositionUtils.positionEquals(s, m.to)));
+          moves = moves.filter(m => blockingSquares.find(s => SquareUtils.squareEquals(s, m.to)));
         }
       }
 
@@ -104,8 +113,8 @@ export default class MoveGenerationUtils {
 
   private static getFreeMovesOnBoard(moves: Move[], board: Board, shouldCalculateCheck: boolean): Move[] {
     return moves
-      .filter(m => PositionUtils.isOnBoard(m.to))
-      .filter(m => PositionUtils.isFree(board, m.to))
+      .filter(m => SquareUtils.isOnBoard(m.to))
+      .filter(m => SquareUtils.isFree(board, m.to))
       .map(m => {
         if (shouldCalculateCheck) {
           m.isCheck = this.isCheck(board, m);
@@ -132,7 +141,7 @@ export default class MoveGenerationUtils {
     // if there are attacking pieces check if the piece can be captured
     if (enemyAttackingPieces.length > 0) {
       // filter out all moves that capture the attacking piece
-      captureMoves = captureMoves.filter(m => enemyAttackingPieces.some(p => PositionUtils.positionEquals(p.position, m.to)));
+      captureMoves = captureMoves.filter(m => enemyAttackingPieces.some(p => SquareUtils.squareEquals(p.position, m.to)));
     }
 
     return captureMoves
@@ -141,14 +150,15 @@ export default class MoveGenerationUtils {
         m.piece.position = piece.position;
 
         if (!m.isEnPassant) {
-          m.capturedPiece = PositionUtils.getPieceOnPos(board, m.to);
+          m.capturedPiece = SquareUtils.getPieceOnPos(board, m.to);
         } else {
-          let capturedPiecePos: Position = {
-            row: m.piece.color === Color.WHITE ? m.to.row - 1 : m.to.row + 1,
-            column: m.to.column
+          const moveToPos = SquareUtils.convertSquareToPosition(m.to);
+          let capturedPiecePos: any = {
+            row: m.piece.color === Color.WHITE ? moveToPos.row - 1 : moveToPos.row + 1,
+            column: moveToPos.column
           }
 
-          m.capturedPiece = PositionUtils.getPieceOnPos(board, capturedPiecePos);
+          m.capturedPiece = SquareUtils.getPieceOnPos(board, SquareUtils.convertPositionToSquare(capturedPiecePos));
 
         }
 
@@ -165,12 +175,12 @@ export default class MoveGenerationUtils {
       .filter(p => this.generationHandlers.find(h => h.canHandle(p))?.isAttackingKing(p, board));
   }
 
-  private static isOppositeColoredPieceOnPos(board: Board, position: Position, color: Color): boolean {
-    const pieceOnPos = PositionUtils.getPieceOnPos(board, position);
+  private static isOppositeColoredPieceOnPos(board: Board, position: Square, color: Color): boolean {
+    const pieceOnPos = SquareUtils.getPieceOnPos(board, position);
     return pieceOnPos ? pieceOnPos.color !== color : false;
   }
 
-  public static calculateAttackedSquares(board: Board, colorOfPieces: Color): Position[] {
+  public static calculateAttackedSquares(board: Board, colorOfPieces: Color): Square[] {
     // get all pieces of the color
     const pieces = board.pieces.filter(p => p.color === colorOfPieces);
     // get all attacked squares of the pieces
@@ -178,10 +188,10 @@ export default class MoveGenerationUtils {
       .find(h => h.canHandle(p))
       ?.getAttackingSquares(p, board))
       .filter(s => s !== undefined)
-      .flat() as Position[];
+      .flat() as Square[];
   }
 
-  public static getAttackingSquares(piece: Piece, board: Board): Position[] {
+  public static getAttackingSquares(piece: Piece, board: Board): Square[] {
     return this.generationHandlers.find(h => h.canHandle(piece))?.getAttackingSquares(piece, board) ?? [];
   }
 }

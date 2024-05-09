@@ -1,9 +1,10 @@
-import { Board, Position } from "src/app/types/board.t";
+import { Board, } from "src/app/types/board.t";
+import { Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
 import MoveGenerationUtils from "./move.generation.utils";
 
@@ -16,7 +17,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     let moves: Move[] = [];
 
     // surrounding squares:
-    moves = PositionUtils.getSurroundingSquares(piece)
+    moves = SquareUtils.getSurroundingSquares(piece)
       .map(p => {
         return {
           piece: piece,
@@ -31,31 +32,20 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     // deep copy of board, because we need to check if king is attacked after castle
     let copiedBoard: Board = CopyUtils.deepCopyElement(board);
     // remove king from copied board, because we need to check if king is attacked after castle
-    copiedBoard.pieces = copiedBoard.pieces.filter(p => !PositionUtils.positionEquals(p.position,piece.position));
+    copiedBoard.pieces = copiedBoard.pieces.filter(p => !SquareUtils.squareEquals(p.position, piece.position));
 
-    const attackedSquares: Position[] = MoveGenerationUtils.calculateAttackedSquares(copiedBoard, PieceUtils.getOpposedColor(piece.color));
+    const attackedSquares: Square[] = MoveGenerationUtils.calculateAttackedSquares(copiedBoard, PieceUtils.getOpposedColor(piece.color));
     // kingside castle
     if (castleRights.canShortCastle) {
-      const squareBeforeCastle = {
-        row: piece.position.row,
-        column: piece.position.column + 1
-      }
+      const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_F1, piece.color);
+      const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_G1, piece.color);
+      const rookSquare = SquareUtils.getRelativeSquare(Square.SQ_H1, piece.color);
 
-      const castleSquare = {
-        row: piece.position.row,
-        column: piece.position.column + 2
-      }
-
-      const rookSquare = {
-        row: piece.position.row,
-        column: 8
-      }
-
-      const pieceOnRookPos: Piece | undefined = PositionUtils.getPieceOnPos(board, rookSquare);
+      const pieceOnRookPos: Piece | undefined = SquareUtils.getPieceOnPos(board, rookSquare);
 
       if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
-        && PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
-        && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+        && SquareUtils.isFree(board, squareBeforeCastle) && !SquareUtils.includes(attackedSquares, squareBeforeCastle)
+        && SquareUtils.isFree(board, castleSquare) && !SquareUtils.includes(attackedSquares, castleSquare)) {
         moves.push({
           piece: piece,
           from: piece.position,
@@ -67,26 +57,15 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
 
     // queenside castle
     if (castleRights.canLongCastle) {
-      const squareBeforeCastle = {
-        row: piece.position.row,
-        column: piece.position.column - 1
-      }
+      const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_D1, piece.color);
+      const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_C1, piece.color);
+      const rookSquare = SquareUtils.getRelativeSquare(Square.SQ_A1, piece.color);
 
-      const castleSquare = {
-        row: piece.position.row,
-        column: piece.position.column - 2
-      }
-
-      const rookSquare = {
-        row: piece.position.row,
-        column: 1
-      }
-
-      const pieceOnRookPos: Piece | undefined = PositionUtils.getPieceOnPos(board, rookSquare);
+      const pieceOnRookPos: Piece | undefined = SquareUtils.getPieceOnPos(board, rookSquare);
 
       if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
-        && PositionUtils.isFree(board, squareBeforeCastle) && !PositionUtils.includes(attackedSquares, squareBeforeCastle)
-        && PositionUtils.isFree(board, castleSquare) && !PositionUtils.includes(attackedSquares, castleSquare)) {
+        && SquareUtils.isFree(board, squareBeforeCastle) && !SquareUtils.includes(attackedSquares, squareBeforeCastle)
+        && SquareUtils.isFree(board, castleSquare) && !SquareUtils.includes(attackedSquares, castleSquare)) {
         moves.push({
           piece: piece,
           from: piece.position,
@@ -96,25 +75,25 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       }
     }
 
-    return PositionUtils.filterOutAttackedSquares(moves, attackedSquares);
+    return SquareUtils.filterOutAttackedSquares(moves, attackedSquares);
   }
 
   public getCaptures(piece: Piece, board: Board): Move[] {
-    return PositionUtils.getSurroundingSquares(piece)
-      .map(PositionUtils.positionToMoveFunction(piece))
-      .filter(m => !BoardUtils.isProtected(board, PositionUtils.getPieceOnPos(board, m.to)))
+    return SquareUtils.getSurroundingSquares(piece)
+      .map(SquareUtils.positionToMoveFunction(piece))
+      .filter(m => !BoardUtils.isProtected(board, SquareUtils.getPieceOnPos(board, m.to)))
   }
 
   public isAttackingKing(): boolean {
     return false;
   }
 
-  public getBlockingSquares(): Position[] {
+  public getBlockingSquares(): Square[] {
     return [];
   }
 
-  public getAttackingSquares(piece: Piece, board: Board): Position[] {
-    return PositionUtils.getSurroundingSquares(piece)
-    .filter(p => PositionUtils.isOnBoard(p));
+  public getAttackingSquares(piece: Piece, board: Board): Square[] {
+    return SquareUtils.getSurroundingSquares(piece)
+      .filter(p => SquareUtils.isOnBoard(p));
   }
 }
