@@ -1,4 +1,4 @@
-import { Color } from "./compressed.types.t";
+import { Color, Square } from "./compressed.types.t";
 import { Piece } from "./pieces.t";
 
 export interface Board {
@@ -6,20 +6,15 @@ export interface Board {
   whiteCastleRights: CastleRights;
   blackCastleRights: CastleRights;
   moveCount: number;
-  enPassantSquare?: Position;
+  enPassantSquare?: Square;
   playerToMove: Color;
   result?: Result;
   plyCount?: number;
 }
 
-export type Position = {
-  row: number;
-  column: number
-}
-
 export type SquareWithHighlight = {
   highlight: HighlightColor;
-  position: Position
+  position: Square
 }
 
 export enum HighlightColor {

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Color } from '../types/compressed.types.t';
+import { Color, Square } from '../types/compressed.types.t';
 import { Piece, PieceType } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
 
@@ -22,10 +22,7 @@ describe('ChessBoardService', () => {
 
       let pieceToRemove: Piece = {
         type: PieceType.ROOK,
-        position: {
-          row: 1,
-          column: 1
-        },
+        position: Square.SQ_A1,
         color: Color.WHITE
       }
 
@@ -44,41 +41,41 @@ describe('ChessBoardService', () => {
     it('should load start FEN', () => {
       service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
       expect(service.getBoard().pieces.sort(comparePositions())).toEqual([
-        { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 1 } },
-        { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 2 } },
-        { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 3 } },
-        { color: Color.WHITE, type: PieceType.QUEEN, position: { row: 1, column: 4 } },
-        { color: Color.WHITE, type: PieceType.KING, position: { row: 1, column: 5 } },
-        { color: Color.WHITE, type: PieceType.BISHOP, position: { row: 1, column: 6 } },
-        { color: Color.WHITE, type: PieceType.KNIGHT, position: { row: 1, column: 7 } },
-        { color: Color.WHITE, type: PieceType.ROOK, position: { row: 1, column: 8 } },
+        { color: Color.WHITE, type: PieceType.ROOK, position: Square.SQ_A1 },
+        { color: Color.WHITE, type: PieceType.KNIGHT, position: Square.SQ_B1 },
+        { color: Color.WHITE, type: PieceType.BISHOP, position: Square.SQ_C1 },
+        { color: Color.WHITE, type: PieceType.QUEEN, position: Square.SQ_D1 },
+        { color: Color.WHITE, type: PieceType.KING, position: Square.SQ_E1 },
+        { color: Color.WHITE, type: PieceType.BISHOP, position: Square.SQ_F1 },
+        { color: Color.WHITE, type: PieceType.KNIGHT, position: Square.SQ_G1 },
+        { color: Color.WHITE, type: PieceType.ROOK, position: Square.SQ_H1 },
 
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 1 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 2 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 3 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 4 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 5 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 6 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 7 } },
-        { color: Color.WHITE, type: PieceType.PAWN, position: { row: 2, column: 8 } },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_A2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_B2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_C2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_D2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_E2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_F2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_G2 },
+        { color: Color.WHITE, type: PieceType.PAWN, position: Square.SQ_H2 },
 
-        { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 1 } },
-        { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 2 } },
-        { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 3 } },
-        { color: Color.BLACK, type: PieceType.QUEEN, position: { row: 8, column: 4 } },
-        { color: Color.BLACK, type: PieceType.KING, position: { row: 8, column: 5 } },
-        { color: Color.BLACK, type: PieceType.BISHOP, position: { row: 8, column: 6 } },
-        { color: Color.BLACK, type: PieceType.KNIGHT, position: { row: 8, column: 7 } },
-        { color: Color.BLACK, type: PieceType.ROOK, position: { row: 8, column: 8 } },
+        { color: Color.BLACK, type: PieceType.ROOK, position: Square.SQ_A8 },
+        { color: Color.BLACK, type: PieceType.KNIGHT, position: Square.SQ_B8 },
+        { color: Color.BLACK, type: PieceType.BISHOP, position: Square.SQ_C8 },
+        { color: Color.BLACK, type: PieceType.QUEEN, position: Square.SQ_D8 },
+        { color: Color.BLACK, type: PieceType.KING, position: Square.SQ_E8 },
+        { color: Color.BLACK, type: PieceType.BISHOP, position: Square.SQ_F8 },
+        { color: Color.BLACK, type: PieceType.KNIGHT, position: Square.SQ_G8 },
+        { color: Color.BLACK, type: PieceType.ROOK, position: Square.SQ_H8 },
 
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 1 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 2 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 3 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 4 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 5 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 6 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 7 } },
-        { color: Color.BLACK, type: PieceType.PAWN, position: { row: 7, column: 8 } },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_A7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_B7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_C7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_D7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_E7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_F7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_G7 },
+        { color: Color.BLACK, type: PieceType.PAWN, position: Square.SQ_H7 },
 
       ]
         .sort(comparePositions()));
@@ -127,13 +124,13 @@ describe('ChessBoardService', () => {
     it('should set en passant square to e3', () => {
       service.importFen("rnbqkbnr/ppppp1pp/8/8/4Pp2/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
 
-      expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 3 });
+      expect(service.getEnPassantSquare()).toEqual(Square.SQ_E3);
     });
 
     it('should set en passant square to e6', () => {
       service.importFen("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
 
-      expect(service.getEnPassantSquare()).toEqual({ column: 5, row: 6 });
+      expect(service.getEnPassantSquare()).toEqual(Square.SQ_E6);
     });
 
     it('should set number of plies to 24', () => {
@@ -162,26 +159,6 @@ describe('ChessBoardService', () => {
   });
 });
 
-function comparePositions(): ((a: { color: Color; type: PieceType; position: { row: number; column: number; }; }, b: { color: Color; type: PieceType; position: { row: number; column: number; }; }) => number) | undefined {
-  return (a, b) => {
-    let rowA = a.position.row;
-    let columnA = a.position.column;
-
-    let rowB = b.position.row;
-    let columnB = b.position.column;
-
-    if (rowA < rowB) {
-      return -1;
-    } else if (rowA > rowB) {
-      return 1;
-    } else {
-      if (columnA < columnB) {
-        return -1;
-      } else if (columnA > columnB) {
-        return 1;
-      } else {
-        return 0;
-      };
-    }
-  };
+function comparePositions(): ((a: { color: Color; type: PieceType; position: Square }, b: { color: Color; type: PieceType; position: Square }) => number) | undefined {
+  return (a, b) => a.position - b.position;
 }

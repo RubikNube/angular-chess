@@ -65,7 +65,8 @@ export enum Direction {
   NORTH_EAST = NORTH + EAST,
   SOUTH_EAST = SOUTH + EAST,
   SOUTH_WEST = SOUTH + WEST,
-  NORTH_WEST = NORTH + WEST
+  NORTH_WEST = NORTH + WEST,
+  NONE = 42
 }
 
 export enum File {

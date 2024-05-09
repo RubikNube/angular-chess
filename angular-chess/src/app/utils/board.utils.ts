@@ -1,15 +1,20 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { Board, CastleRights, Position } from "../types/board.t";
-import { Color } from "../types/compressed.types.t";
+import { Board, CastleRights } from "../types/board.t";
+import { Color, Direction, Square } from "../types/compressed.types.t";
 import { Move, Piece, PieceType } from "../types/pieces.t";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";
-import PositionUtils from "./position.utils";
+import SquareUtils from "./square.utils";
 
 export default class BoardUtils {
   private static readonly PIECES_MATCHER_CHARS = "[R|B|Q|K|N|P]";
 
+  /**
+   * Loads a chess board from a FEN (Forsyth-Edwards Notation) string.
+   * @param newFen The FEN string representing the chess board.
+   * @returns The loaded chess board.
+   */
   public static loadBoardFromFen(newFen: string): Board {
     const board: BoardBuilder = new BoardBuilder();
 
@@ -44,8 +49,8 @@ export default class BoardUtils {
     if (fenSections.length > 3) {
       const enPassantFen = fenSections[3];
 
-      const enPassantPosition = PositionUtils.getPositionFromCoordinate(enPassantFen);
-      board.enPassantSquare(enPassantPosition);
+      const enPassantSquare = SquareUtils.getSquareFromCoordinate(enPassantFen);
+      board.enPassantSquare(enPassantSquare);
     }
 
     if (fenSections.length > 4) {
@@ -78,8 +83,8 @@ export default class BoardUtils {
         else if (currentChar.toUpperCase().match(this.PIECES_MATCHER_CHARS)) {
           const newPiece: Piece = {
             color: currentChar.match("[A-Z]") ? Color.WHITE : Color.BLACK,
-            type: this.getPiece(currentChar),
-            position: { row: 8 - j, column: currentPos + 1 }
+            type: this.getPieceType(currentChar),
+            position: SquareUtils.convertPositionToSquare({ row: 8 - j, column: currentPos + 1 })
           };
 
           pieces.push(newPiece);
@@ -93,7 +98,7 @@ export default class BoardUtils {
     return pieces;
   }
 
-  public static getPiece(pieceChar: string): PieceType {
+  public static getPieceType(pieceChar: string): PieceType {
     switch (pieceChar.toUpperCase()) {
       case 'K':
         return PieceType.KING;
@@ -142,14 +147,14 @@ export default class BoardUtils {
     return { whiteCastleRights, blackCastleRights };
   }
 
-  public static isEnPassantSquare(board: Board, position: Position): boolean {
+  public static isEnPassantSquare(board: Board, position: Square): boolean {
     const enPassantSquare = board.enPassantSquare;
 
-    return enPassantSquare !== undefined && PositionUtils.positionEquals(enPassantSquare, position);
+    return enPassantSquare !== undefined && SquareUtils.squareEquals(enPassantSquare, position);
   }
 
-  public static calculateBlockingSquares(board: Board, colorOfPieces: Color): Position[] {
-    const blockingSquares: Set<Position> = new Set<Position>();
+  public static calculateBlockingSquares(board: Board, colorOfPieces: Color): Square[] {
+    const blockingSquares: Set<Square> = new Set<Square>();
 
     board.pieces
       .filter(p => p.color === colorOfPieces && p.type !== PieceType.KING)
@@ -176,12 +181,12 @@ export default class BoardUtils {
     return Array.from(blockingSquares.values());
   }
 
-  private static isOnBoardFunction(): (value: Position, index: number, array: Position[]) => unknown {
-    return p => PositionUtils.isOnBoard(p);
+  private static isOnBoardFunction(): (value: Square, index: number, array: Square[]) => unknown {
+    return p => SquareUtils.isOnBoard(p);
   }
 
-  public static calculateMoveSquares(board: Board, colorOfPieces: Color, includeKingOrPawn?: boolean): Position[] {
-    const attackedSquares: Set<Position> = new Set<Position>();
+  public static calculateMoveSquares(board: Board, colorOfPieces: Color, includeKingOrPawn?: boolean): Square[] {
+    const attackedSquares: Set<Square> = new Set<Square>();
 
     board.pieces
       .filter(p => p.color === colorOfPieces)
@@ -191,7 +196,7 @@ export default class BoardUtils {
             return;
           }
           else {
-            PositionUtils.getSurroundingSquares(p)
+            SquareUtils.getSurroundingSquares(p)
               .filter(this.isOnBoardFunction())
               .forEach(m => attackedSquares.add(m))
           }
@@ -212,15 +217,15 @@ export default class BoardUtils {
     return Array.from(attackedSquares.values());
   }
 
-  private static isCheck(attackedSquares: Position[], kingPosition: Position): boolean {
-    return PositionUtils.includes(attackedSquares, kingPosition);
+  private static isCheck(attackedSquares: Square[], kingSquare: Square): boolean {
+    return SquareUtils.includes(attackedSquares, kingSquare);
   }
 
-  private static hasEscapeSquares(board: Board, attackedSquares: Position[], king: Piece): boolean {
-    return PositionUtils.getSurroundingSquares(king)
-      .find(s => PositionUtils.isOnBoard(s)
-        && PositionUtils.isFree(board, s)
-        && !PositionUtils.includes(attackedSquares, s))
+  private static hasEscapeSquares(board: Board, attackedSquares: Square[], king: Piece): boolean {
+    return SquareUtils.getSurroundingSquares(king)
+      .find(s => SquareUtils.isOnBoard(s)
+        && SquareUtils.isFree(board, s)
+        && !SquareUtils.includes(attackedSquares, s))
       !== undefined;
   }
 
@@ -251,26 +256,26 @@ export default class BoardUtils {
     }
     else {
 
-      if (king.position.column === move.from.column) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      if (SquareUtils.fileOf(king.position) === SquareUtils.fileOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockSameColumn(attackedSquaresOfPlayerToMove, king.position, move.from);
-      } else if (king.position.row === move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      } else if (SquareUtils.rankOf(king.position) === SquareUtils.rankOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockSameRow(attackedSquaresOfPlayerToMove, king.position, move.from);
-      } else if (king.position.column < move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      } else if (SquareUtils.fileOf(king.position) < SquareUtils.fileOf(move.from) && SquareUtils.rankOf(king.position) < SquareUtils.rankOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
-      else if (king.position.column > move.from.column && king.position.row < move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      else if (SquareUtils.fileOf(king.position) > SquareUtils.fileOf(move.from) && SquareUtils.rankOf(king.position) < SquareUtils.rankOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
-      else if (king.position.column < move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      else if (SquareUtils.fileOf(king.position) < SquareUtils.fileOf(move.from) && SquareUtils.rankOf(king.position) > SquareUtils.rankOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
-      else if (king.position.column > move.from.column && king.position.row > move.from.row) {
-        const attackedSquaresOfPlayerToMove: Position[] = this.calculateBlockingSquares(board, board.playerToMove);
+      else if (SquareUtils.fileOf(king.position) > SquareUtils.fileOf(move.from) && SquareUtils.rankOf(king.position) > SquareUtils.rankOf(move.from)) {
+        const attackedSquaresOfPlayerToMove: Square[] = this.calculateBlockingSquares(board, board.playerToMove);
         return this.canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove, king.position, move.from);
       }
 
@@ -278,26 +283,28 @@ export default class BoardUtils {
     }
   }
 
-  private static canBlockSameColumn(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockSameColumn(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
     if (kingPos.row < attackingPos.row) {
       for (let index = 0; index < attackingPos.row - kingPos.row; index++) {
-        const newPos: Position = {
+        const newPos: Square = SquareUtils.convertPositionToSquare({
           column: kingPos.column,
           row: kingPos.row + 1 + index
-        }
+        });
 
-        if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+        if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
           return true;
         }
       }
     } else {
       for (let index = 0; index < kingPos.row - attackingPos.row; index++) {
-        const newPos: Position = {
+        const newPos: Square = SquareUtils.convertPositionToSquare({
           column: kingPos.column,
           row: attackingPos.row - 1 - index
-        }
+        });
 
-        if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+        if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
           return true;
         }
       }
@@ -306,14 +313,16 @@ export default class BoardUtils {
     return false;
   }
 
-  private static canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockUpperRightDiagonal(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
     for (let i = 0; i < attackingPos.row - kingPos.row; i++) {
-      const newPos: Position = {
+      const newPos: Square = SquareUtils.convertPositionToSquare({
         column: kingPos.column + 1 + i,
         row: kingPos.row + 1 + i
-      }
+      })
 
-      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+      if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
         return true;
       }
     }
@@ -321,14 +330,17 @@ export default class BoardUtils {
     return false;
   }
 
-  private static canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockUpperLeftDiagonal(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
+
     for (let i = 0; i < attackingPos.row - kingPos.row; i++) {
-      const newPos: Position = {
+      const newPos: Square = SquareUtils.convertPositionToSquare({
         column: kingPos.column - 1 - i,
         row: kingPos.row + 1 + i
-      }
+      })
 
-      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+      if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
         return true;
       }
     }
@@ -336,14 +348,17 @@ export default class BoardUtils {
     return false;
   }
 
-  private static canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockLowerRightDiagonal(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
+
     for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
-      const newPos: Position = {
+      const newPos: Square = SquareUtils.convertPositionToSquare({
         column: kingPos.column + 1 + i,
         row: kingPos.row - 1 - i
-      }
+      })
 
-      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+      if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
         return true;
       }
     }
@@ -351,14 +366,17 @@ export default class BoardUtils {
     return false;
   }
 
-  private static canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockLowerLeftDiagonal(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
+
     for (let i = 0; i < kingPos.row - attackingPos.row; i++) {
-      const newPos: Position = {
+      const newPos: Square = SquareUtils.convertPositionToSquare({
         column: kingPos.column - 1 - i,
         row: kingPos.row - 1 - i
-      }
+      })
 
-      if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+      if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
         return true;
       }
     }
@@ -366,26 +384,29 @@ export default class BoardUtils {
     return false;
   }
 
-  private static canBlockSameRow(attackedSquaresOfPlayerToMove: Position[], kingPos: Position, attackingPos: Position): boolean {
+  private static canBlockSameRow(attackedSquaresOfPlayerToMove: Square[], kingSquare: Square, attackingSquare: Square): boolean {
+    const kingPos = SquareUtils.convertSquareToPosition(kingSquare);
+    const attackingPos = SquareUtils.convertSquareToPosition(attackingSquare);
+
     if (kingPos.column < attackingPos.column) {
       for (let index = 0; index < attackingPos.column - kingPos.column; index++) {
-        const newPos: Position = {
+        const newPos: Square = SquareUtils.convertPositionToSquare({
           column: kingPos.column + 1 + index,
           row: kingPos.row
-        }
+        });
 
-        if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+        if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
           return true;
         }
       }
     } else {
       for (let index = 0; index < kingPos.column - attackingPos.column; index++) {
-        const newPos: Position = {
+        const newPos: Square = SquareUtils.convertPositionToSquare({
           column: kingPos.column - 1 - index,
           row: attackingPos.row
-        }
+        });
 
-        if (PositionUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
+        if (SquareUtils.includes(attackedSquaresOfPlayerToMove, newPos)) {
           return true;
         }
       }
@@ -410,10 +431,10 @@ export default class BoardUtils {
       moveCount: board.moveCount
     };
 
-    const foundPos: Position | undefined = copiedBoard.pieces
+    const foundPos: Square | undefined = copiedBoard.pieces
       .filter(p => p.color === piece.color)
       .flatMap(p => MoveGenerationUtils.getAttackingSquares(p, copiedBoard))
-      .find(p => PositionUtils.positionEquals(p, piece.position));
+      .find(p => SquareUtils.squareEquals(p, piece.position));
 
     return foundPos !== undefined;
   }
@@ -445,309 +466,61 @@ export default class BoardUtils {
     }
   }
 
-  public static getFreeFrontSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
+  /**
+   * Retrieves the free squares in a given direction from a specified piece on the board.
+   * 
+   * @param board - The chess board.
+   * @param piece - The chess piece.
+   * @param direction - The direction to move in.
+   * @param maxSquares - The maximum number of squares to check.
+   * @returns An array of free squares in the specified direction.
+   */
+  public static getFreeSquaresInDirection(board: Board, piece: Piece, direction: Direction, maxSquares: number = 8): Square[] {
+    const squaresToMove: Square[] = [];
 
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column,
-        row: piece.position.row + index
-      };
+    let oldSquare = piece.position;
+    let nextSquare = SquareUtils.getSquareInDirection(oldSquare, direction);
+    let squaresChecked = 0;
 
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
+    while (SquareUtils.isOnBoard(nextSquare) && SquareUtils.isFree(board, nextSquare) && BoardUtils.getDistanceOfSquares(oldSquare, nextSquare) === 1 && squaresChecked < maxSquares) {
+      squaresToMove.push(nextSquare);
+
+      squaresChecked++;
+      oldSquare = nextSquare;
+      nextSquare = SquareUtils.getSquareInDirection(oldSquare, direction);
     }
 
     return squaresToMove;
   }
 
-  public static getFreeBackSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
+  /**
+   * Retrieves the occupied square in a given direction from a specified piece on the board.
+   * @param board The chess board.
+   * @param piece The chess piece.
+   * @param direction The direction to check for occupied square.
+   * @param maxSquares The maximum number of square to check.
+   * @returns An array of occupied square in the specified direction.
+   */
+  public static getOccupiedSquareInDirection(board: Board, piece: Piece, direction: Direction, maxSquares: number = 8): Square[] {
+    const occupiedSquare: Square[] = [];
 
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column,
-        row: piece.position.row - index
-      };
+    let oldSquare = piece.position;
+    let nextSquare = SquareUtils.getSquareInDirection(oldSquare, direction);
+    let squaresChecked = 0;
 
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
+    while (SquareUtils.isOnBoard(nextSquare) && this.getDistanceOfSquares(oldSquare, nextSquare) === 1 && squaresChecked < maxSquares) {
+      squaresChecked++;
+
+      if (!SquareUtils.isFree(board, nextSquare)) {
+        occupiedSquare.push(nextSquare);
         break;
       }
+
+      oldSquare = nextSquare;
+      nextSquare = SquareUtils.getSquareInDirection(oldSquare, direction);
     }
 
-    return squaresToMove;
-  }
-
-  public static getFreeLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getFreeRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getFreeFrontLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row + index
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getFreeFrontRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row + index
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getFreeBackRightSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row - index
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getFreeBackLeftSquares(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row - index
-      };
-
-      if (PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-      }
-      else {
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedBackSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column,
-        row: piece.position.row - index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedFrontSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column,
-        row: piece.position.row + index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-
-  public static getOccupiedLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedFrontLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row + index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedFrontRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row + index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedBackRightSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column + index,
-        row: piece.position.row - index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
-  }
-
-  public static getOccupiedBackLeftSquare(board: Board, piece: Piece, maxSquares: number): Position[] {
-    const squaresToMove: Position[] = [];
-
-    for (let index = 1; index <= maxSquares; index++) {
-      const squareToAdd = {
-        column: piece.position.column - index,
-        row: piece.position.row - index
-      };
-
-      if (!PositionUtils.isFree(board, squareToAdd)) {
-        squaresToMove.push(squareToAdd);
-        break;
-      }
-    }
-
-    return squaresToMove;
+    return occupiedSquare;
   }
 
   public static getFen(board: Board): string {
@@ -770,7 +543,7 @@ export default class BoardUtils {
   }
 
   public static getEnPassantFen(board: Board): string {
-    return board.enPassantSquare !== undefined ? PositionUtils.getCoordinate(board.enPassantSquare) : "-";
+    return board.enPassantSquare !== undefined ? SquareUtils.getSquareRepresentation(board.enPassantSquare) ?? "-" : "-";
   }
 
   public static getCastleRightFen(board: Board): string {
@@ -799,9 +572,7 @@ export default class BoardUtils {
   public static getPieceFen(board: Board): string {
     const pieces: Piece[] = Object.assign([], board.pieces);
 
-    pieces.sort((a, b) =>
-      this.comparePositions(a.position, b.position)
-    )
+    pieces.sort((a, b) => a.position - b.position);
 
     let rows: Piece[][] = [[]];
     for (let index = 0; index < 8; index++) {
@@ -810,7 +581,7 @@ export default class BoardUtils {
 
     pieces.forEach(piece => {
       LoggingUtils.log(LogLevel.INFO, () => "piece:" + JSON.stringify(piece));
-      rows[piece.position.row - 1].push(piece);
+      rows[SquareUtils.rankOf(piece.position)].push(piece);
     });
 
     rows.reverse();
@@ -820,17 +591,26 @@ export default class BoardUtils {
       .join("/");
   }
 
+  /**
+   * Converts an array of pieces into a FEN string representation of a row.
+   * @param row - The array of pieces representing a row.
+   * @returns The FEN string representation of the row.
+   * 
+   * @example
+   * getRowFen([{type:PieceType.KING, color:Color.WHITE,position:Square.E1}]);
+   * // returns "4K3"
+   */
   public static getRowFen(row: Piece[]): string {
     let rowFen: string = "";
 
     let lastColumn: number = 0;
 
     row.forEach(p => {
-      let columnDif: number = p.position.column - lastColumn;
-      if (p.position.column - lastColumn > 1) {
+      let columnDif: number = SquareUtils.fileOf(p.position) + 1 - lastColumn;
+      if (SquareUtils.fileOf(p.position) + 1 - lastColumn > 1) {
         rowFen += columnDif - 1;
       }
-      lastColumn = p.position.column;
+      lastColumn = SquareUtils.fileOf(p.position) + 1;
       rowFen += PieceUtils.getPieceFenChar(p.type, p.color);
     });
 
@@ -841,19 +621,6 @@ export default class BoardUtils {
     return rowFen;
   }
 
-  private static comparePositions(a: Position, b: Position): number {
-    const rowDifference = a.row - b.row;
-
-    if (rowDifference < 0) {
-      return 1;
-    }
-    else if (rowDifference > 0) {
-      return -1;
-    }
-    else {
-      return a.column - b.column;
-    }
-  }
 
   public static getCastleRights(player: Color, board: Board): CastleRights {
     if (player === Color.WHITE) {
@@ -864,39 +631,39 @@ export default class BoardUtils {
     }
   }
 
-  public static getDiagonalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
+  public static getDiagonalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedMoves(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
   }
 
-  public static getHorizontalPartiallyPinnedMoves(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+  public static getHorizontalPartiallyPinnedMoves(piece: Piece, board: Board, horizontalSquares: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedMoves(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
   }
 
-  public static getVerticalPartiallyPinnedMoves(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+  public static getVerticalPartiallyPinnedMoves(piece: Piece, board: Board, verticalSquares: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedMoves(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
   }
 
-  private static getPartiallyPinnedMoves(piece: Piece, board: Board, orderedSquares: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
-    const pieces: Piece[] = orderedSquares.map(p => PositionUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
+  private static getPartiallyPinnedMoves(piece: Piece, board: Board, orderedSquares: Square[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
+    const pieces: Piece[] = orderedSquares.map(p => SquareUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
 
     const closestPieces: Piece[] = PieceUtils.sortByDistanceToPiece(piece, pieces);
 
     let compareLeft: (p: Piece) => boolean;
     let compareRight: (p: Piece) => boolean;
-    let filterLeft: (p: Position) => boolean;
-    let filterRight: (p: Position) => boolean;
+    let filterLeft: (p: Square) => boolean;
+    let filterRight: (p: Square) => boolean;
 
     if (orderByColumn) {
-      compareLeft = (p: Piece): boolean => p.position.column < piece.position.column;
-      compareRight = (p: Piece): boolean => p.position.column > piece.position.column;
-      filterLeft = (p: Position): boolean => p.column < piece.position.column && p.column > closestLeftPiece!.position.column;
-      filterRight = (p: Position): boolean => p.column > piece.position.column && p.column < closestRightPiece!.position.column;
+      compareLeft = (p: Piece): boolean => SquareUtils.fileOf(p.position) < SquareUtils.fileOf(piece.position);
+      compareRight = (p: Piece): boolean => SquareUtils.fileOf(p.position) > SquareUtils.fileOf(piece.position);
+      filterLeft = (p: Square): boolean => SquareUtils.fileOf(p) < SquareUtils.fileOf(piece.position) && SquareUtils.fileOf(p) > SquareUtils.fileOf(closestLeftPiece!.position);
+      filterRight = (p: Square): boolean => SquareUtils.fileOf(p) > SquareUtils.fileOf(piece.position) && SquareUtils.fileOf(p) < SquareUtils.fileOf(closestRightPiece!.position);
     }
     else {
-      compareLeft = (p: Piece): boolean => p.position.row < piece.position.row;
-      compareRight = (p: Piece): boolean => p.position.row > piece.position.row;
-      filterLeft = (p: Position): boolean => p.row < piece.position.row && p.row > closestLeftPiece!.position.row;
-      filterRight = (p: Position): boolean => p.row > piece.position.row && p.row < closestRightPiece!.position.row;
+      compareLeft = (p: Piece): boolean => SquareUtils.rankOf(p.position) < SquareUtils.rankOf(piece.position);
+      compareRight = (p: Piece): boolean => SquareUtils.rankOf(p.position) > SquareUtils.rankOf(piece.position);
+      filterLeft = (p: Square): boolean => SquareUtils.rankOf(p) < SquareUtils.rankOf(piece.position) && SquareUtils.rankOf(p) > SquareUtils.rankOf(closestLeftPiece!.position);
+      filterRight = (p: Square): boolean => SquareUtils.rankOf(p) > SquareUtils.rankOf(piece.position) && SquareUtils.rankOf(p) < SquareUtils.rankOf(closestRightPiece!.position);
     }
 
     const closestLeftPiece: Piece | undefined = closestPieces.find(compareLeft);
@@ -906,14 +673,14 @@ export default class BoardUtils {
 
       const validMoves: Move[] = [];
 
-      const freeFieldsBetweenPieceAndLeftClosestPiece: Position[] = orderedSquares
+      const freeFieldsBetweenPieceAndLeftClosestPiece: Square[] = orderedSquares
         .filter(filterLeft);
-      const movesToLeft: Move[] = freeFieldsBetweenPieceAndLeftClosestPiece.map(PositionUtils.positionToMoveFunction(piece));
+      const movesToLeft: Move[] = freeFieldsBetweenPieceAndLeftClosestPiece.map(SquareUtils.positionToMoveFunction(piece));
       validMoves.push(...movesToLeft);
 
-      const freeFieldsBetweenPieceAndRightClosestPiece: Position[] = orderedSquares
+      const freeFieldsBetweenPieceAndRightClosestPiece: Square[] = orderedSquares
         .filter(filterRight);
-      const movesToRight: Move[] = freeFieldsBetweenPieceAndRightClosestPiece.map(PositionUtils.positionToMoveFunction(piece));
+      const movesToRight: Move[] = freeFieldsBetweenPieceAndRightClosestPiece.map(SquareUtils.positionToMoveFunction(piece));
       validMoves.push(...movesToRight);
 
       return validMoves;
@@ -932,20 +699,20 @@ export default class BoardUtils {
       && pinningTypes.includes(pinningPiece.type);
   }
 
-  public static getDiagonalPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[]): Move[] | undefined {
+  public static getDiagonalPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedCaptures(piece, board, diagonal, [PieceType.BISHOP, PieceType.QUEEN], true);
   }
 
-  public static getHorizontalPartiallyPinnedCaptures(piece: Piece, board: Board, horizontalSquares: Position[]): Move[] | undefined {
+  public static getHorizontalPartiallyPinnedCaptures(piece: Piece, board: Board, horizontalSquares: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedCaptures(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN], true);
   }
 
-  public static getVerticalPartiallyPinnedCaptures(piece: Piece, board: Board, verticalSquares: Position[]): Move[] | undefined {
+  public static getVerticalPartiallyPinnedCaptures(piece: Piece, board: Board, verticalSquares: Square[]): Move[] | undefined {
     return this.getPartiallyPinnedCaptures(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN], false);
   }
 
-  private static getPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Position[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
-    const piecesOnDiagonal: Piece[] = diagonal.map(p => PositionUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
+  private static getPartiallyPinnedCaptures(piece: Piece, board: Board, diagonal: Square[], pinningTypes: PieceType[], orderByColumn: boolean): Move[] | undefined {
+    const piecesOnDiagonal: Piece[] = diagonal.map(p => SquareUtils.getPieceOnPos(board, p)).filter(p => p !== undefined) as Piece[];
 
     const closestPieces: Piece[] = PieceUtils.sortByDistanceToPiece(piece, piecesOnDiagonal);
 
@@ -953,12 +720,12 @@ export default class BoardUtils {
     let compareRight: (p: Piece) => boolean;
 
     if (orderByColumn) {
-      compareLeft = (p: Piece): boolean => p.position.column < piece.position.column;
-      compareRight = (p: Piece): boolean => p.position.column > piece.position.column;
+      compareLeft = (p: Piece): boolean => SquareUtils.fileOf(p.position) < SquareUtils.fileOf(piece.position);
+      compareRight = (p: Piece): boolean => SquareUtils.fileOf(p.position) > SquareUtils.fileOf(piece.position);
     }
     else {
-      compareLeft = (p: Piece): boolean => p.position.row < piece.position.row;
-      compareRight = (p: Piece): boolean => p.position.row > piece.position.row;
+      compareLeft = (p: Piece): boolean => SquareUtils.rankOf(p.position) < SquareUtils.rankOf(piece.position);
+      compareRight = (p: Piece): boolean => SquareUtils.rankOf(p.position) > SquareUtils.rankOf(piece.position);
     }
 
     const closestLeftPiece: Piece | undefined = closestPieces.find(compareLeft);
@@ -970,12 +737,12 @@ export default class BoardUtils {
 
       // if left piece is an enemy piece, it can be captured
       if (closestLeftPiece && closestLeftPiece.color !== piece.color) {
-        validMoves.push(PositionUtils.positionToMoveFunction(piece)(closestLeftPiece.position, 0, [closestLeftPiece.position]));
+        validMoves.push(SquareUtils.positionToMoveFunction(piece)(closestLeftPiece.position, 0, [closestLeftPiece.position]));
       }
 
       // if right piece is an enemy piece, it can be captured
       if (closestRightPiece && closestRightPiece.color !== piece.color) {
-        validMoves.push(PositionUtils.positionToMoveFunction(piece)(closestRightPiece.position, 0, [closestRightPiece.position]));
+        validMoves.push(SquareUtils.positionToMoveFunction(piece)(closestRightPiece.position, 0, [closestRightPiece.position]));
       }
 
       return validMoves;
@@ -987,5 +754,20 @@ export default class BoardUtils {
 
   public static getColorRepresentation(color: Color): string {
     return color === Color.WHITE ? "WHITE" : "BLACK";
+  }
+
+  /**
+   * Calculates the distance between two squares on a chessboard.
+   * The distance is defined as the maximum difference between the row and column positions of the squares.
+   *
+   * @param square1 - The first square.
+   * @param square2 - The second square.
+   * @returns The distance between the two squares.
+   */
+  public static getDistanceOfSquares(square1: Square, square2: Square): number {
+    const pos1 = SquareUtils.convertSquareToPosition(square1);
+    const pos2 = SquareUtils.convertSquareToPosition(square2);
+
+    return Math.max(Math.abs(pos1.row - pos2.row), Math.abs(pos1.column - pos2.column));
   }
 }

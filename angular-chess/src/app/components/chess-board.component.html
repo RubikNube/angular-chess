@@ -7,7 +7,7 @@
         [piece]="boardService.getPiece$(columnIndex, rowIndex) | async"
         [activePlayer]="boardService.activePlayer$ | async"
         [boardTheme]="themingService.selectedTheme$ | async"
-        [square]="highlightingService.getSquare$({ row: rowIndex, column: columnIndex })
+        [square]="highlightingService.getSquare$(SquareUtils.convertPositionToSquare({ row: rowIndex, column: columnIndex }))
             | async"
         [disabled]="isDragDisabled$ | async"
         (dragStart)="dragStart($event)"

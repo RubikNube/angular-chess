@@ -1,8 +1,24 @@
-import { Board, Position } from "src/app/types/board.t";
+import { Board, } from "src/app/types/board.t";
+import { Square } from "src/app/types/compressed.types.t";
 import { Move, Piece, PieceType } from "src/app/types/pieces.t";
+import BoardUtils from "../board.utils";
 import PieceUtils from "../piece.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
 import { MoveGenerationHandler } from "./move-generation.handler";
+
+/**
+ * Enum representing the possible move offsets for a knight piece on a chessboard.
+ */
+enum KnightMoveOffsets {
+  NORTH_EAST = 17,
+  EAST_NORTH = 10,
+  EAST_SOUTH = -6,
+  SOUTH_EAST = -15,
+  SOUTH_WEST = -17,
+  WEST_SOUTH = -10,
+  WEST_NORTH = 6,
+  NORTH_WEST = 15
+}
 
 export class MoveGenerationKnightHandler implements MoveGenerationHandler {
   public canHandle(piece: Piece): boolean {
@@ -44,40 +60,27 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
       });
   }
 
-  private getValidKnightMoves(piece: Piece): Position[] {
-    return [
-      {
-        row: piece.position.row + 1,
-        column: piece.position.column - 2
-      },
-      {
-        row: piece.position.row + 2,
-        column: piece.position.column - 1
-      },
-      {
-        row: piece.position.row + 1,
-        column: piece.position.column + 2
-      },
-      {
-        row: piece.position.row + 2,
-        column: piece.position.column + 1
-      },
-      {
-        row: piece.position.row - 1,
-        column: piece.position.column - 2
-      },
-      {
-        row: piece.position.row - 2,
-        column: piece.position.column - 1
-      },
-      {
-        row: piece.position.row - 1,
-        column: piece.position.column + 2
-      },
-      {
-        row: piece.position.row - 2,
-        column: piece.position.column + 1
-      }];
+  public getValidKnightMoves(piece: Piece): Square[] {
+    // iterate over all possible knight move offsets
+    const validKnightMoves: Square[] = [];
+    for (const offset of
+      [
+        KnightMoveOffsets.NORTH_EAST,
+        KnightMoveOffsets.EAST_NORTH,
+        KnightMoveOffsets.EAST_SOUTH,
+        KnightMoveOffsets.SOUTH_EAST,
+        KnightMoveOffsets.SOUTH_WEST,
+        KnightMoveOffsets.WEST_SOUTH,
+        KnightMoveOffsets.WEST_NORTH,
+        KnightMoveOffsets.NORTH_WEST
+      ] as number[]) {
+      const newSquare = piece.position + offset;
+      if (BoardUtils.getDistanceOfSquares(piece.position, newSquare) === 2) {
+        validKnightMoves.push(newSquare);
+      }
+    }
+
+    return validKnightMoves;
   }
 
   public isAttackingKing(piece: Piece, board: Board): boolean {
@@ -89,15 +92,15 @@ export class MoveGenerationKnightHandler implements MoveGenerationHandler {
     }
     const knightMoves = this.getValidKnightMoves(piece);
 
-    return PositionUtils.includes(knightMoves, kingPos);
+    return SquareUtils.includes(knightMoves, kingPos);
   }
 
-  public getBlockingSquares(piece: Piece, board: Board): Position[] {
+  public getBlockingSquares(piece: Piece, board: Board): Square[] {
     return [];
   }
 
-  public getAttackingSquares(piece: Piece, board: Board): Position[] {
+  public getAttackingSquares(piece: Piece, board: Board): Square[] {
     return this.getValidKnightMoves(piece)
-      .filter(p => PositionUtils.isOnBoard(p));
+      .filter(square => SquareUtils.isOnBoard(square));
   }
 }

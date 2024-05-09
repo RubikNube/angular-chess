@@ -1,8 +1,9 @@
-import { Board, Position } from "src/app/types/board.t";
-import { Color } from "src/app/types/compressed.types.t";
-import { Piece, PieceType } from "src/app/types/pieces.t";
+import { Board } from "src/app/types/board.t";
+import { Color, Square } from "src/app/types/compressed.types.t";
+import { Move, Piece, PieceType } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
-import PositionUtils from "../position.utils";
+import SquareUtils from "../square.utils";
+import TestUtils from "../test.utils";
 import { MoveGenerationQueenHandler } from "./move-generation.queen.handler";
 
 describe('MoveGenerationQueenHandler', () => {
@@ -12,7 +13,7 @@ describe('MoveGenerationQueenHandler', () => {
   });
 
   describe('isAttackingKing', () => {
-    function isAttackingKing(description: string, fen: string, queenPosition: Position, expected: boolean) {
+    function isAttackingKing(description: string, fen: string, queenPosition: Square, expected: boolean) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
@@ -25,239 +26,273 @@ describe('MoveGenerationQueenHandler', () => {
     isAttackingKing(
       'should return true if queen is attacking king from right',
       '8/8/8/k3Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return false if queen is not attacking king',
       '8/8/k7/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       false
     );
 
     isAttackingKing(
       'should return false if queen piece is blocking check horizontally',
       '8/8/8/kN2Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       false
     );
 
     isAttackingKing(
       'should return true if queen is attacking king from bottom right',
       '1k6/8/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return true if queen is attacking king from bottom left',
       '7k/8/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return true if queen is attacking king from top left',
       '8/8/8/4Q3/8/8/7k/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return true if queen is attacking king from top right',
       '8/8/8/4Q3/8/2k5/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       true
     );
 
     isAttackingKing(
       'should return false if queen is not attacking king',
       '8/8/8/4Q3/1k6/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       false
     );
 
     isAttackingKing(
       'should return false if piece is blocking check diagonally',
       '1k6/2n5/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       false
     );
   });
 
   describe('getBlockingSquares', () => {
-    function getBlockingSquares(description: string, fen: string, queenPosition: Position, expectedBlockingSquares: Position[]) {
+    function getBlockingSquares(description: string, fen: string, queenPosition: Square, expectedBlockingSquares: Square[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
-        const blockingSquares = PositionUtils.sortPositions(handler.getBlockingSquares(queen, board));
+        const blockingSquares = SquareUtils.sortSquares(handler.getBlockingSquares(queen, board));
 
-        expect(blockingSquares).toEqual(PositionUtils.sortPositions(expectedBlockingSquares));
+        expect(blockingSquares).toEqual(SquareUtils.sortSquares(expectedBlockingSquares));
       });
     }
 
     getBlockingSquares(
       'should return empty array if queen is not attacking king',
       '8/8/k7/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       []
     );
 
     getBlockingSquares(
       'should return blocking squares if queen is attacking king from right',
       '8/8/8/k3Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
-      [{ column: 2, row: 5 }, { column: 3, row: 5 }, { column: 4, row: 5 }]
+      Square.SQ_E5,
+      [Square.SQ_B5, Square.SQ_C5, Square.SQ_D5]
     );
 
     getBlockingSquares(
       'should return blocking squares if queen is attacking king from top',
       '8/8/8/4Q3/8/8/8/2K1k3 w - - 0 1',
-      { column: 5, row: 5 },
-      [{ column: 5, row: 2 }, { column: 5, row: 3 }, { column: 5, row: 4 }]
+      Square.SQ_E5,
+      [Square.SQ_E2, Square.SQ_E3, Square.SQ_E4]
     );
 
     getBlockingSquares(
       'should return correct squares if queen is attacking king from bottom right',
       '1k6/8/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
-      [{ column: 3, row: 7 }, { column: 4, row: 6 }]
+      Square.SQ_E5,
+      [Square.SQ_C7, Square.SQ_D6]
     );
 
     getBlockingSquares(
       'should return correct squares if queen is attacking king from bottom left',
       '7k/8/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
-      [{ column: 6, row: 6 }, { column: 7, row: 7 }]
+      Square.SQ_E5,
+      [Square.SQ_F6, Square.SQ_G7]
     );
 
     getBlockingSquares(
       'should return squares even if piece is blocking check diagonally',
       '7k/6n1/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
-      [{ column: 6, row: 6 }, { column: 7, row: 7 }]
+      Square.SQ_E5,
+      [Square.SQ_F6, Square.SQ_G7]
     );
 
     getBlockingSquares(
       'should return no squares if queen is not attacking king',
       '6k1/6n1/8/4Q3/8/8/8/2K5 w - - 0 1',
-      { column: 5, row: 5 },
+      Square.SQ_E5,
       []
     );
   });
 
   describe('getAttackingSquares', () => {
-    function getAttackingSquares(description: string, fen: string, queenPosition: Position, expectedAttackingSquares: Position[]) {
+    function getAttackingSquares(description: string, fen: string, queenPosition: Square, expectedAttackingSquares: Square[]) {
       it(description, () => {
         const board: Board = BoardUtils.loadBoardFromFen(fen);
         const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: Color.WHITE };
-        const attackingSquares = PositionUtils.sortPositions(handler.getAttackingSquares(queen, board));
+        const attackingSquares = SquareUtils.sortSquares(handler.getAttackingSquares(queen, board));
 
-        expect(attackingSquares).toEqual(PositionUtils.sortPositions(expectedAttackingSquares));
+        expect(attackingSquares).toEqual(SquareUtils.sortSquares(expectedAttackingSquares));
       });
     }
 
     getAttackingSquares(
       'should return correct squares if queen is not obstructed',
       '8/8/4k3/8/3Q4/8/8/4K3 w - - 0 1',
-      { column: 4, row: 4 },
+      Square.SQ_D4,
       [
-        { column: 1, row: 1 },
-        { column: 2, row: 2 },
-        { column: 3, row: 3 },
-        { column: 5, row: 5 },
-        { column: 6, row: 6 },
-        { column: 7, row: 7 },
-        { column: 8, row: 8 },
-        { column: 1, row: 7 },
-        { column: 2, row: 6 },
-        { column: 3, row: 5 },
-        { column: 5, row: 3 },
-        { column: 6, row: 2 },
-        { column: 7, row: 1 },
-        { column: 1, row: 4 },
-        { column: 2, row: 4 },
-        { column: 3, row: 4 },
-        { column: 5, row: 4 },
-        { column: 6, row: 4 },
-        { column: 7, row: 4 },
-        { column: 8, row: 4 },
-        { column: 4, row: 1 },
-        { column: 4, row: 2 },
-        { column: 4, row: 3 },
-        { column: 4, row: 5 },
-        { column: 4, row: 6 },
-        { column: 4, row: 7 },
-        { column: 4, row: 8 }
+        Square.SQ_A1,
+        Square.SQ_B2,
+        Square.SQ_C3,
+        Square.SQ_E5,
+        Square.SQ_F6,
+        Square.SQ_G7,
+        Square.SQ_H8,
+        Square.SQ_A7,
+        Square.SQ_B6,
+        Square.SQ_C5,
+        Square.SQ_E3,
+        Square.SQ_F2,
+        Square.SQ_G1,
+        Square.SQ_A4,
+        Square.SQ_B4,
+        Square.SQ_C4,
+        Square.SQ_E4,
+        Square.SQ_F4,
+        Square.SQ_G4,
+        Square.SQ_H4,
+        Square.SQ_D1,
+        Square.SQ_D2,
+        Square.SQ_D3,
+        Square.SQ_D5,
+        Square.SQ_D6,
+        Square.SQ_D7,
+        Square.SQ_D8
       ]
     );
 
     getAttackingSquares(
       'should ignore enemy king',
       '8/8/5k2/8/3Q4/8/8/4K3 w - - 0 1',
-      { column: 4, row: 4 },
+      Square.SQ_D4,
       [
-        { column: 1, row: 1 },
-        { column: 2, row: 2 },
-        { column: 3, row: 3 },
-        { column: 5, row: 5 },
-        { column: 6, row: 6 },
-        { column: 7, row: 7 },
-        { column: 8, row: 8 },
-        { column: 1, row: 7 },
-        { column: 2, row: 6 },
-        { column: 3, row: 5 },
-        { column: 5, row: 3 },
-        { column: 6, row: 2 },
-        { column: 7, row: 1 },
-        { column: 1, row: 4 },
-        { column: 2, row: 4 },
-        { column: 3, row: 4 },
-        { column: 5, row: 4 },
-        { column: 6, row: 4 },
-        { column: 7, row: 4 },
-        { column: 8, row: 4 },
-        { column: 4, row: 1 },
-        { column: 4, row: 2 },
-        { column: 4, row: 3 },
-        { column: 4, row: 5 },
-        { column: 4, row: 6 },
-        { column: 4, row: 7 },
-        { column: 4, row: 8 }
+        Square.SQ_A1,
+        Square.SQ_B2,
+        Square.SQ_C3,
+        Square.SQ_E5,
+        Square.SQ_F6,
+        Square.SQ_G7,
+        Square.SQ_H8,
+        Square.SQ_A7,
+        Square.SQ_B6,
+        Square.SQ_C5,
+        Square.SQ_E3,
+        Square.SQ_F2,
+        Square.SQ_G1,
+        Square.SQ_A4,
+        Square.SQ_B4,
+        Square.SQ_C4,
+        Square.SQ_E4,
+        Square.SQ_F4,
+        Square.SQ_G4,
+        Square.SQ_H4,
+        Square.SQ_D1,
+        Square.SQ_D2,
+        Square.SQ_D3,
+        Square.SQ_D5,
+        Square.SQ_D6,
+        Square.SQ_D7,
+        Square.SQ_D8
       ]
     );
 
     getAttackingSquares(
       'should not ignore blocking enemy piece',
       '8/6k1/5n2/8/3Q4/8/8/4K3 w - - 0 1',
-      { column: 4, row: 4 },
+      Square.SQ_D4,
       [
-        { column: 1, row: 1 },
-        { column: 2, row: 2 },
-        { column: 3, row: 3 },
-        { column: 5, row: 5 },
-        { column: 6, row: 6 },
-        { column: 1, row: 7 },
-        { column: 2, row: 6 },
-        { column: 3, row: 5 },
-        { column: 5, row: 3 },
-        { column: 6, row: 2 },
-        { column: 7, row: 1 },
-        { column: 1, row: 4 },
-        { column: 2, row: 4 },
-        { column: 3, row: 4 },
-        { column: 5, row: 4 },
-        { column: 6, row: 4 },
-        { column: 7, row: 4 },
-        { column: 8, row: 4 },
-        { column: 4, row: 1 },
-        { column: 4, row: 2 },
-        { column: 4, row: 3 },
-        { column: 4, row: 5 },
-        { column: 4, row: 6 },
-        { column: 4, row: 7 },
-        { column: 4, row: 8 }
+        Square.SQ_A1,
+        Square.SQ_B2,
+        Square.SQ_C3,
+        Square.SQ_E5,
+        Square.SQ_F6,
+        Square.SQ_A7,
+        Square.SQ_B6,
+        Square.SQ_C5,
+        Square.SQ_E3,
+        Square.SQ_F2,
+        Square.SQ_G1,
+        Square.SQ_A4,
+        Square.SQ_B4,
+        Square.SQ_C4,
+        Square.SQ_E4,
+        Square.SQ_F4,
+        Square.SQ_G4,
+        Square.SQ_H4,
+        Square.SQ_D1,
+        Square.SQ_D2,
+        Square.SQ_D3,
+        Square.SQ_D5,
+        Square.SQ_D6,
+        Square.SQ_D7,
+        Square.SQ_D8
+      ]
+    );
+  });
+
+  describe('getMoves', () => {
+    function getMoves(description: string, fen: string, color: Color, queenPosition: Square, expectedMoves: Move[]) {
+      it(description, () => {
+        const board: Board = BoardUtils.loadBoardFromFen(fen);
+        const queen: Piece = { type: PieceType.QUEEN, position: queenPosition, color: color };
+        const moves = handler.getMoves(queen, board);
+
+        TestUtils.checkMoves(expectedMoves, moves);
+      });
+    }
+
+    getMoves(
+      'should return all squares the queen can move to',
+      '8/p4k1p/1p4p1/4Qp2/3P4/P4PK1/2r3PP/2q5 b - - 0 1',
+      Color.BLACK,
+      Square.SQ_C1,
+      [
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_A1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_B1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_B2 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_D1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_D2 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_E1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_F1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_G1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_H1 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_E3 },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_F4, isCheck: true },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_G5, isCheck: true },
+        { piece: { type: PieceType.QUEEN, position: Square.SQ_C1, color: Color.BLACK }, from: Square.SQ_C1, to: Square.SQ_H6 },
       ]
     );
   });

@@ -1,12 +1,13 @@
-import { Board, Position } from "../types/board.t";
-import { Color } from "../types/compressed.types.t";
+import { Board } from "../types/board.t";
+import { Color, Square } from "../types/compressed.types.t";
 import { Piece, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import PositionUtils from "./position.utils";
+import SquareUtils from "./square.utils";
 
 export default class PieceUtils {
   public static pieceEquals(a: Piece, b: Piece) {
-    return a.color === b.color && a.type === b.type && PositionUtils.positionEquals(a.position, b.position);
+    return a.color === b.color && a.type === b.type && a.position === b.position;
   }
 
   public static getOpposedColor(color: Color) {
@@ -117,45 +118,50 @@ export default class PieceUtils {
     }
   }
 
+  /**
+   * Sorts an array of pieces based on their positions.
+   * @param pieces - The array of pieces to be sorted.
+   * @returns The sorted array of pieces.
+   */
   public static sortPieces(pieces: Piece[] | undefined): Piece[] {
     if (pieces === undefined) {
       return [];
     }
 
     return pieces.sort((a, b) => {
-      if (a.position.row < b.position.row) {
+      if (SquareUtils.rankOf(a.position) < SquareUtils.rankOf(b.position)) {
         return -1;
       }
-      if (a.position.row > b.position.row) {
+      if (SquareUtils.rankOf(a.position) > SquareUtils.rankOf(b.position)) {
         return 1;
       }
-      if (a.position.column < b.position.column) {
+      if (SquareUtils.fileOf(a.position) < SquareUtils.fileOf(b.position)) {
         return -1;
       }
-      if (a.position.column > b.position.column) {
+      if (SquareUtils.fileOf(a.position) > SquareUtils.fileOf(b.position)) {
         return 1;
       }
       return 0;
     });
   }
 
-  public static isPinnedDiagonally(position: Position, board: Board): boolean {
+  public static isPinnedDiagonally(position: Square, board: Board): boolean {
     // get piece on position
-    const piece = PositionUtils.getPieceOnPos(board, position);
+    const piece = PositionUtils.getPieceOnPos(board, SquareUtils.convertSquareToPosition(position));
     if (!piece) {
       return false;
     }
 
     // get diagonal squares for piece
-    const lowerToUpperDiagonal: Position[] = PositionUtils.getLowerToUpperDiagonal(piece.position);
-    const upperToLowerDiagonal: Position[] = PositionUtils.getUpperToLowerDiagonal(piece.position);
+    const lowerToUpperDiagonal: Square[] = PositionUtils.getLowerToUpperDiagonal(SquareUtils.convertSquareToPosition(piece.position)).map((position) => SquareUtils.convertPositionToSquare(position));
+    const upperToLowerDiagonal: Square[] = PositionUtils.getUpperToLowerDiagonal(SquareUtils.convertSquareToPosition(piece.position)).map((position) => SquareUtils.convertPositionToSquare(position));
 
     return this.isPiecePinned(piece, board, lowerToUpperDiagonal, [PieceType.BISHOP, PieceType.QUEEN]) ||
       this.isPiecePinned(piece, board, upperToLowerDiagonal, [PieceType.BISHOP, PieceType.QUEEN]);
   }
 
-  private static isPiecePinned(piece: Piece, board: Board, lineOrDiagonal: Position[], pieceTypes: PieceType[]): boolean {
-    const pieces: Piece[] = lineOrDiagonal.map((position) => PositionUtils.getPieceOnPos(board, position)!).filter((piece) => piece !== undefined);
+  private static isPiecePinned(piece: Piece, board: Board, lineOrDiagonal: Square[], pieceTypes: PieceType[]): boolean {
+    const pieces: Piece[] = lineOrDiagonal.map((position) => PositionUtils.getPieceOnPos(board, SquareUtils.convertSquareToPosition(position))!).filter((piece) => piece !== undefined);
     const opponents = pieces.filter((diagonalPiece) => diagonalPiece.color !== piece.color && pieceTypes.includes(diagonalPiece.type));
     const king = pieces.find((diagonalPiece) => diagonalPiece.type === PieceType.KING && diagonalPiece.color === piece.color);
 
@@ -187,24 +193,26 @@ export default class PieceUtils {
     return [];
   }
 
-  public static isPinnedHorizontally(position: Position, board: Board): boolean {
-    const piece = PositionUtils.getPieceOnPos(board, position);
+  public static isPinnedHorizontally(position: Square, board: Board): boolean {
+    const piece = PositionUtils.getPieceOnPos(board, SquareUtils.convertSquareToPosition(position));
     if (!piece) {
       return false;
     }
 
-    const horizontalSquares: Position[] = PositionUtils.getHorizontalSquares(piece.position);
+    const pPos = SquareUtils.convertSquareToPosition(piece.position);
+    const horizontalSquares: Square[] = PositionUtils.getHorizontalSquares(pPos).map((position) => SquareUtils.convertPositionToSquare(position));
 
     return this.isPiecePinned(piece, board, horizontalSquares, [PieceType.ROOK, PieceType.QUEEN]);
   }
 
-  public static isPinnedVertically(position: Position, board: Board): boolean {
-    const piece = PositionUtils.getPieceOnPos(board, position);
+  public static isPinnedVertically(position: Square, board: Board): boolean {
+    const piece = PositionUtils.getPieceOnPos(board, SquareUtils.convertSquareToPosition(position));
     if (!piece) {
       return false;
     }
 
-    const verticalSquares: Position[] = PositionUtils.getVerticalSquares(piece.position);
+    const pPos = SquareUtils.convertSquareToPosition(piece.position);
+    const verticalSquares: Square[] = PositionUtils.getVerticalSquares(pPos).map((position) => SquareUtils.convertPositionToSquare(position));
 
     return this.isPiecePinned(piece, board, verticalSquares, [PieceType.ROOK, PieceType.QUEEN]);
   }
@@ -215,8 +223,11 @@ export default class PieceUtils {
     const piecesToSort: Piece[] = CopyUtils.deepCopyElement(pieces);
 
     return piecesToSort.sort((a, b) => {
-      const aDistance = Math.abs(a.position.column - piece.position.column) + Math.abs(a.position.row - piece.position.row);
-      const bDistance = Math.abs(b.position.column - piece.position.column) + Math.abs(b.position.row - piece.position.row);
+      const aPos = SquareUtils.convertSquareToPosition(a.position);
+      const bPos = SquareUtils.convertSquareToPosition(b.position);
+      const pPos = SquareUtils.convertSquareToPosition(piece.position);
+      const aDistance = Math.abs(aPos.column - pPos.column) + Math.abs(aPos.row - pPos.row);
+      const bDistance = Math.abs(bPos.column - pPos.column) + Math.abs(bPos.row - pPos.row);
 
       if (aDistance < bDistance) {
         return -1;

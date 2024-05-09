@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { Board, CastleRights, HighlightColor, Position, Result } from '../types/board.t';
-import { Color } from '../types/compressed.types.t';
+import { Board, CastleRights, HighlightColor, Result } from '../types/board.t';
+import { Color, Square } from '../types/compressed.types.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveExecutionUtils from '../utils/move-execution.utils';
 import PgnUtils from '../utils/pgn.utils';
 import PieceUtils from '../utils/piece.utils';
+import SquareUtils from '../utils/square.utils';
 import { HighlightingService } from './highlighting.service';
 import { MoveHistoryService } from './move-history.service';
 import { PersistenceService } from './persistence.service';
@@ -90,17 +91,17 @@ export class ChessBoardService {
     this.board$$.next(currentBoard);
   }
 
-  public setEnPassantSquares(enPassantSquare: Position): void {
+  public setEnPassantSquares(enPassantSquare: Square): void {
     let currentBoard: Board = this.board$$.getValue();
     currentBoard.enPassantSquare = enPassantSquare;
     this.board$$.next(currentBoard);
   }
 
-  public getEnPassantSquare(): Position | undefined {
+  public getEnPassantSquare(): Square | undefined {
     return this.board$$.getValue().enPassantSquare;
   }
 
-  public getEnPassantSquare$(): Observable<Position | undefined> {
+  public getEnPassantSquare$(): Observable<Square | undefined> {
     return this.board$$.pipe(map(b => {
       return b.enPassantSquare;
     }));
@@ -179,7 +180,7 @@ export class ChessBoardService {
   }
 
   public getPiece$(columnIndex: number, rowIndex: number): Observable<Piece | undefined> {
-    return this.board$$.pipe(map(board => board.pieces.find(piece => piece.position.column === columnIndex && piece.position.row === rowIndex)));
+    return this.board$$.pipe(map(board => board.pieces.find(piece => SquareUtils.fileOf(piece.position) + 1 === columnIndex && SquareUtils.rankOf(piece.position) + 1 === rowIndex)));
   }
 
   public importFen(newFen: string): void {

@@ -1,7 +1,7 @@
-import { Position } from "../types/board.t";
+import { Square } from "../types/compressed.types.t";
 import { Move, PieceType } from "../types/pieces.t";
 import PieceUtils from "./piece.utils";
-import PositionUtils from "./position.utils";
+import SquareUtils from "./square.utils";
 
 export enum MoveRepresentationConfig {
   INCLUDE_FROM_COLUMN,
@@ -10,7 +10,7 @@ export enum MoveRepresentationConfig {
 
 export default class MoveUtils {
   public static moveToUci(move: Move): string {
-    let uci: string = PositionUtils.getCoordinate(move.from) + PositionUtils.getCoordinate(move.to);
+    let uci: string = (SquareUtils.getSquareRepresentation(move.from) ?? '') + (SquareUtils.getSquareRepresentation(move.to) ?? '');
     if (move.promotedPiece !== undefined) {
       uci += move.promotedPiece.type;
     }
@@ -30,25 +30,25 @@ export default class MoveUtils {
 
     if (move.capturedPiece !== undefined) {
       if (move.piece.type === PieceType.PAWN) {
-        return PositionUtils.getColumnString(move.from) + "x" + PositionUtils.getCoordinate(move.to) + this.getCheckOrMateRepresentation(move);
+        return SquareUtils.getColumnString(move.from) + "x" + SquareUtils.getSquareRepresentation(move.to) + this.getCheckOrMateRepresentation(move);
       } else {
-        return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + "x" + PositionUtils.getCoordinate(move.to) + this.getCheckOrMateRepresentation(move);
+        return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + "x" + SquareUtils.getSquareRepresentation(move.to) + this.getCheckOrMateRepresentation(move);
       }
     }
 
-    const toRepresentation = move.to ? PositionUtils.getCoordinate(move.to) : "";
+    const toRepresentation = move.to ? SquareUtils.getSquareRepresentation(move.to) : "";
 
 
     return this.getEnglishPieceChar(move.piece.type) + this.getFromRepresentation(move.from, represenationConfig) + toRepresentation + this.getCheckOrMateRepresentation(move);
   }
 
-  private static getFromRepresentation(fromProsition: Position, represenationConfig?: MoveRepresentationConfig): string {
+  private static getFromRepresentation(fromProsition: Square, represenationConfig?: MoveRepresentationConfig): string {
     if (represenationConfig === undefined) {
       return '';
     } else if (represenationConfig === MoveRepresentationConfig.INCLUDE_FROM_COLUMN) {
-      return PositionUtils.getColumnString(fromProsition) + '';
+      return SquareUtils.getColumnString(fromProsition) + '';
     } else {
-      return fromProsition.row + '';
+      return SquareUtils.getRowString(fromProsition) + '';
     }
   }
 
@@ -79,7 +79,7 @@ export default class MoveUtils {
     } else if (move?.isLongCastle) {
       return "O-O-O";
     } else {
-      return PositionUtils.getCoordinate(move?.from) + this.getMoveDelimiter(move) + PositionUtils.getCoordinate(move?.to) + this.getEnPassantRepresentation(move);
+      return SquareUtils.getSquareRepresentation(move?.from) + this.getMoveDelimiter(move) + SquareUtils.getSquareRepresentation(move?.to) + this.getEnPassantRepresentation(move);
     }
   }
 

@@ -1,11 +1,11 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, Result } from "../types/board.t";
-import { Color } from "../types/compressed.types.t";
+import { Color, Square } from "../types/compressed.types.t";
 import { Move, PieceType } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
-import PositionUtils from "./position.utils";
+import SquareUtils from "./square.utils";
 
 export default class MoveExecutionUtils {
   public static executeMove(move: Move, board: Board): Move | undefined {
@@ -24,13 +24,13 @@ export default class MoveExecutionUtils {
 
     if (copiedMove.capturedPiece === undefined) { // move
       if (copiedMove.piece.type === PieceType.PAWN) {
-        if (copiedMove.piece.color === Color.WHITE && copiedMove.to.row === 4) {
-          boardBuilder.enPassantSquare({ row: 3, column: copiedMove.from.column });
+        if (copiedMove.piece.color === Color.WHITE && SquareUtils.rankOf(copiedMove.to) === 3) {
+          boardBuilder.enPassantSquare(SquareUtils.convertPositionToSquare({ row: 3, column: SquareUtils.fileOf(copiedMove.from) + 1 }));
 
           return this.finishMove(copiedMove, boardBuilder);
         }
-        else if (copiedMove.piece.color === Color.BLACK && copiedMove.to.row === 5) {
-          boardBuilder.enPassantSquare({ row: 6, column: copiedMove.from.column });
+        else if (copiedMove.piece.color === Color.BLACK && SquareUtils.rankOf(copiedMove.to) === 4) {
+          boardBuilder.enPassantSquare(SquareUtils.convertPositionToSquare({ row: 6, column: SquareUtils.fileOf(copiedMove.from) + 1 }));
 
           return this.finishMove(copiedMove, boardBuilder);
         }
@@ -90,7 +90,7 @@ export default class MoveExecutionUtils {
   }
 
   private static hasPawnGoneLongStep(move: Move): boolean {
-    return move.piece.type === PieceType.PAWN && Math.abs(move.from.row - move.to.row) === 2;
+    return move.piece.type === PieceType.PAWN && Math.abs(SquareUtils.rankOf(move.from) - SquareUtils.rankOf(move.to)) === 2;
   }
 
   private static isCastle(move: Move): boolean | undefined {
@@ -100,20 +100,20 @@ export default class MoveExecutionUtils {
   private static executeLongCastle(move: Move, boardBuilder: BoardBuilder): void {
     LoggingUtils.log(LogLevel.INFO, () => "executeLongCastle: " + JSON.stringify(move));
 
-    const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 1, row: move.piece.position.row });
+    const westRook = SquareUtils.getPieceOnPos(boardBuilder.build(), SquareUtils.getRelativeSquare(Square.SQ_A1, move.piece.color));
 
-    if (pieceOnSide !== undefined) {
+    if (westRook !== undefined) {
       boardBuilder.movePiece(move)
-        .movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 4 } });
+        .movePiece({ piece: westRook, from: westRook.position, to: SquareUtils.getRelativeSquare(Square.SQ_C1, move.piece.color) });
     }
   }
 
   private static executeShortCastle(move: Move, boardBuilder: BoardBuilder): void {
     LoggingUtils.log(LogLevel.INFO, () => "executeShortCastle: " + JSON.stringify(move));
-    const pieceOnSide = PositionUtils.getPieceOnPos(boardBuilder.build(), { column: 8, row: move.piece.position.row });
+    const eastRook = SquareUtils.getPieceOnPos(boardBuilder.build(), SquareUtils.getRelativeSquare(Square.SQ_H1, move.piece.color));
 
-    if (pieceOnSide !== undefined) {
-      boardBuilder.movePiece(move).movePiece({ piece: pieceOnSide, from: pieceOnSide.position, to: { row: pieceOnSide.position.row, column: 6 } });
+    if (eastRook !== undefined) {
+      boardBuilder.movePiece(move).movePiece({ piece: eastRook, from: eastRook.position, to: SquareUtils.getRelativeSquare(Square.SQ_F1, move.piece.color) });
     }
   }
 }
