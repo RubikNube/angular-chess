@@ -1,7 +1,7 @@
 import { BoardBuilder } from "../builders/board.builder";
 import { Board, CastleRights } from "../types/board.t";
-import { Color, Direction, Square } from "../types/compressed.types.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
+import { Color, Direction, PieceType, Square } from "../types/compressed.types.t";
+import { Move, Piece } from "../types/pieces.t";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
 import PieceUtils from "./piece.utils";

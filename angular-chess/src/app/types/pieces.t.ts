@@ -1,19 +1,10 @@
 import { Board } from "./board.t";
-import { Color, Square } from "./compressed.types.t";
+import { Color, PieceType, Square } from "./compressed.types.t";
 
 export type Piece = {
   type: PieceType;
   color: Color;
   position: Square;
-}
-
-export enum PieceType {
-  KING = "KING",
-  QUEEN = "QUEEN",
-  BISHOP = "BISHOP",
-  KNIGHT = "KNIGHT",
-  PAWN = "PAWN",
-  ROOK = "ROOK"
 }
 
 export type Move = {

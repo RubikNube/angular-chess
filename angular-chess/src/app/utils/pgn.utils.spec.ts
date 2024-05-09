@@ -1,5 +1,5 @@
-import { Color, Square } from "../types/compressed.types.t";
-import { Move, PieceType } from "../types/pieces.t";
+import { Color, PieceType, Square } from "../types/compressed.types.t";
+import { Move } from "../types/pieces.t";
 import { Board } from "./../types/board.t";
 import BoardUtils from "./board.utils";
 import PgnUtils, { MoveGroup } from "./pgn.utils";
@@ -196,7 +196,9 @@ Rc2+ 34. Kg3 Qg5+`;
         isShortCastle: true
       }
 
-      expect(PgnUtils.getMoveFromString(board, 'O-O')).toEqual(expectedMove);
+      const actualMove: Move | undefined = PgnUtils.getMoveFromString(board, 'O-O');
+
+      TestUtils.checkMove(expectedMove, actualMove);
     });
 
     it('should return white long castle move for "O-O-O" in "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"', () => {

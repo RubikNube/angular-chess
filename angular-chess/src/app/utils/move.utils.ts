@@ -1,5 +1,5 @@
-import { Square } from "../types/compressed.types.t";
-import { Move, PieceType } from "../types/pieces.t";
+import { PieceType, Square } from "../types/compressed.types.t";
+import { Move } from "../types/pieces.t";
 import PieceUtils from "./piece.utils";
 import SquareUtils from "./square.utils";
 

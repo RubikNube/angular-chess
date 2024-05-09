@@ -1,6 +1,6 @@
 import { Board } from "../types/board.t";
-import { Color } from "../types/compressed.types.t";
-import { Move, Piece, PieceType } from "../types/pieces.t";
+import { Color, PieceType } from "../types/compressed.types.t";
+import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";

@@ -1,6 +1,6 @@
 import { Board } from 'src/app/types/board.t';
-import { Color, Square } from 'src/app/types/compressed.types.t';
-import { Move, Piece, PieceType } from 'src/app/types/pieces.t';
+import { Color, PieceType, Square } from 'src/app/types/compressed.types.t';
+import { Move, Piece } from 'src/app/types/pieces.t';
 import BoardUtils from '../board.utils';
 import SquareUtils from '../square.utils';
 import TestUtils from '../test.utils';
