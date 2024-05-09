@@ -1,5 +1,4 @@
-import { Color, Square } from "../types/compressed.types.t";
-import { PieceType } from "../types/pieces.t";
+import { Color, PieceType, Square } from "../types/compressed.types.t";
 import MoveUtils, { MoveRepresentationConfig } from "./move.utils";
 
 describe('MoveUtils', () => {

@@ -1,6 +1,6 @@
 import { Board } from "../types/board.t";
 import { Square } from "../types/compressed.types.t";
-import { Move, PieceType } from "../types/pieces.t";
+import { Move } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import MoveExecutionUtils from "./move-execution.utils";
 import MoveUtils from "./move.utils";
@@ -11,7 +11,7 @@ export default class TestUtils {
   public static sortByPosition = (a: Move, b: Move): number => a.to - b.to;
   public static sortByPromotedPieceType = (a: Move, b: Move): number => {
     if (a.promotedPiece && b.promotedPiece) {
-      return TestUtils.pieceTypeToNumber(a.promotedPiece.type) - TestUtils.pieceTypeToNumber(b.promotedPiece.type);
+      return a.promotedPiece.type - b.promotedPiece.type;
     }
     return 0;
   };
@@ -24,7 +24,7 @@ export default class TestUtils {
       return 1;
     }
     if (a.capturedPiece && b.capturedPiece) {
-      return TestUtils.pieceTypeToNumber(a.capturedPiece.type) - TestUtils.pieceTypeToNumber(b.capturedPiece.type);
+      return a.capturedPiece.type - b.capturedPiece.type;
     }
     return 0;
   };
@@ -37,10 +37,10 @@ export default class TestUtils {
       return expected.to - actual.to;
     }
     if (expected.capturedPiece && actual.capturedPiece) {
-      return TestUtils.pieceTypeToNumber(expected.capturedPiece.type) - TestUtils.pieceTypeToNumber(actual.capturedPiece.type);
+      return expected.capturedPiece.type - actual.capturedPiece.type;
     }
     if (expected.promotedPiece && actual.promotedPiece) {
-      return TestUtils.pieceTypeToNumber(expected.promotedPiece.type) - TestUtils.pieceTypeToNumber(actual.promotedPiece.type);
+      return expected.promotedPiece.type - actual.promotedPiece.type;
     }
     return 0;
   }
@@ -109,23 +109,6 @@ export default class TestUtils {
   public static moveToString(move: Move): string {
     return `${SquareUtils.fileOf(move.from)}${SquareUtils.rankOf(move.from)}-${SquareUtils.fileOf(move.to)}${SquareUtils.rankOf(move.to)}: ${move.capturedPiece?.type} ${move.promotedPiece?.type}`;
   };
-
-  public static pieceTypeToNumber(pieceType: PieceType): number {
-    switch (pieceType) {
-      case PieceType.QUEEN:
-        return 1;
-      case PieceType.ROOK:
-        return 2;
-      case PieceType.BISHOP:
-        return 3;
-      case PieceType.KNIGHT:
-        return 4;
-      case PieceType.PAWN:
-        return 5;
-      case PieceType.KING:
-        return 6;
-    }
-  }
 
   public static checkBoards(expectedBoard: Board | undefined, actualBoard: Board | undefined): void {
     expect(expectedBoard?.blackCastleRights)

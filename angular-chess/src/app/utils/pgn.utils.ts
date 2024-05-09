@@ -1,6 +1,6 @@
 import { Board } from "../types/board.t";
-import { Color, Square } from "../types/compressed.types.t";
-import { Move, PieceType } from "../types/pieces.t";
+import { Color, PieceType, Square } from "../types/compressed.types.t";
+import { Move } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import CopyUtils from "./copy.utils";
 import LoggingUtils, { LogLevel } from "./logging.utils";

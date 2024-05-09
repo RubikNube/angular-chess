@@ -1,6 +1,6 @@
 import { Board } from "../types/board.t";
-import { Color, Square } from "../types/compressed.types.t";
-import { Piece, PieceType } from "../types/pieces.t";
+import { Color, PieceType, Square } from "../types/compressed.types.t";
+import { Piece } from "../types/pieces.t";
 import CopyUtils from "./copy.utils";
 import PositionUtils from "./position.utils";
 import SquareUtils from "./square.utils";
@@ -29,6 +29,8 @@ export default class PieceUtils {
           return 'q';
         case PieceType.KING:
           return 'k';
+        default:
+          return 'N/A'
       }
     }
     else {
@@ -45,6 +47,8 @@ export default class PieceUtils {
           return 'w';
         case PieceType.KING:
           return 'l';
+        default:
+          return 'N/A'
       }
     }
   }
@@ -74,21 +78,6 @@ export default class PieceUtils {
     }
 
     return color === Color.WHITE ? typeChar : typeChar.toLowerCase();
-  }
-
-  public static getPieceType(pieceName: string) {
-    switch (pieceName) {
-      case "QUEEN":
-        return PieceType.QUEEN;
-      case "ROOK":
-        return PieceType.ROOK;
-      case "BISHOP":
-        return PieceType.BISHOP;
-      case "KNIGHT":
-        return PieceType.KNIGHT;
-      default:
-        return PieceType.QUEEN;
-    }
   }
 
   public static getPieceTypeFromMoveString(moveString: string): PieceType | undefined {

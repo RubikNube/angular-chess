@@ -8,13 +8,22 @@ import { HighlightingService } from '../services/highlighting.service';
 import { MoveHistoryService } from '../services/move-history.service';
 import { PositioningService } from '../services/positioning.service';
 import { Board, HighlightColor, Result, SquareWithHighlight } from '../types/board.t';
-import { Color, Square } from '../types/compressed.types.t';
-import { Move, Piece, PieceType } from '../types/pieces.t';
+import { Color, PieceType, Square } from '../types/compressed.types.t';
+import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
 import MoveGenerationUtils from '../utils/move-generation/move.generation.utils';
-import PieceUtils from '../utils/piece.utils';
 import SquareUtils from '../utils/square.utils';
+
+/**
+ * Represents the types of chess pieces.
+ */
+enum PieceTypeRepresentation {
+  QUEEN = "Queen",
+  ROOK = "Rook",
+  BISHOP = "Bishop",
+  KNIGHT = "Knight"
+}
 
 @Component({
   selector: 'app-chess-board',
@@ -34,11 +43,11 @@ export class ChessBoardComponent implements OnInit {
   private dragPos: Square = Square.SQ_NONE;
   private grabbedPiece: Piece | undefined = undefined;
   public selectedPromotionPiece: PieceType | undefined;
-  public possiblePromotionPieces: PieceType[] = [
-    PieceType.QUEEN,
-    PieceType.ROOK,
-    PieceType.KNIGHT,
-    PieceType.BISHOP
+  public possiblePromotionPieces: PieceTypeRepresentation[] = [
+    PieceTypeRepresentation.QUEEN,
+    PieceTypeRepresentation.ROOK,
+    PieceTypeRepresentation.KNIGHT,
+    PieceTypeRepresentation.BISHOP
   ];
   private lastMove: Move | undefined;
 
@@ -189,9 +198,10 @@ export class ChessBoardComponent implements OnInit {
 
   // TODO: event type has to change to specific type
   public selectPromotionPiece(event: any): void {
-    LoggingUtils.log(LogLevel.INFO, () => `selectedPromotionPiece event: ${event}`);
 
-    let selectedPiece = PieceUtils.getPieceType(event.value);
+    const selectedPiece = this.getPieceType(event.option);
+    LoggingUtils.log(LogLevel.INFO, () => `selectedPromotionPiece event: ${JSON.stringify(event)}\nselectedPiece: ${selectedPiece}`);
+
     if (this.lastMove !== undefined) {
       this.lastMove.promotedPiece = { type: selectedPiece, color: this.lastMove.piece.color, position: this.lastMove.to };
 
@@ -199,5 +209,25 @@ export class ChessBoardComponent implements OnInit {
     }
 
     this.overlayPanel?.hide();
+  }
+
+  /**
+   * Returns the corresponding PieceType based on the given pieceName.
+   * @param pieceName - The name of the piece.
+   * @returns The corresponding PieceType.
+   */
+  private getPieceType(pieceName: string) {
+    if (pieceName === PieceTypeRepresentation.QUEEN.valueOf()) {
+      return PieceType.QUEEN;
+    } else if (pieceName === PieceTypeRepresentation.ROOK.valueOf()) {
+      return PieceType.ROOK;
+    } else if (pieceName === PieceTypeRepresentation.BISHOP.valueOf()) {
+      return PieceType.BISHOP;
+    } else if (pieceName === PieceTypeRepresentation.KNIGHT.valueOf()) {
+      return PieceType.KNIGHT;
+    } else {
+      LoggingUtils.log(LogLevel.ERROR, () => `getPieceType unknown piece: ${pieceName}`);
+      return PieceType.PAWN;
+    }
   }
 }
