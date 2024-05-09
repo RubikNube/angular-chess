@@ -80,21 +80,6 @@ export default class PieceUtils {
     return color === Color.WHITE ? typeChar : typeChar.toLowerCase();
   }
 
-  public static getPieceType(pieceName: string) {
-    switch (pieceName) {
-      case "QUEEN":
-        return PieceType.QUEEN;
-      case "ROOK":
-        return PieceType.ROOK;
-      case "BISHOP":
-        return PieceType.BISHOP;
-      case "KNIGHT":
-        return PieceType.KNIGHT;
-      default:
-        return PieceType.QUEEN;
-    }
-  }
-
   public static getPieceTypeFromMoveString(moveString: string): PieceType | undefined {
     if (!moveString || moveString.length === 0) {
       return undefined;
