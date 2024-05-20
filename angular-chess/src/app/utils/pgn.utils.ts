@@ -65,7 +65,7 @@ export default class PgnUtils {
           const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.boardAfterMove) {
-              currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
+              currentBoard = CopyUtils.copyBoard(executedMove.boardAfterMove);
             }
             else {
               throw Error("Can't load PGN: " + pgn);
@@ -80,7 +80,7 @@ export default class PgnUtils {
           const executedMove = MoveExecutionUtils.executeMove(move, currentBoard);
           if (executedMove) {
             if (executedMove.boardAfterMove) {
-              currentBoard = CopyUtils.deepCopyElement(executedMove.boardAfterMove);
+              currentBoard = CopyUtils.copyBoard(executedMove.boardAfterMove);
             }
             else {
               throw Error("Can't load PGN: " + pgn);
@@ -311,7 +311,7 @@ export default class PgnUtils {
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       const representationConfig: MoveRepresentationConfig | undefined = this.getMoveRepresentationConfig(move, boardBeforeMove);
-      boardBeforeMove = CopyUtils.deepCopyElement(move.boardAfterMove);
+      boardBeforeMove = move.boardAfterMove ? CopyUtils.copyBoard(move.boardAfterMove) : boardBeforeMove;
       const moveString = MoveUtils.getSimpleMoveRepresentation(move, representationConfig);
       const moveCount = PgnUtils.getMoveCount(moves[0].piece.color, move.piece.color, i);
       pgn += `${moveCount}${moveString} `;

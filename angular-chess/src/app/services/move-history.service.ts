@@ -224,7 +224,7 @@ export class MoveHistoryService {
 
   public setStartingBoard(board: Board | undefined): void {
     this.persistenceService.save("startingBoard", board);
-    this.startingBoard = CopyUtils.deepCopyElement(board);
+    this.startingBoard = board ? CopyUtils.copyBoard(board) : board;
   }
 
   public getStartingBoard(): Board | undefined {

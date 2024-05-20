@@ -48,7 +48,7 @@ export default class EngineUtils {
 
   private static addPromotionMoves(board: Board, move: Move, promotionMoves: Move[]) {
     [PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT].forEach(type => {
-      const copiedMove = CopyUtils.deepCopyElement(move);
+      const copiedMove = CopyUtils.copyMove(move);
       copiedMove.promotedPiece = { type, color: copiedMove.piece.color, position: move.to };
       copiedMove.isCheck = MoveGenerationUtils.isCheck(board, copiedMove);
       const isMate = this.isMateAfterMove(board, copiedMove);
@@ -61,7 +61,7 @@ export default class EngineUtils {
 
   public static isMateAfterMove(board: Board, move: Move): boolean {
     // copy board
-    const copiedBoard = CopyUtils.deepCopyElement(board);
+    const copiedBoard = CopyUtils.copyBoard(board);
 
     const executedMove = MoveExecutionUtils.executeMove(move, copiedBoard);
     // execute move
@@ -71,7 +71,7 @@ export default class EngineUtils {
     }
 
     // get all pieces of current player
-    const pieces: Piece[] = boardAfterMove.pieces.filter(p => p.color === boardAfterMove.playerToMove);
+    const pieces: Piece[] = [...boardAfterMove.pieces].filter(p => p.color === boardAfterMove.playerToMove);
 
     // get all valid moves of current player
     let moves: Move[] = [];

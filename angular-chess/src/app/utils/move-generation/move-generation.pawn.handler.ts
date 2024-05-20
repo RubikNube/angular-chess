@@ -92,7 +92,7 @@ export class MoveGenerationPawnHandler implements MoveGenerationHandler {
           }
         }
         else {
-          const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+          const copiedBoard: Board = CopyUtils.copyBoard(board);
           copiedBoard.pieces = copiedBoard.pieces.filter(b => SquareUtils.rankOf(b.position) !== (SquareUtils.rankOf(p) - 1) && SquareUtils.fileOf(b.position) !== SquareUtils.fileOf(p));
 
 

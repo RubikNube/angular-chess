@@ -11,7 +11,7 @@ export class BoardBuilder {
 
   constructor(board?: Board) {
     if (board) {
-      this._board = CopyUtils.deepCopyElement(board);
+      this._board = CopyUtils.copyBoard(board);
     }
     else {
       this._board = {
@@ -119,6 +119,6 @@ export class BoardBuilder {
   }
 
   public build(): Board {
-    return CopyUtils.deepCopyElement(this._board);
+    return CopyUtils.copyBoard(this._board);
   }
 }
