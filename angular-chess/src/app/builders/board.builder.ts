@@ -1,5 +1,5 @@
-import { Board, CastleRights, Result } from "../types/board.t";
-import { Color, Square } from "../types/compressed.types.t";
+import { Board, Result } from "../types/board.t";
+import { CastlingRights, Color, Square } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";
@@ -16,8 +16,7 @@ export class BoardBuilder {
     else {
       this._board = {
         pieces: [],
-        whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
-        blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
+        castlingRights: CastlingRights.ANY_CASTLING,
         playerToMove: Color.WHITE,
         result: Result.UNKNOWN,
         moveCount: 0
@@ -70,18 +69,19 @@ export class BoardBuilder {
     return this.addPiece(move.promotedPiece ? move.promotedPiece : move.piece);
   }
 
-  public whiteCastleRights(whiteCastleRights: CastleRights): BoardBuilder {
-    this._board.whiteCastleRights = whiteCastleRights;
+  public setCastleRights(castlingRights: CastlingRights): BoardBuilder {
+    this._board.castlingRights = castlingRights;
     return this;
   }
 
-  public blackCastleRights(blackCastleRights: CastleRights): BoardBuilder {
-    this._board.blackCastleRights = blackCastleRights;
+  public clearCastleRights(player: Color): BoardBuilder {
+    if (player === Color.WHITE) {
+      this._board.castlingRights &= ~CastlingRights.WHITE_CASTLING;
+    }
+    else {
+      this._board.castlingRights &= ~CastlingRights.BLACK_CASTLING;
+    }
     return this;
-  }
-
-  public setCastleRights(castleRights: CastleRights): BoardBuilder {
-    return castleRights.player === Color.WHITE ? this.whiteCastleRights(castleRights) : this.blackCastleRights(castleRights);
   }
 
   public moveCount(moveCount: number): BoardBuilder {

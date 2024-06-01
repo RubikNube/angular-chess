@@ -1,4 +1,4 @@
-import { Board, CastleRights } from "../types/board.t";
+import { Board } from "../types/board.t";
 import { Move, Piece } from "../types/pieces.t";
 
 /**
@@ -77,8 +77,7 @@ export default class CopyUtils {
     return {
       pieces: this.copyPieceArray(board.pieces),
       playerToMove: board.playerToMove,
-      whiteCastleRights: this.copyCastleRights(board.whiteCastleRights),
-      blackCastleRights: this.copyCastleRights(board.blackCastleRights),
+      castlingRights: board.castlingRights,
       result: board.result,
       moveCount: board.moveCount,
       enPassantSquare: board.enPassantSquare,
@@ -94,19 +93,5 @@ export default class CopyUtils {
    */
   public static copyPieceArray(pieces: Piece[]): Piece[] {
     return pieces.map(piece => this.copyPiece(piece) as Piece);
-  }
-
-  /**
-   * Creates a deep copy of the given `CastleRights` object.
-   * 
-   * @param castleRights - The `CastleRights` object to be copied.
-   * @returns A new `CastleRights` object with the same properties as the original.
-   */
-  public static copyCastleRights(castleRights: CastleRights): CastleRights {
-    return {
-      player: castleRights.player,
-      canShortCastle: castleRights.canShortCastle,
-      canLongCastle: castleRights.canLongCastle
-    }
   }
 }

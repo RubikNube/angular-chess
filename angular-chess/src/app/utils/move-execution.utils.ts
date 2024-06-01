@@ -46,7 +46,7 @@ export default class MoveExecutionUtils {
   }
 
   private static executeKingCastle(move: Move, boardBuilder: BoardBuilder): Move | undefined {
-    boardBuilder.setCastleRights({ player: move.piece.color, canShortCastle: false, canLongCastle: false })
+    boardBuilder.clearCastleRights(move.piece.color);
 
     // kingside castle
     if (move.isShortCastle) {

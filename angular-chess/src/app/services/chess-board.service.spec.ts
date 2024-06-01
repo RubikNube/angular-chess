@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Color, PieceType, Square } from '../types/compressed.types.t';
+import { CastlingRights, Color, PieceType, Square } from '../types/compressed.types.t';
 import { Piece } from '../types/pieces.t';
 import { ChessBoardService } from './chess-board.service';
 
@@ -96,29 +96,25 @@ describe('ChessBoardService', () => {
     it('should set castle rights for "KQkq"', () => {
       service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
-      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: true, canShortCastle: true });
+      expect(service.getCastleRights()).toEqual(CastlingRights.ANY_CASTLING);
     });
 
     it('should set castle rights for "KQ"', () => {
       service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ");
 
-      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: true, canShortCastle: true });
-      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+      expect(service.getCastleRights()).toEqual(CastlingRights.WHITE_CASTLING);
     });
 
     it('should set castle rights for "Kk"', () => {
       service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk");
 
-      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: true });
-      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: true });
+      expect(service.getCastleRights()).toEqual(CastlingRights.WHITE_OO | CastlingRights.BLACK_OO);
     });
 
     it('should set castle rights for empty castle fen', () => {
       service.importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w");
 
-      expect(service.getCastleRights(Color.WHITE)).toEqual({ player: Color.WHITE, canLongCastle: false, canShortCastle: false });
-      expect(service.getCastleRights(Color.BLACK)).toEqual({ player: Color.BLACK, canLongCastle: false, canShortCastle: false });
+      expect(service.getCastleRights()).toEqual(CastlingRights.NO_CASTLING);
     });
 
     it('should set en passant square to e3', () => {
