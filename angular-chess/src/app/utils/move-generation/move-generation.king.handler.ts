@@ -35,9 +35,12 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     copiedBoard.pieces = copiedBoard.pieces.filter(p => !SquareUtils.squareEquals(p.position, piece.position));
 
     const attackedSquares: Square[] = MoveGenerationUtils.calculateAttackedSquares(copiedBoard, PieceUtils.getOpposedColor(piece.color));
+    const isKingAttacked = SquareUtils.includes(attackedSquares, piece.position);
+
     // kingside castle
-    if ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OO) === CastlingRights.WHITE_OO)
-      || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OO) === CastlingRights.BLACK_OO)) {
+    if (!isKingAttacked
+      && ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OO) === CastlingRights.WHITE_OO)
+        || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OO) === CastlingRights.BLACK_OO))) {
 
       const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_F1, piece.color);
       const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_G1, piece.color);
@@ -58,8 +61,9 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     // queenside castle
-    if ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OOO) === CastlingRights.WHITE_OOO)
-      || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OOO) === CastlingRights.BLACK_OOO)) {
+    if (!isKingAttacked
+      && ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OOO) === CastlingRights.WHITE_OOO)
+        || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OOO) === CastlingRights.BLACK_OOO))) {
       const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_D1, piece.color);
       const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_C1, piece.color);
       const rookSquare = SquareUtils.getRelativeSquare(Square.SQ_A1, piece.color);

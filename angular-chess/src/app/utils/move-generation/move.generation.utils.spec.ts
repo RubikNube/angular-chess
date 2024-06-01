@@ -204,6 +204,17 @@ describe('MoveGenerationUtils', () => {
         });
       });
 
+      it('should not generate black king long castle if e8 is attacked', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0");
+        let king: Piece = { type: PieceType.KING, position: Square.SQ_E8, color: Color.BLACK };
+        let validMoves = MoveGenerationUtils.getValidMoves(board, king, true);
+
+        TestUtils.checkMoves([
+          { piece: king, from: Square.SQ_E8, to: Square.SQ_F8, isCheck: false },
+          { piece: king, from: Square.SQ_E8, to: Square.SQ_F7, isCheck: false }
+        ], validMoves);
+      });
+
       it('should not generate black king long castle if d8 is attacked', () => {
         let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/3RK3 b - - 0 1");
         let king: Piece = { type: PieceType.KING, position: Square.SQ_E8, color: Color.BLACK };
