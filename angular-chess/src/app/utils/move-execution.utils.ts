@@ -10,7 +10,7 @@ import SquareUtils from "./square.utils";
 export default class MoveExecutionUtils {
   public static executeMove(move: Move, board: Board): Move | undefined {
     LoggingUtils.log(LogLevel.INFO, () => "executeMove: " + JSON.stringify(move));
-    const copiedMove: Move = CopyUtils.deepCopyElement(move);
+    const copiedMove: Move = CopyUtils.copyMove(move);
     const boardBuilder: BoardBuilder = new BoardBuilder(board);
 
     if (copiedMove.piece.color !== board.playerToMove) {
@@ -113,7 +113,9 @@ export default class MoveExecutionUtils {
     const eastRook = SquareUtils.getPieceOnPos(boardBuilder.build(), SquareUtils.getRelativeSquare(Square.SQ_H1, move.piece.color));
 
     if (eastRook !== undefined) {
-      boardBuilder.movePiece(move).movePiece({ piece: eastRook, from: eastRook.position, to: SquareUtils.getRelativeSquare(Square.SQ_F1, move.piece.color) });
+      boardBuilder
+        .movePiece(move)
+        .movePiece({ piece: eastRook, from: eastRook.position, to: SquareUtils.getRelativeSquare(Square.SQ_F1, move.piece.color) });
     }
   }
 }

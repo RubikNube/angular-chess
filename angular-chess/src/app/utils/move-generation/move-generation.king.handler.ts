@@ -30,7 +30,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     const castleRights = BoardUtils.getCastleRights(piece.color, board);
 
     // deep copy of board, because we need to check if king is attacked after castle
-    let copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    let copiedBoard: Board = CopyUtils.copyBoard(board);
     // remove king from copied board, because we need to check if king is attacked after castle
     copiedBoard.pieces = copiedBoard.pieces.filter(p => !SquareUtils.squareEquals(p.position, piece.position));
 

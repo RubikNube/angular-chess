@@ -118,7 +118,7 @@ export class MoveGenerationBishopHandler implements MoveGenerationHandler {
    * @returns An array of squares that the bishop can attack.
    */
   public getAttackingSquares(piece: Piece, board: Board): Square[] {
-    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    const copiedBoard: Board = CopyUtils.copyBoard(board);
     copiedBoard.pieces = copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
     const freeSquares = this.getFreeSquares(copiedBoard, piece);
     const occupiedSquares = this.getOccupiedSquares(copiedBoard, piece);

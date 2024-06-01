@@ -137,7 +137,7 @@ export class MoveGenerationQueenHandler implements MoveGenerationHandler {
   }
 
   public getAttackingSquares(piece: Piece, board: Board): Square[] {
-    const copiedBoard: Board = CopyUtils.deepCopyElement(board);
+    const copiedBoard: Board = CopyUtils.copyBoard(board);
     copiedBoard.pieces = copiedBoard.pieces.filter(p => !(p.type === PieceType.KING && p.color !== piece.color));
 
     return [...this.getFreeSquares(copiedBoard, piece), ...this.getOccupiedSquares(copiedBoard, piece)];

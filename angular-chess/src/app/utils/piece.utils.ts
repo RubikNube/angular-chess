@@ -1,7 +1,6 @@
 import { Board } from "../types/board.t";
 import { Color, PieceType, Square } from "../types/compressed.types.t";
 import { Piece } from "../types/pieces.t";
-import CopyUtils from "./copy.utils";
 import PositionUtils from "./position.utils";
 import SquareUtils from "./square.utils";
 
@@ -209,7 +208,7 @@ export default class PieceUtils {
   /** returns the pieces sorted by the distance to the given piece */
   public static sortByDistanceToPiece(piece: Piece, pieces: Piece[]): Piece[] {
     // deep copy the pieces by using CopyUtils
-    const piecesToSort: Piece[] = CopyUtils.deepCopyElement(pieces);
+    const piecesToSort: Piece[] = [...pieces];
 
     return piecesToSort.sort((a, b) => {
       const aPos = SquareUtils.convertSquareToPosition(a.position);

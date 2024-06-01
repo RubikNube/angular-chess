@@ -199,7 +199,7 @@ describe('EngineUtils', () => {
       }
 
       function getBoardAfterMove(board: Board, move: Move): Board | undefined {
-        const newBoard: Board = CopyUtils.deepCopyElement(board);
+        const newBoard: Board = CopyUtils.copyBoard(board);
         let executedMove: Move | undefined = MoveExecutionUtils.executeMove(move, newBoard);
         return executedMove?.boardAfterMove;
       }
