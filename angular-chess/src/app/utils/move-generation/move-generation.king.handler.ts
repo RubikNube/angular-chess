@@ -1,5 +1,5 @@
 import { Board, } from "src/app/types/board.t";
-import { PieceType, Square } from "src/app/types/compressed.types.t";
+import { CastlingRights, Color, PieceType, Square } from "src/app/types/compressed.types.t";
 import { Move, Piece } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
@@ -27,7 +27,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       });
 
     // castle
-    const castleRights = BoardUtils.getCastleRights(piece.color, board);
+    const castleRights = BoardUtils.getCastleRights(board);
 
     // deep copy of board, because we need to check if king is attacked after castle
     let copiedBoard: Board = CopyUtils.copyBoard(board);
@@ -35,8 +35,13 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     copiedBoard.pieces = copiedBoard.pieces.filter(p => !SquareUtils.squareEquals(p.position, piece.position));
 
     const attackedSquares: Square[] = MoveGenerationUtils.calculateAttackedSquares(copiedBoard, PieceUtils.getOpposedColor(piece.color));
+    const isKingAttacked = SquareUtils.includes(attackedSquares, piece.position);
+
     // kingside castle
-    if (castleRights.canShortCastle) {
+    if (!isKingAttacked
+      && ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OO) === CastlingRights.WHITE_OO)
+        || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OO) === CastlingRights.BLACK_OO))) {
+
       const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_F1, piece.color);
       const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_G1, piece.color);
       const rookSquare = SquareUtils.getRelativeSquare(Square.SQ_H1, piece.color);
@@ -56,7 +61,9 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     }
 
     // queenside castle
-    if (castleRights.canLongCastle) {
+    if (!isKingAttacked
+      && ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OOO) === CastlingRights.WHITE_OOO)
+        || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OOO) === CastlingRights.BLACK_OOO))) {
       const squareBeforeCastle = SquareUtils.getRelativeSquare(Square.SQ_D1, piece.color);
       const castleSquare = SquareUtils.getRelativeSquare(Square.SQ_C1, piece.color);
       const rookSquare = SquareUtils.getRelativeSquare(Square.SQ_A1, piece.color);

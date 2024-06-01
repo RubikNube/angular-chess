@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { Board, Result } from "../types/board.t";
-import { Color, Direction, PieceType, Square } from "../types/compressed.types.t";
+import { CastlingRights, Color, Direction, PieceType, Square } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 import TestUtils from "./test.utils";
@@ -263,8 +263,7 @@ describe('BoardUtils', () => {
           { type: PieceType.ROOK, color: Color.WHITE, position: Square.SQ_H1 },
         ],
         playerToMove: Color.WHITE,
-        whiteCastleRights: { player: Color.WHITE, canShortCastle: true, canLongCastle: true },
-        blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
+        castlingRights: CastlingRights.ANY_CASTLING,
         enPassantSquare: Square.SQ_NONE,
         plyCount: 0,
         moveCount: 1

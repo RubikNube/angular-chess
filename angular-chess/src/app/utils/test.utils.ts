@@ -111,12 +111,9 @@ export default class TestUtils {
   };
 
   public static checkBoards(expectedBoard: Board | undefined, actualBoard: Board | undefined): void {
-    expect(expectedBoard?.blackCastleRights)
-      .withContext(`Expected black castle rights: ${JSON.stringify(expectedBoard?.blackCastleRights)} but got ${JSON.stringify(actualBoard?.blackCastleRights)}`)
-      .toEqual(actualBoard?.blackCastleRights);
-    expect(expectedBoard?.whiteCastleRights)
-      .withContext(`Expected white castle rights: ${JSON.stringify(expectedBoard?.whiteCastleRights)} but got ${JSON.stringify(actualBoard?.whiteCastleRights)}`)
-      .toEqual(actualBoard?.whiteCastleRights);
+    expect(expectedBoard?.castlingRights)
+      .withContext(`Expected castle rights: ${expectedBoard?.castlingRights} but got ${actualBoard?.castlingRights}`)
+      .toEqual(actualBoard?.castlingRights);
     expect(expectedBoard?.enPassantSquare ?? Square.SQUARE_NB)
       .withContext(`Expected en passant square: ${JSON.stringify(expectedBoard?.enPassantSquare)} but got ${JSON.stringify(actualBoard?.enPassantSquare)}`)
       .toEqual(actualBoard?.enPassantSquare ?? Square.SQUARE_NB);

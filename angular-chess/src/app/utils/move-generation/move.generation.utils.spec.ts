@@ -204,6 +204,17 @@ describe('MoveGenerationUtils', () => {
         });
       });
 
+      it('should not generate black king long castle if e8 is attacked', () => {
+        let board: Board = BoardUtils.loadBoardFromFen("r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0");
+        let king: Piece = { type: PieceType.KING, position: Square.SQ_E8, color: Color.BLACK };
+        let validMoves = MoveGenerationUtils.getValidMoves(board, king, true);
+
+        TestUtils.checkMoves([
+          { piece: king, from: Square.SQ_E8, to: Square.SQ_F8, isCheck: false },
+          { piece: king, from: Square.SQ_E8, to: Square.SQ_F7, isCheck: false }
+        ], validMoves);
+      });
+
       it('should not generate black king long castle if d8 is attacked', () => {
         let board: Board = BoardUtils.loadBoardFromFen("r3k2r/8/8/8/8/8/8/3RK3 b - - 0 1");
         let king: Piece = { type: PieceType.KING, position: Square.SQ_E8, color: Color.BLACK };
@@ -1264,6 +1275,24 @@ describe('MoveGenerationUtils', () => {
 
       expect(attackedSquares).toContain(Square.SQ_B4);
       expect(attackedSquares).toContain(Square.SQ_D4);
+    });
+
+    it('should generate attacked squares for "r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0"', () => {
+      let board: Board = BoardUtils.loadBoardFromFen("r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0");
+      let attackedSquares: Square[] = MoveGenerationUtils.calculateAttackedSquares(board, Color.WHITE).sort((a, b) => a - b);
+
+      let expectedSquares: Square[] = [
+        Square.SQ_E8, Square.SQ_E7, Square.SQ_E6, Square.SQ_E4, Square.SQ_E3, Square.SQ_E2, Square.SQ_E1,
+        Square.SQ_A5, Square.SQ_B5, Square.SQ_C5, Square.SQ_D5, Square.SQ_F5, Square.SQ_G5,
+        Square.SQ_C3, Square.SQ_F6, Square.SQ_D7,
+        Square.SQ_G3, Square.SQ_F4, Square.SQ_D4,
+        Square.SQ_D6, Square.SQ_A2, Square.SQ_B2, Square.SQ_F2, Square.SQ_G2, Square.SQ_H2,
+        Square.SQ_A3, Square.SQ_B3, Square.SQ_D3, Square.SQ_F3, Square.SQ_H3,
+        Square.SQ_F1, Square.SQ_H1, Square.SQ_B7,
+        Square.SQ_D2, Square.SQ_C7, Square.SQ_G7, Square.SQ_H4, Square.SQ_H6, Square.SQ_E5, Square.SQ_B1, Square.SQ_G1].sort((a, b) => a - b);
+
+      // check if the expected squares equal the actual squares
+      expect(attackedSquares).withContext(`Expected ${attackedSquares} to equal ${expectedSquares}.`).toEqual(expectedSquares);
     });
   });
 });

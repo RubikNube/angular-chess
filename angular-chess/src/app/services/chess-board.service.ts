@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { Board, CastleRights, HighlightColor, Result } from '../types/board.t';
-import { Color, Square } from '../types/compressed.types.t';
+import { Board, HighlightColor, Result } from '../types/board.t';
+import { CastlingRights, Color, Square } from '../types/compressed.types.t';
 import { Move, Piece } from '../types/pieces.t';
 import BoardUtils from '../utils/board.utils';
 import LoggingUtils, { LogLevel } from '../utils/logging.utils';
@@ -22,8 +22,7 @@ const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 export class ChessBoardService {
   private initialBoard: Board = {
     pieces: [],
-    whiteCastleRights: { player: Color.WHITE, canLongCastle: true, canShortCastle: true },
-    blackCastleRights: { player: Color.BLACK, canShortCastle: true, canLongCastle: true },
+    castlingRights: CastlingRights.ANY_CASTLING,
     playerToMove: Color.WHITE,
     result: Result.UNKNOWN,
     moveCount: 1
@@ -115,39 +114,22 @@ export class ChessBoardService {
     return this.board$$.getValue().moveCount;
   }
 
-  public setCastleRights(castleRights: CastleRights): void {
+  public setCastleRights(castleRights: CastlingRights): void {
     let currentBoard: Board = this.board$$.getValue();
 
-    if (castleRights.player === Color.WHITE) {
-      currentBoard.whiteCastleRights = castleRights;
-    }
-    else {
-      currentBoard.blackCastleRights = castleRights;
-    }
+    currentBoard.castlingRights = castleRights;
 
     this.board$$.next(currentBoard);
   }
 
-  public getCastleRights(player: Color): CastleRights {
-    if (player === Color.WHITE) {
-      return this.board$$.getValue().whiteCastleRights;
-    }
-    else {
-      return this.board$$.getValue().blackCastleRights;
-    }
+  public getCastleRights(): CastlingRights {
+    return this.board$$.getValue().castlingRights;
   }
 
-  public getCastleRights$(player: Color): Observable<CastleRights> {
-    if (player === Color.WHITE) {
-      return this.board$.pipe(map(b => {
-        return b.whiteCastleRights;
-      }));
-    }
-    else {
-      return this.board$.pipe(map(b => {
-        return b.blackCastleRights;
-      }));
-    }
+  public getCastleRights$(player: Color): Observable<CastlingRights> {
+    return this.board$.pipe(map(b => {
+      return b.castlingRights;
+    }));
   }
 
   public togglePlayerToMove(): void {

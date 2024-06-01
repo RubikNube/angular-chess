@@ -180,15 +180,25 @@ export default class MoveGenerationUtils {
     return pieceOnPos ? pieceOnPos.color !== color : false;
   }
 
+  /**
+   * Calculates the squares that are attacked by the pieces of a specific color on the board.
+   * 
+   * @param board The chess board.
+   * @param colorOfPieces The color of the pieces to consider.
+   * @returns An array of squares that are attacked by the pieces of the specified color.
+   */
   public static calculateAttackedSquares(board: Board, colorOfPieces: Color): Square[] {
     // get all pieces of the color
     const pieces = board.pieces.filter(p => p.color === colorOfPieces);
     // get all attacked squares of the pieces
-    return pieces.map(p => this.generationHandlers
+    let attackedSquares = pieces.map(p => this.generationHandlers
       .find(h => h.canHandle(p))
       ?.getAttackingSquares(p, board))
       .filter(s => s !== undefined)
       .flat() as Square[];
+
+    // filter out duplicates
+    return attackedSquares.filter((square, index) => attackedSquares.indexOf(square) === index);
   }
 
   public static getAttackingSquares(piece: Piece, board: Board): Square[] {

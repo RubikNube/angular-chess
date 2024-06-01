@@ -83,7 +83,7 @@ describe('EngineUtils', () => {
         const expectedPossibleMoves = expectedMoves
           .sort(TestUtils.compareMoves);
 
-        TestUtils.checkMoves(actualPossibleMoves, expectedPossibleMoves);
+        TestUtils.checkMoves(expectedPossibleMoves, actualPossibleMoves);
       });
     }
 
@@ -155,6 +155,16 @@ describe('EngineUtils', () => {
       { piece: blackPawn, from: Square.SQ_G2, to: Square.SQ_G1, isCheck: false, promotedPiece: { color: Color.BLACK, position: Square.SQ_G1, type: PieceType.BISHOP } },
       { piece: blackPawn, from: Square.SQ_G2, to: Square.SQ_G1, isCheck: false, promotedPiece: { color: Color.BLACK, position: Square.SQ_G1, type: PieceType.KNIGHT } },
       { piece: blackPawn, from: Square.SQ_G2, to: Square.SQ_G1, isCheck: true, promotedPiece: { color: Color.BLACK, position: Square.SQ_G1, type: PieceType.ROOK } },
+    ]);
+
+    getPossibleMoves('should calculated all possible moves for black in "r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0"', 'r1bqk2r/p1p3pp/2P5/4Qp2/2p5/5N2/PPP2PPP/RNB3K1 b kq - 0 0', Color.BLACK, [
+      // bishop move from c8 to e6
+      { piece: { color: Color.BLACK, type: PieceType.BISHOP, position: Square.SQ_C8 }, from: Square.SQ_C8, to: Square.SQ_E6, isCheck: false },
+      // queen move from d8 to e7
+      { piece: { color: Color.BLACK, type: PieceType.QUEEN, position: Square.SQ_D8 }, from: Square.SQ_D8, to: Square.SQ_E7, isCheck: false },
+      // king moves from e8 to f8 and f7
+      { piece: { color: Color.BLACK, type: PieceType.KING, position: Square.SQ_E8 }, from: Square.SQ_E8, to: Square.SQ_F8, isCheck: false },
+      { piece: { color: Color.BLACK, type: PieceType.KING, position: Square.SQ_E8 }, from: Square.SQ_E8, to: Square.SQ_F7, isCheck: false },
     ]);
 
     describe('getPossibleMoves performance test', () => {

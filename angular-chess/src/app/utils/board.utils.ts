@@ -1,6 +1,6 @@
 import { BoardBuilder } from "../builders/board.builder";
-import { Board, CastleRights } from "../types/board.t";
-import { Color, Direction, PieceType, Square } from "../types/compressed.types.t";
+import { Board } from "../types/board.t";
+import { CastlingRights, Color, Direction, PieceType, Square } from "../types/compressed.types.t";
 import { Move, Piece } from "../types/pieces.t";
 import LoggingUtils, { LogLevel } from "./logging.utils";
 import MoveGenerationUtils from "./move-generation/move.generation.utils";
@@ -33,17 +33,11 @@ export default class BoardUtils {
     if (fenSections.length > 2) {
       const castleFen = fenSections[2];
 
-      const { whiteCastleRights, blackCastleRights }: { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } = this.readCastleRights(castleFen);
-
-      board.whiteCastleRights(whiteCastleRights);
-      board.blackCastleRights(blackCastleRights);
+      const castlingRights = this.readCastleRights(castleFen);
+      board.setCastleRights(castlingRights);
     }
     else {
-      const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-      const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
-
-      board.whiteCastleRights(whiteCastleRights);
-      board.blackCastleRights(blackCastleRights);
+      board.setCastleRights(CastlingRights.NO_CASTLING);
     }
 
     if (fenSections.length > 3) {
@@ -121,30 +115,27 @@ export default class BoardUtils {
     return playerChar === 'w' ? Color.WHITE : Color.BLACK;
   }
 
-  private static readCastleRights(castleFen: string): { whiteCastleRights: CastleRights; blackCastleRights: CastleRights; } {
-    const whiteCastleRights: CastleRights = { player: Color.WHITE, canShortCastle: false, canLongCastle: false };
-    const blackCastleRights: CastleRights = { player: Color.BLACK, canShortCastle: false, canLongCastle: false };
-
+  private static readCastleRights(castleFen: string): CastlingRights {
+    let castlingRights: CastlingRights = CastlingRights.NO_CASTLING;
     for (let castleChar of castleFen) {
       switch (castleChar) {
         case 'K':
-          whiteCastleRights.canShortCastle = true;
+          castlingRights |= CastlingRights.WHITE_OO;
           break;
         case 'Q':
-          whiteCastleRights.canLongCastle = true;
+          castlingRights |= CastlingRights.WHITE_OOO;
           break;
         case 'k':
-          blackCastleRights.canShortCastle = true;
+          castlingRights |= CastlingRights.BLACK_OO;
           break;
         case 'q':
-          blackCastleRights.canLongCastle = true;
+          castlingRights |= CastlingRights.BLACK_OOO;
           break;
-
         default:
           break;
       }
     }
-    return { whiteCastleRights, blackCastleRights };
+    return castlingRights;
   }
 
   public static isEnPassantSquare(board: Board, position: Square): boolean {
@@ -422,9 +413,8 @@ export default class BoardUtils {
     }
 
     const copiedBoard: Board = {
-      blackCastleRights: board.blackCastleRights,
       pieces: board.pieces.filter(p => !PieceUtils.pieceEquals(p, piece)),
-      whiteCastleRights: board.whiteCastleRights,
+      castlingRights: board.castlingRights,
       playerToMove: board.playerToMove,
       result: board.result,
       enPassantSquare: board.enPassantSquare,
@@ -549,16 +539,26 @@ export default class BoardUtils {
   public static getCastleRightFen(board: Board): string {
     let castleRightFen: string = "";
 
-    if (board.whiteCastleRights.canShortCastle) {
+    if (board.castlingRights === undefined) {
+      return "-";
+    }
+    if (board.castlingRights === CastlingRights.NO_CASTLING) {
+      return "-";
+    }
+
+    if ((board.castlingRights & CastlingRights.WHITE_OO) !== 0) {
       castleRightFen += "K";
     }
-    if (board.whiteCastleRights.canLongCastle) {
+
+    if ((board.castlingRights & CastlingRights.WHITE_OOO) !== 0) {
       castleRightFen += "Q";
     }
-    if (board.blackCastleRights.canShortCastle) {
+
+    if ((board.castlingRights & CastlingRights.BLACK_OO) !== 0) {
       castleRightFen += "k";
     }
-    if (board.blackCastleRights.canLongCastle) {
+
+    if ((board.castlingRights & CastlingRights.BLACK_OOO) !== 0) {
       castleRightFen += "q";
     }
 
@@ -622,13 +622,8 @@ export default class BoardUtils {
   }
 
 
-  public static getCastleRights(player: Color, board: Board): CastleRights {
-    if (player === Color.WHITE) {
-      return board.whiteCastleRights;
-    }
-    else {
-      return board.blackCastleRights;
-    }
+  public static getCastleRights(board: Board): CastlingRights {
+    return board.castlingRights;
   }
 
   public static getDiagonalPartiallyPinnedMoves(piece: Piece, board: Board, diagonal: Square[]): Move[] | undefined {

@@ -1,5 +1,5 @@
 import { Board } from '../types/board.t';
-import { Color, Direction, File, PieceType, Rank, Square } from '../types/compressed.types.t';
+import { CastlingRights, Color, Direction, File, PieceType, Rank, Square } from '../types/compressed.types.t';
 import { Move, Piece } from '../types/pieces.t';
 import SquareUtils, { Position } from './square.utils';
 
@@ -572,16 +572,7 @@ describe('SquareUtils', () => {
         { color: Color.BLACK, type: PieceType.ROOK, position: Square.SQ_E4 },
         { color: Color.WHITE, type: PieceType.KING, position: Square.SQ_H8 }
       ],
-      whiteCastleRights: {
-        player: Color.WHITE,
-        canShortCastle: false,
-        canLongCastle: false
-      },
-      blackCastleRights: {
-        player: Color.WHITE,
-        canShortCastle: false,
-        canLongCastle: false
-      },
+      castlingRights: CastlingRights.NO_CASTLING,
       moveCount: 0,
       playerToMove: Color.WHITE
     };
@@ -610,16 +601,7 @@ describe('SquareUtils', () => {
         { color: Color.BLACK, type: PieceType.ROOK, position: Square.SQ_E4 },
         { color: Color.WHITE, type: PieceType.KING, position: Square.SQ_H8 }
       ],
-      whiteCastleRights: {
-        player: Color.WHITE,
-        canShortCastle: false,
-        canLongCastle: false
-      },
-      blackCastleRights: {
-        player: Color.WHITE,
-        canShortCastle: false,
-        canLongCastle: false
-      },
+      castlingRights: CastlingRights.NO_CASTLING,
       moveCount: 0,
       playerToMove: Color.WHITE
     };
