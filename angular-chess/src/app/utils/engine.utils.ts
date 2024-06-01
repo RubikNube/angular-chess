@@ -24,8 +24,8 @@ export default class EngineUtils {
     let piecesOfColor: Piece[] = board.pieces.filter(p => p.color === playerToMove);
 
     for (let piece of piecesOfColor) {
-      moves = moves.concat(MoveGenerationUtils.getValidMoves(board, piece, true));
-      moves = moves.concat(MoveGenerationUtils.getValidCaptures(board, piece, true));
+      moves.push(...MoveGenerationUtils.getValidMoves(board, piece, true));
+      moves.push(...MoveGenerationUtils.getValidCaptures(board, piece, true));
     }
 
     // for every pawn move to the last row, add the promotion moves
