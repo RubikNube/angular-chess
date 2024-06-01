@@ -24,6 +24,13 @@ export default class MoveSearchUtils {
     let bestMove: Move | undefined;
     let bestScore: number = playerToMove === Color.WHITE ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
 
+    if (possibleMoves.length === 0) {
+      return undefined;
+    }
+    else {
+      bestMove = possibleMoves[0];
+    }
+
     for (let move of possibleMoves) {
       const boardAfterMove = MoveExecutionUtils.executeMove(move, board)?.boardAfterMove;
       if (boardAfterMove) {
