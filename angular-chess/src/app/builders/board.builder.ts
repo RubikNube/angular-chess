@@ -1,6 +1,5 @@
 import { Board, Result } from "../types/board.t";
-import { CastlingRights, Color, Square } from "../types/compressed.types.t";
-import { Move, Piece } from "../types/pieces.t";
+import { CastlingRights, Color, Move, Piece, Square, StateInfo } from "../types/compressed.types.t";
 import CopyUtils from "../utils/copy.utils";
 import LoggingUtils, { LogLevel } from "../utils/logging.utils";
 import SquareUtils from "../utils/square.utils";
@@ -34,26 +33,43 @@ export class BoardBuilder {
     return this;
   }
 
+  public removePieceOnSquare(square: Square): BoardBuilder {
+    this._board.pieces = this._board.pieces.filter(piece => !SquareUtils.squareEquals(piece.position, square));
+    return this;
+  }
+
   public addPiece(piece: Piece): BoardBuilder {
     this._board.pieces.push(piece);
 
     return this;
   }
 
-  public movePiece(move: Move): BoardBuilder {
+  /** Makes a move, and saves all information necessary
+    * to a StateInfo object. The move is assumed to be legal. Pseudo-legal
+    * moves should be filtered out before this function is called.
+    */
+  public movePiece(move: Move, stateInfo: StateInfo, givesCheck: boolean): BoardBuilder {
     LoggingUtils.log(LogLevel.INFO, () => "movePiece: " + JSON.stringify(move));
 
-    if (!move.promotedPiece) {
-      this.removePiece(move.piece);
-      move.piece.position = move.to;
-      this.addPiece(move.piece);
+    stateInfo.previous
+
+    if (stateInfo.dirtyPiece.dirty_num === 1) {
+      this.addPiece(stateInfo.dirtyPiece.piece[0]);
+      this.removePieceOnSquare(stateInfo.dirtyPiece.from[0]);
     }
-    else {
-      this.removePiece(move.piece);
-      this.removePiece(move.promotedPiece);
-      move.promotedPiece.position = move.to;
-      this.addPiece(move.promotedPiece);
-    }
+
+    // if (!move.isPromotion()) {
+    //   stateInfo.dirtyPiece.dirty_num
+
+    //   this.removePieceOnSquare(move.fromSquare());
+    //   this.addPiece(move.piece);
+    // }
+    // else {
+    //   this.removePiece(move.piece);
+    //   this.removePiece(move.promotedPiece);
+    //   move.promotedPiece.position = move.to;
+    //   this.addPiece(move.promotedPiece);
+    // }
 
     return this;
   }

@@ -1,6 +1,6 @@
 import { Board, } from "src/app/types/board.t";
-import { CastlingRights, Color, PieceType, Square } from "src/app/types/compressed.types.t";
-import { Move, Piece } from "src/app/types/pieces.t";
+import { CastlingRights, Color, Move, MoveType, PieceType, Square } from "src/app/types/compressed.types.t";
+import { Piece } from "src/app/types/pieces.t";
 import BoardUtils from "../board.utils";
 import CopyUtils from "../copy.utils";
 import PieceUtils from "../piece.utils";
@@ -19,11 +19,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
     // surrounding squares:
     moves = SquareUtils.getSurroundingSquares(piece)
       .map(p => {
-        return {
-          piece: piece,
-          from: piece.position,
-          to: p
-        }
+        return Move.make(piece.position, p, piece.type);
       });
 
     // castle
@@ -51,16 +47,11 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
         && SquareUtils.isFree(board, squareBeforeCastle) && !SquareUtils.includes(attackedSquares, squareBeforeCastle)
         && SquareUtils.isFree(board, castleSquare) && !SquareUtils.includes(attackedSquares, castleSquare)) {
-        moves.push({
-          piece: piece,
-          from: piece.position,
-          to: castleSquare,
-          isShortCastle: true
-        });
+        moves.push(Move.make(piece.position, castleSquare, piece.type, MoveType.CASTLING));
       }
     }
 
-    // queenside castle
+    // queenside castling
     if (!isKingAttacked
       && ((piece.color === Color.WHITE && (castleRights & CastlingRights.WHITE_OOO) === CastlingRights.WHITE_OOO)
         || (piece.color === Color.BLACK && (castleRights & CastlingRights.BLACK_OOO) === CastlingRights.BLACK_OOO))) {
@@ -73,12 +64,7 @@ export class MoveGenerationKingHandler implements MoveGenerationHandler {
       if (pieceOnRookPos && pieceOnRookPos.type === PieceType.ROOK && pieceOnRookPos.color === piece.color
         && SquareUtils.isFree(board, squareBeforeCastle) && !SquareUtils.includes(attackedSquares, squareBeforeCastle)
         && SquareUtils.isFree(board, castleSquare) && !SquareUtils.includes(attackedSquares, castleSquare)) {
-        moves.push({
-          piece: piece,
-          from: piece.position,
-          to: castleSquare,
-          isLongCastle: true
-        });
+        moves.push(Move.make(piece.position, castleSquare, piece.type, MoveType.CASTLING));
       }
     }
 

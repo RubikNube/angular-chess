@@ -1,6 +1,6 @@
 import { Board } from "../types/board.t";
-import { Color, Direction, File, Rank, Square } from "../types/compressed.types.t";
-import { Move, Piece } from "../types/pieces.t";
+import { Color, Direction, File, Move, Rank, Square } from "../types/compressed.types.t";
+import { Piece } from "../types/pieces.t";
 import BoardUtils from "./board.utils";
 
 
@@ -196,7 +196,7 @@ export default class SquareUtils {
    * @returns The filtered list of moves that do not include attacked squares.
    */
   public static filterOutAttackedSquares(moves: Move[], attackedSquares: Square[]): Move[] {
-    return moves.filter(move => !attackedSquares.includes(move.to));
+    return moves.filter(move => !attackedSquares.includes(move.toSquare()));
   }
 
 
@@ -494,14 +494,8 @@ export default class SquareUtils {
    * @returns A move function that takes a square and returns a move object.
    */
   public static positionToMoveFunction(piece: Piece): (value: Square, index: number, array: Square[]) => Move {
-    return (value: Square, index: number, array: Square[]) => {
-      return {
-        piece: piece,
-        from: piece.position,
-        to: value
-      };
-    };
-  }
+    return (value: Square, index: number, array: Square[]) => Move.make(piece.position, value, piece.type);
+  };
 
   /**
    * Retrieves the piece located on a specific position on the board.

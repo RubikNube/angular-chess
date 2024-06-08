@@ -1,5 +1,5 @@
-import { CastlingRights, Color, Square } from "./compressed.types.t";
-import { Piece } from "./pieces.t";
+import { CastlingRights, Color, Piece, Square } from "./compressed.types.t";
+
 
 export interface Board {
   pieces: Piece[];
