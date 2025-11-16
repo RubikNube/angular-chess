@@ -1,4 +1,5 @@
 # angular-chess
+
 A simple chess program made with Angular
 
-Visible on https://rubiknube.github.io/angular-chess/
+Visible on [https://rubiknube.github.io/angular-chess/](https://rubiknube.github.io/angular-chess/)
